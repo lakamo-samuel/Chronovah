@@ -10,7 +10,7 @@ function AppLayout() {
     <div
       className={` ${
         isOpen ? "md:grid-cols-[260px_1fr]" : " md:grid-cols-[80px_1fr]"
-      } min-h-screen grid   grid-cols-1 grid-rows-[auto_1fr]`}
+      } min-h-screen grid  dark:bg-gray-950 grid-cols-1 grid-rows-[auto_1fr]`}
     >
       {/* Header */}
       <header className="col-span-full">

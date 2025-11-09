@@ -49,7 +49,7 @@ useEffect(() => {
           onClick={toggleSidebar}
           className="p-2 rounded-md hidden md:block hover:bg-gray-100 dark:hover:bg-gray-800"
         >
-          <Menu size={20} />
+          <Menu size={20} className="dark:*:text-white"/>
         </button>
         <Box className="w-8 h-8 rounded-xl bg-blue-500 text-gray-800 dark:text-gray-100 tracking-wide" />
         <h1 className="font-bold text-lg text-gray-800 dark:text-gray-100 tracking-wide">
