@@ -7,7 +7,7 @@ export interface Place {
   location: string;
   type: string;
   notes: string;
-  image: string;
+  image: string;  
   createdAt: string;
 }
 

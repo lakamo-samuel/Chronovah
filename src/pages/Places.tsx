@@ -1,6 +1,7 @@
 import { useLiveQuery } from "dexie-react-hooks";
 import { db, type Place } from "../Database/placesDB";
 import { useState } from "react";
+import CommonPageHeader from "../components/CommonPageHeader";
 
 function Places() {
   const places = useLiveQuery(() => db.places.toArray(), []) || [];
@@ -64,61 +65,64 @@ function Places() {
   };
 
   return (
-    <div className="p-4 max-w-4xl my-20 mx-auto space-y-6">
-      {/* Form */}
+    <div className="p-4 max-w-5xl mx-auto mt-20 mb-32 space-y-8 text-gray-800 dark:text-gray-100">
+      {/* Form Section */}
+      <CommonPageHeader heading="Places"/>
       <form
         onSubmit={handleSubmit}
-        className="bg-white dark:bg-neutral-900 p-4 rounded-2xl shadow space-y-3"
+        className="bg-white dark:bg-[#0B1120] p-6 rounded-2xl shadow-md space-y-4 border border-gray-200 dark:border-gray-800"
       >
-        <h2 className="text-lg font-semibold">
-          {editingId ? "Edit Place" : "Add New Place"}
+        <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
+          {editingId ? "Edit Place" : "Add a New Place"}
         </h2>
 
-        <input
-          type="text"
-          placeholder="Place name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="w-full border border-gray-300 dark:border-neutral-700 rounded-xl p-2 outline-none focus:border-blue-500"
-          required
-        />
+        <div className="grid sm:grid-cols-2 gap-4">
+          <input
+            type="text"
+            placeholder="Place name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="w-full border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-[#1E293B] rounded-xl p-2 outline-none focus:border-blue-500"
+            required
+          />
 
-        <input
-          type="text"
-          placeholder="Country"
-          value={country}
-          onChange={(e) => setCountry(e.target.value)}
-          className="w-full border border-gray-300 dark:border-neutral-700 rounded-xl p-2 outline-none focus:border-blue-500"
-          required
-        />
+          <input
+            type="text"
+            placeholder="Country"
+            value={country}
+            onChange={(e) => setCountry(e.target.value)}
+            className="w-full border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-[#1E293B] rounded-xl p-2 outline-none focus:border-blue-500"
+            required
+          />
 
-        <input
-          type="text"
-          placeholder="Location (City, Street, etc.)"
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-          className="w-full border border-gray-300 dark:border-neutral-700 rounded-xl p-2 outline-none focus:border-blue-500"
-        />
+          <input
+            type="text"
+            placeholder="Location (City, Street, etc.)"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            className="w-full border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-[#1E293B] rounded-xl p-2 outline-none focus:border-blue-500 sm:col-span-2"
+          />
 
-        <select
-          value={type}
-          onChange={(e) => setType(e.target.value)}
-          className="w-full border border-gray-300 dark:border-neutral-700 rounded-xl p-2 outline-none focus:border-blue-500"
-        >
-          <option value="City">City</option>
-          <option value="Village">Village</option>
-          <option value="Landmark">Landmark</option>
-          <option value="Restaurant">Restaurant</option>
-          <option value="School">School</option>
-          <option value="Other">Other</option>
-        </select>
+          <select
+            value={type}
+            onChange={(e) => setType(e.target.value)}
+            className="w-full border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-[#1E293B] rounded-xl p-2 outline-none focus:border-blue-500"
+          >
+            <option value="City">City</option>
+            <option value="Village">Village</option>
+            <option value="Landmark">Landmark</option>
+            <option value="Restaurant">Restaurant</option>
+            <option value="School">School</option>
+            <option value="Other">Other</option>
+          </select>
 
-        <textarea
-          placeholder="Notes about this place"
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-          className="w-full border border-gray-300 dark:border-neutral-700 rounded-xl p-2 outline-none focus:border-blue-500"
-        />
+          <textarea
+            placeholder="Notes about this place..."
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            className="w-full border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-[#1E293B] rounded-xl p-2 outline-none focus:border-blue-500 sm:col-span-2"
+          />
+        </div>
 
         <div>
           <label className="block text-sm mb-1">Photo (optional)</label>
@@ -126,62 +130,67 @@ function Places() {
             type="file"
             accept="image/*"
             onChange={handleImageUpload}
-            className="w-full text-sm"
+            className="w-full text-sm text-gray-700 dark:text-gray-300"
           />
           {image && (
             <img
               src={image}
               alt="Preview"
-              className="mt-2 w-24 h-24 object-cover rounded-xl border border-gray-300 dark:border-neutral-700"
+              className="mt-3 w-28 h-28 object-cover rounded-xl border border-gray-300 dark:border-gray-700"
             />
           )}
         </div>
 
         <button
           type="submit"
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-xl transition"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-xl transition"
         >
           {editingId ? "Save Changes" : "Add Place"}
         </button>
       </form>
 
-      {/* List */}
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {/* List Section */}
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {places.map((place) => (
           <div
             key={place.id}
-            className="p-4 bg-white dark:bg-neutral-900 rounded-2xl shadow space-y-2"
+            className="p-4 bg-white dark:bg-[#0B1120] border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm hover:shadow-md transition space-y-2"
           >
             {place.image && (
               <img
                 src={place.image}
                 alt={place.name}
-                className="w-full h-40 object-cover rounded-xl"
+                className="w-full h-44 object-cover rounded-xl"
               />
             )}
             <h3 className="text-lg font-semibold">{place.name}</h3>
-            <p className="text-sm text-neutral-500">{place.country}</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              {place.country}
+            </p>
             {place.location && (
-              <p className="text-sm text-neutral-600 dark:text-neutral-400">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
                 📍 {place.location}
               </p>
             )}
-            <p className="text-sm">Type: {place.type}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Type: <span className="font-medium">{place.type}</span>
+            </p>
             {place.notes && (
-              <p className="text-sm text-neutral-600 dark:text-neutral-400">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
                 {place.notes}
               </p>
             )}
+
             <div className="flex justify-between text-sm pt-1">
               <span
                 onClick={() => handleEdit(place)}
-                className="text-blue-600 cursor-pointer hover:underline"
+                className="text-blue-500 cursor-pointer hover:underline"
               >
                 Edit
               </span>
               <span
                 onClick={() => handleDelete(Number(place.id))}
-                className="text-red-600 cursor-pointer hover:underline"
+                className="text-red-500 cursor-pointer hover:underline"
               >
                 Delete
               </span>
