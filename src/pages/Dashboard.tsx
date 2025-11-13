@@ -4,7 +4,8 @@ import { db as peopleDB } from "../Database/peopleDB";
 import { db as placeDB } from "../Database/placesDB";
 import { db as noteDB } from "../Database/db";
 import { db as journalDB } from "../Database/journalDB";
-import CommonPageHeader from "../components/CommonPageHeader";
+
+import DashHeader from "../features/dashboard/DashHeader";
 
 type ActivityType = "people" | "places" | "notes" | "journals";
 
@@ -87,11 +88,10 @@ const Dashboard: React.FC = () => {
               createdAt: j.createdAt,
             })
           ),
-        ]
-          //.sort(
-        //   (a, b) =>
-        //     new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        // );
+        ].sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
         console.log(combined);
         
         setActivities(combined.slice(0, 6)); // show top 6 recent
@@ -142,36 +142,10 @@ const Dashboard: React.FC = () => {
   return (
     <div className="p-6 mt-15 space-y-8 transition-colors duration-300">
       {/* Heading */}
-      <div>
-       <CommonPageHeader heading="Dashboard"/>
-        <p className="text-gray-600 dark:text-gray-400 text-sm -mt-5">
-          Overview of your saved memories and progress
-        </p>
-      </div>
-
+     
+<DashHeader/>
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map((stat, i) => (
-          <div
-            key={i}
-            className={`p-5 rounded-2xl ${stat.bg} border border-gray-200 dark:border-white/5 shadow-sm`}
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-600 dark:text-gray-400 text-sm">
-                  {stat.title}
-                </p>
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
-                  {stat.value}
-                </h2>
-              </div>
-              <div className="bg-white/50 dark:bg-white/10 p-2 rounded-lg">
-                {stat.icon}
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+      
 
       {/* Recent Activity */}
       <div>
