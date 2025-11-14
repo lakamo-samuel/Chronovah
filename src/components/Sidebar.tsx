@@ -40,7 +40,7 @@ function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="mt-auto mb-4 text-center text-xs text-gray-500 dark:text-gray-400">
+      <div className="mt-auto mb-20 text-center text-xs text-gray-500 dark:text-gray-400">
         {isOpen && "© 2025 LifePanel"}
       </div>
     </aside>

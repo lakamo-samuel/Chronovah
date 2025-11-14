@@ -1,5 +1,11 @@
 import { createContext, useContext, type JSX } from "react";
 import type { ActivityItem } from "../type/DashboardType";
+
+interface ActivityCardItem {
+  id: number | string;
+  title: string;
+  createdAt: string;
+}
 interface DashboardContextType {
   stats: {
     title: string;
@@ -8,6 +14,10 @@ interface DashboardContextType {
     bg: string;
   }[];
   activities: ActivityItem[];
+  recentNotes: ActivityCardItem[];
+  recentPeople: ActivityCardItem[];
+  recentPlaces: ActivityCardItem[];
+  recentJournals: ActivityCardItem[];
 }
 
 export const DashboardContext = createContext<DashboardContextType | undefined>(

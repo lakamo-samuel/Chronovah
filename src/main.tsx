@@ -8,6 +8,8 @@ import { SidebarProvider } from './context/SidebarToggleContext.tsx'
 import { registerSW } from "virtual:pwa-register";
 import { DashboardProvider } from './context/DashboardContext.tsx'
 
+import { SearchProvider } from './context/SearchContext.tsx'
+
 const updateSW = registerSW({
   onNeedRefresh() {
     if (confirm("New content available. Reload?")) {
@@ -23,7 +25,9 @@ createRoot(document.getElementById("root")!).render(
     <DarkModeProvider>
       <SidebarProvider>
         <DashboardProvider>
-          <App />
+          <SearchProvider>
+            <App />
+         </SearchProvider>
         </DashboardProvider>
       </SidebarProvider>
     </DarkModeProvider>
