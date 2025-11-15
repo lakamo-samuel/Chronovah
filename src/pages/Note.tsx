@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { db } from "../Database/db";
-import { nanoid } from "nanoid";
+
 import { Plus, Trash2 } from "lucide-react";
 import { useLiveQuery } from "dexie-react-hooks";
 import type { Note } from "../type/NoteType";
@@ -14,7 +14,6 @@ function Notes() {
     if (!newNote.title.trim() && !newNote.content.trim()) return;
 
     const note: Note = {
-      id: nanoid(),
       title: newNote.title.trim() || "Untitled",
       content: newNote.content.trim(),
       createdAt: new Date().toISOString(),
@@ -25,13 +24,13 @@ function Notes() {
   };
 
   // Update a note
-  const updateNote = async (id: string, field: keyof Note, value: string) => {
-    await db.notes.update(id, { [field]: value });
+  const updateNote = async (id: number, field: keyof Note, value: string) => {
+    await db.notes.update(Number(id), { [field]: value });
   };
 
   // Delete a note
-  const deleteNote = async (id: string) => {
-    await db.notes.delete(id);
+  const deleteNote = async (id: number) => {
+    await db.notes.delete(Number(id));
   };
 
   return (
@@ -74,7 +73,7 @@ function Notes() {
             className="bg-white dark:bg-[#0B1120] p-4 rounded-lg shadow hover:shadow-md transition relative"
           >
             <button
-              onClick={() => deleteNote(note.id)}
+              onClick={() => deleteNote(note.id!)}
               className="absolute top-3 right-3 text-gray-400 hover:text-red-500"
             >
               <Trash2 size={16} />
@@ -82,12 +81,12 @@ function Notes() {
 
             <input
               value={note.title}
-              onChange={(e) => updateNote(note.id, "title", e.target.value)}
+              onChange={(e) => updateNote(note.id!, "title", e.target.value)}
               className="w-full font-semibold text-lg bg-transparent outline-none dark:text-gray-100 text-gray-800"
             />
             <textarea
               value={note.content}
-              onChange={(e) => updateNote(note.id, "content", e.target.value)}
+              onChange={(e) => updateNote(note.id!, "content", e.target.value)}
               className="w-full bg-transparent outline-none resize-none mt-2 dark:text-gray-300 text-gray-700"
               rows={4}
             />
