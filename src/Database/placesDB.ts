@@ -1,7 +1,7 @@
 import Dexie, {  type Table } from "dexie";
 
 export interface Place {
-  id?: string;
+  id?: number;
   name: string;
   country: string;
   location: string;
