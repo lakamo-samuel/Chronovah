@@ -3,7 +3,7 @@ import navItems from "../type/navItems";
 
 function BottomNav() {
   return (
-    <nav className="flex justify-around items-center bg-white dark:bg-[#0B1120] rounded-full border-t border-gray-200 dark:border-gray-700 py-4  mx-6 mb-2 shadow-md">
+    <nav className="flex justify-around bg-white/95 items-center  dark:bg-[#0B1120] rounded-full border-t border-gray-200 dark:border-gray-800 py-4 drop-shadow-2xl  mx-6 mb-2 shadow-lg">
       {navItems.map(({ name, icon: Icon, path }) => (
         <NavLink
           key={name}

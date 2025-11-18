@@ -9,13 +9,14 @@ import People from "./pages/People";
 import Setting from "./pages/Setting";
 import PageNotFound from "./pages/PageNotFound";
  import ItemDetails from "./ui/ItemDetails";
+import Homepage from "./pages/Homepage";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route element={<AppLayout />}>
-          <Route path="/" element={<Dashboard />} />
+          <Route path="dashboard" element={<Dashboard />} />
 
           <Route path="notes" element={<Note />} />
           <Route path="journal" element={<Journal />} />
@@ -24,6 +25,7 @@ function App() {
           <Route path="settings" element={<Setting />} />
           <Route path="item/:type/:id" element={<ItemDetails />} />
         </Route>
+        <Route path="/" element={<Homepage />} />
         <Route path="*" element={<PageNotFound />} />
       </Routes>
     </BrowserRouter>
