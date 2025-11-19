@@ -1,3 +1,21 @@
 @import "tailwindcss";
 
 @custom-variant dark (&:where(.dark, .dark *));
+.animate-float{
+    animation: float linear infinite;
+}
+@keyframes float {
+    0%,100%{
+        transform: translateX(-5px) translateY(0);
+    }
+
+    25%{
+        transform: translateX(-30px) translateY(0px);
+    }
+    50%{
+         transform: translateX(-40px) translateY(-10px);
+    }
+    75%{
+         transform: translateX(-20px) translateY(5px);
+    }
+}
