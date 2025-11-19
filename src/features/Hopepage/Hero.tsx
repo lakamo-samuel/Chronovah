@@ -211,7 +211,7 @@ export default function Hero() {
             <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full ">
               <div>
                 <span className="font-bold text-blue-700 text-[3rem] font-mono">
-                  {animState.currentActive.toLocaleString()}+d
+                  {animState.currentActive.toLocaleString()}+
                 </span>
                 <div className="flex items-center gap-1 text-sm text-green-600 font-medium">
                   <svg
