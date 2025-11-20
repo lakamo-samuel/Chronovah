@@ -40,7 +40,7 @@ export default function Faq() {
   };
 
   return (
-    <section className="max-w-3xl mx-auto py-12 px-4 dark:bg-[#060a13]">
+    <section className=" mx-auto py-12 px-4 dark:bg-[#060a13]">
       <h2 className="text-3xl font-bold text-center mb-6 text-gray-800 dark:text-white">
         Frequently Asked Questions
       </h2>

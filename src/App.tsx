@@ -10,6 +10,11 @@ import Setting from "./pages/Setting";
 import PageNotFound from "./pages/PageNotFound";
  import ItemDetails from "./ui/ItemDetails";
 import Homepage from "./pages/Homepage";
+import SignIn from "./pages/SignIn";
+import SignUp from "./pages/SignUp";
+import ForgotPassword from "./pages/ForgetPassword";
+import OtpVerification from "./pages/OTP";
+import ResetPassword from "./pages/ResetPassword";
 
 function App() {
   return (
@@ -26,7 +31,11 @@ function App() {
           <Route path="settings" element={<Setting />} />
           <Route path="item/:type/:id" element={<ItemDetails />} />
         </Route>
-
+        <Route path="/signin" element={<SignIn />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/forgot" element={<ForgotPassword />} />
+        <Route path="/otp" element={<OtpVerification />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="*" element={<PageNotFound />} />
       </Routes>
     </BrowserRouter>

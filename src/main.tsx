@@ -9,6 +9,7 @@ import { registerSW } from "virtual:pwa-register";
 import { DashboardProvider } from './context/DashboardContext.tsx'
 
 import { SearchProvider } from './context/SearchContext.tsx'
+import { AuthProvider } from './context/AuthContext.tsx'
 
 const updateSW = registerSW({
   onNeedRefresh() {
@@ -22,14 +23,16 @@ const updateSW = registerSW({
 });
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <DarkModeProvider>
-      <SidebarProvider>
-        <DashboardProvider>
-          <SearchProvider>
-            <App />
-         </SearchProvider>
-        </DashboardProvider>
-      </SidebarProvider>
-    </DarkModeProvider>
+    <AuthProvider>
+      <DarkModeProvider>
+        <SidebarProvider>
+          <DashboardProvider>
+            <SearchProvider>
+              <App />
+            </SearchProvider>
+          </DashboardProvider>
+        </SidebarProvider>
+      </DarkModeProvider>
+    </AuthProvider>
   </StrictMode>
 );
