@@ -11,7 +11,7 @@ export default function Features() {
         desc: "Save locations, memories, photos, and places you’ve been.",
         icon: (
           <MapPin
-            size={30}
+            size={40}
             className="text-primary text-blue-800 dark:text-blue-400"
           />
         ),
@@ -20,7 +20,10 @@ export default function Features() {
         title: "Notes",
         desc: "Save ideas, reminders, lists, and everything on your mind.",
         icon: (
-          <NotebookPen className="w-6 h-6 text-yellow-900 dark:text-yellow-400" />
+          <NotebookPen
+            size={40}
+            className="w-6 h-6 text-yellow-900 dark:text-yellow-400"
+          />
         ),
       },
       {
@@ -28,7 +31,7 @@ export default function Features() {
         desc: "Store details about friends, family, clients, and relationships.",
         icon: (
           <Users
-            size={30}
+            size={40}
             className="text-primary text-green-900 dark:text-green-400"
           />
         ),
@@ -39,7 +42,7 @@ export default function Features() {
         desc: "Track your thoughts, mood, and daily emotional progress.",
         icon: (
           <Book
-            size={30}
+            size={40}
             className="text-primary  text-purple-900 dark:text-purple-400"
           />
         ),
@@ -47,23 +50,30 @@ export default function Features() {
     ];
 
   return (
-    <section id="features" className="px-6 md:px-12 py-16 bg-gray-50">
-      <h2 className="text-3xl md:text-4xl font-bold text-center mb-10">
+    <section
+      id="features"
+      className="px-6 md:px-12 py-16 bg-gray-50 dark:bg-[#0B1120] relative"
+    >
+      <h2 className="text-3xl md:text-4xl font-bold text-center mb-10 dark:text-white text-gray-900">
         What Cronova Helps You Manage
       </h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-        {features.map((f,i) => (
+        {features.map((f, i) => (
           <motion.div
             key={i}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.2 }}
-            className="bg-white/5 dark:bg-black/20 text-gray-900  border-white/10 backdrop-blur-sm rounded-xl shadow-sm p-6    hover:shadow-md transition border"
+            initial={{ opacity: 0, y: 30 }}
+            
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: false }}
+            transition={{duration: 0.72, delay: i * 0.3 }}
+            className="bg-white dark:bg-black/20 text-gray-900 flex flex-col items-center border-white/10 backdrop-blur-sm rounded-xl text-center  p-6 dark:shadow-gray-900 hover:shadow-lg transition "
           >
-            <div className="text-4xl mb-4 bg-white w-fit p-4 rounded-2xl shadow-2xl">{f.icon}</div>
-            <h3 className="text-xl font-semibold mb-2">{f.title}</h3>
-            <p className="text-gray-700">{f.desc}</p>
+            <div className="text-4xl mb-4 bg-white dark:bg-gray-950 w-[100px] h-[100px] text-center flex items-center justify-center p-4 rounded-2xl shadow-lg">
+              {f.icon}
+            </div>
+            <h3 className="text-xl font-semibold mb-2 dark:text-gray-100">{f.title}</h3>
+            <p className="text-gray-700 dark:text-gray-300">{f.desc}</p>
           </motion.div>
         ))}
       </div>

@@ -116,10 +116,10 @@ export default function Hero() {
   }, []);
 
   return (
-    <section className="min-h-screen bg-linear-to-r from-teal-50 via-blue-100 to-yellow-50 relative overflow-hidden flex justify-center items-center text-center px-4 py-20 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+    <section className="min-h-screen bg-linear-to-r from-teal-50 via-blue-100 to-yellow-50 relative overflow-hidden flex justify-center items-center text-center px-4 py-20 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 ">
       <div className="absolute -top-2 -left-5 w-36 h-4  rounded-2xl bg-blue-700"></div>
 
-      <header className="fixed rounded-full top-3 w-full px-4 py-3 max-w-3xl flex justify-between items-center z-30 shadow-md backdrop-blur-lg bg-white/50 backdrop-saturate-150 bg-linear-to-r from-teal-50 via-blue-100 to-yellow-50  dark:from-[#1E293B] dark:via-gray-800 dark:to-[#0B1120] ">
+      <header className="fixed rounded-full top-3 w-full px-4 py-3 max-w-3xl flex justify-between items-center z-30 shadow-md backdrop-blur-lg  ">
         <div className="flex items-center gap-2">
           <Box className="w-8 h-8 rounded-xl bg-blue-500 text-gray-800 dark:text-gray-100 tracking-wide" />
           <h1 className="font-bold text-lg text-gray-800 dark:text-gray-100 tracking-wide">
@@ -155,7 +155,17 @@ export default function Hero() {
         />
       ))}
 
-      <div className="hero-content relative z-20 flex flex-col items-center justify-center w-full transition-colors duration-700">
+      <div className="hero-content relative z-20 flex flex-col items-center justify-center transition-colors duration-700">
+
+        <div className="absolute inset-0 pointer-events-none z-0">
+          <div
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 
+      w-[400px] h-[450px] rounded-full 
+    bg-[radial-gradient(circle,rgba(0,90,255,0.55)_0%,rgba(80,0,255,0.25)_40%,rgba(5,10,30,0)_70%)]
+      blur-[120px] opacity-70 bg-no-repeat"
+          ></div>
+        </div>
+
         <motion.h1
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -170,8 +180,8 @@ export default function Hero() {
         </motion.h1>
 
         <motion.p
-          initial={{ opacity: 0, y:-10, }}
-          animate={{ opacity: 1,y:0, }}
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8, duration: 0.5 }}
           className="text-lg text-gray-900 dark:text-white/70 opacity-80 mb-5"
         >
