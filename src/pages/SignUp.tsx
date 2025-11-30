@@ -15,7 +15,7 @@ import { useToken } from "../hooks/useToken";
 export default function SignUp() {
   const { loading } = useAuth();
   const navigate = useNavigate();
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+
 const [token, setToken] = useToken();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -26,6 +26,7 @@ const [token, setToken] = useToken();
     email: false,
     password: false,
   });
+  console.log(token);
   const [formError, setFormError] = useState<string | null>(null);
 
   const nameError = touched.name ? validateName(name) : "";

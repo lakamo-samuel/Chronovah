@@ -66,7 +66,7 @@ const deleteEntry = async (id: number) => {
   return (
     <div className="p-4 sm:p-6 mt-20 pb-28 transition-colors duration-300">
       {/* Header */}
-     <CommonPageHeader heading="Journal"/>
+     <CommonPageHeader isSetting={false} heading="Journal"/>
 
       {/* Mood Picker */}
       <div className="flex justify-around mb-6">

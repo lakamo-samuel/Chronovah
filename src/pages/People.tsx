@@ -9,7 +9,7 @@ function People() {
   const [preview, setPreview] = useState<string | null>(null); 
   return (
     <div className="p-4 sm:p-6 mt-20 pb-28 transition-colors duration-300">
-      <CommonPageHeader heading="People"/>
+      <CommonPageHeader isSetting={false} heading="People"/>
       <PeopleInput/>
       <PeopleList setPreview={setPreview} />
       <ImagePreview preview={preview} setPreview={setPreview} />

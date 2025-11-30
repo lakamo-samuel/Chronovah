@@ -18,11 +18,11 @@ export default function SignIn() {
   const [showPassword, setShowPassword] = useState(false);
   const [touched, setTouched] = useState({ email: false, password: false });
   const [formError, setFormError] = useState<string | null>(null);
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const [token, setToken] = useToken();
+
+  const [token, setToken] = useToken();
+  console.log(token);
   const emailError = touched.email ? validateEmail(email) : "";
   const passwordError = touched.password ? validatePassword(password) : "";
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setTouched({ email: true, password: true });

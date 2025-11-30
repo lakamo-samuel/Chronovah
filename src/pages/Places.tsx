@@ -67,7 +67,7 @@ function Places() {
   return (
     <div className="p-4 max-w-5xl mx-auto mt-20 mb-32 space-y-8 text-gray-800 dark:text-gray-100">
       {/* Form Section */}
-      <CommonPageHeader heading="Places"/>
+      <CommonPageHeader isSetting={false} heading="Places"/>
       <form
         onSubmit={handleSubmit}
         className="bg-white dark:bg-[#0B1120] p-6 rounded-2xl shadow-md space-y-4 border border-gray-200 dark:border-gray-800"
