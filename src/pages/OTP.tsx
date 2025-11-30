@@ -42,12 +42,12 @@ export default function OtpVerification() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-[#05060a] p-6">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950 p-6">
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35 }}
-        className="w-full max-w-md bg-white dark:bg-[#07101a] rounded-2xl shadow-lg border border-gray-200 dark:border-[#0b1220] p-6"
+        className="w-full max-w-md bg-white  dark:bg-[#0B1120] rounded-2xl shadow-lg border border-gray-200 dark:border-[#0b1220] p-6"
       >
         <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
           Verify OTP
@@ -56,7 +56,7 @@ export default function OtpVerification() {
           Enter the 6-digit code sent to your email.
         </p>
 
-        <div className="flex justify-center gap-3 mb-4">
+        <div className="flex justify-center gap-2 sm:gap-3 mb-4">
           {otp.map((digit, index) => (
             <input
               key={index}
@@ -64,7 +64,7 @@ export default function OtpVerification() {
               ref={(el) => { inputsRef.current[index] = el; }}
               value={digit}
               onChange={(e) => handleChange(e.target.value, index)}
-              className="w-12 h-12 text-center rounded-xl border border-gray-300 dark:border-[#14202b] bg-gray-50 dark:bg-[#071620] text-lg font-semibold text-gray-900 dark:text-gray-100 outline-none"
+              className="w-9 h-9 sm:w-12 sm:h-12 text-center rounded-xl border border-gray-300 dark:border-[#14202b] bg-gray-50 dark:bg-gray-900 text-lg font-semibold text-gray-900 dark:text-gray-100 outline-none"
             />
           ))}
         </div>

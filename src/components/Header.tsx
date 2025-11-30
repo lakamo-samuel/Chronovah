@@ -5,6 +5,7 @@ import { useSidebar } from "../hooks/useSidebar";
 import GlobalSearch from "../ui/GlobalSearch";
 import { useSearch } from "../hooks/useSearch";
 import DesktopSearchInput from "../ui/DesktopSearchInput";
+import { useUser } from "../hooks/useUser";
 
 function Header() {
   const { openSearch, setOpenSearch } = useSearch();
@@ -12,7 +13,15 @@ function Header() {
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
 const { toggleSidebar } = useSidebar();
+  const [user] = useUser();
+   const {  name, profileImg } = user || {};
  
+   const initials = (name || "User")
+     .split(" ")
+     .map((n: string) => n[0])
+     .slice(0, 2)
+     .join("")
+     .toUpperCase();
 useEffect(() => {
   const handleScroll = () => {
     // Only enable scroll-hide for mobile/tablet screens
@@ -40,7 +49,9 @@ useEffect(() => {
     window.removeEventListener("resize", handleScroll);
   };
 }, [lastScrollY]);
-
+ <div className="w-9 h-9 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold cursor-pointer">
+          S
+        </div>
   return (
     <header
       className={`flex items-center justify-between px-6 py-3 bg-white dark:bg-[#0B1120] border-b border-gray-200 dark:border-gray-700 fixed top-0 left-0 right-0 z-50 transition-transform duration-300 ${
@@ -84,9 +95,25 @@ useEffect(() => {
           )}
         </button>
 
-        <div className="w-9 h-9 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold cursor-pointer">
-          S
-        </div>
+       
+         <div className=" flex flex-col md:flex-row items-center gap-6 ">
+        <div className="">
+          {profileImg ? (
+            <img
+              src={profileImg}
+              alt="Profile"
+              className="w-9 h-9 rounded-full object-cover border shadow-sm"
+            />
+          ) : (
+            <div
+              className="w-9 h-9 rounded-full bg-linear-to-tr from-blue-600 to-blue-500 text-white 
+            flex items-center justify-center  font-semibold shadow-sm"
+            >
+              {initials}
+            </div>
+          )}
+          </div>
+          </div>
       </div>
     </header>
   );

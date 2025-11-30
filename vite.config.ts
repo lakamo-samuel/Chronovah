@@ -15,7 +15,7 @@ export default defineConfig({
         start_url: "/",
         display: "standalone",
         background_color: "#000000",
-        theme_color: "#2b6cb0", 
+        theme_color: "#2b6cb0",
         icons: [
           {
             src: "/android-chrome-192x192.png",
@@ -39,4 +39,12 @@ export default defineConfig({
       },
     }),
   ],
+  server: {
+    proxy: {
+      "/api": {
+        target: "https://x52bljmr-3000.uks1.devtunnels.ms/",
+        changeOrigin: true,
+      },
+    },
+  },
 });

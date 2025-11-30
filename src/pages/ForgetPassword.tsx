@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Mail, ArrowLeft } from "lucide-react";
+import { Mail, ArrowLeft, Box } from "lucide-react";
 import { validateEmail } from "../hooks/useValidation";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
@@ -30,19 +30,20 @@ export default function ForgotPassword() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-[#05060a] p-6">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950 p-6">
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35 }}
-        className="w-full max-w-md bg-white dark:bg-[#07101a] rounded-2xl shadow-lg border border-gray-200 dark:border-[#0b1220] p-6"
+        className="w-full max-w-md bg-white dark:bg-[#0B1120] rounded-2xl shadow-lg border border-gray-200 dark:border-[#0b1220] p-6"
       >
         {/* Logo */}
         <div className="flex items-center gap-3 mb-6">
-          <img
+          {/* <img
             src="/mnt/data/A_wireframe_digital_illustration_depicts_a_persona.png"
             alt="Logo"
-            className="w-12 h-12 rounded-lg object-cover"
+            */}
+          <Box  className="w-12 h-12  text-blue-500 rounded-lg object-cover"
           />
           <div>
             <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">
@@ -66,7 +67,7 @@ export default function ForgotPassword() {
                   emailError
                     ? "border-red-400"
                     : "border-gray-200 dark:border-[#14202b]"
-                } bg-gray-50 dark:bg-[#071620]`}
+                } bg-gray-50 dark:bg-gray-900`}
               >
                 <Mail className="text-gray-500 dark:text-gray-300" />
                 <input
@@ -101,7 +102,7 @@ export default function ForgotPassword() {
               {loading ? "Sending..." : "Send code"}
             </button>
           </form>
-        ) }
+        )}
 
         {/* Back link */}
         <div className="mt-6">

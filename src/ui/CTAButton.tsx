@@ -9,7 +9,7 @@ function CTAButton() {
         animate={{ opacity: 1 }}
         transition={{ delay: 0.6 }}
         whileTap={{ scale: 0.92 }}
-        className="w-full font-semibold max-w-md bg-linear-to-r from-blue-500 to-teal-300 text-white px-8 py-4 rounded-lg shadow-lg hover:from-blue-600 hover:to-teal-500  duration-300  text-lg transition-all flex  items-center justify-center gap-2 dark:text-gray-900"
+        className=" font-semibold max-w-md  bg-blue-500  text-white px-8 py-4 rounded-lg shadow-lg hover:from-blue-600 hover:to-teal-500 hover:scale-x-110 duration-1000  text-lg transition-all flex   items-center justify-center gap-2 dark:text-gray-900"
         onClick={() => (window.location.href = "/dashboard")}
       >
         <span> Get Started</span>

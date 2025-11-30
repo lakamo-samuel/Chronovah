@@ -5,7 +5,7 @@ const feedbacks = [
   {
     id: 1,
     name: "Blessing A.",
-    text: "LifeVault helped me organize everything. Notes, places, memories — all in one secure place.",
+    text: "Chronovah helped me organize everything. Notes, places, memories — all in one secure place.",
     image: "/avatars/user1.jpg",
   },
   {

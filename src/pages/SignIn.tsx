@@ -4,9 +4,12 @@ import { useAuth } from "../hooks/useAuth";
 import { validateEmail, validatePassword } from "../hooks/useValidation";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
+import { GoogleAuthButton } from "../features/Authentication/Oauth";
+import { useToken } from "../hooks/useToken";
+import axios from "axios";
 
 export default function SignIn() {
-  const { signIn, loading } = useAuth();
+  const {  loading } = useAuth();
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
@@ -15,7 +18,8 @@ export default function SignIn() {
   const [showPassword, setShowPassword] = useState(false);
   const [touched, setTouched] = useState({ email: false, password: false });
   const [formError, setFormError] = useState<string | null>(null);
-
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const [token, setToken] = useToken();
   const emailError = touched.email ? validateEmail(email) : "";
   const passwordError = touched.password ? validatePassword(password) : "";
 
@@ -28,8 +32,18 @@ export default function SignIn() {
     setFormError(null);
 
     try {
-      await signIn(email.trim(), remember);
-      navigate("/dashboard"); // change route to your app route
+      // await signIn(email.trim(), remember);
+      // navigate("/dashboard");
+      
+
+      const response = await axios.post('/api/sign-in', {
+        email: email.trim(),
+        password
+      });
+      const { token } = response.data;
+      setToken(token);
+      navigate('/dashboard', { replace: true });
+      // change route to your app route
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: string | any) {
       setFormError(err?.message || "Failed to sign in. Try again.");
@@ -37,12 +51,12 @@ export default function SignIn() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-[#05060a] p-6">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950 p-6">
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35 }}
-        className="w-full max-w-md bg-white dark:bg-[#07101a] rounded-2xl shadow-lg border border-gray-200 dark:border-[#0b1220] p-6"
+        className="w-full max-w-md bg-white dark:bg-[#0B1120] rounded-2xl shadow-lg border border-gray-200 dark:border-[#0b1220] p-6"
       >
         {/* Logo */}
         <div className="flex items-center gap-3 mb-6">
@@ -53,11 +67,28 @@ export default function SignIn() {
           />
           <div>
             <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">
-              Cronovah
+              Chronovah
             </h1>
             <p className="text-xs text-gray-500 dark:text-gray-400">
               Sign in to continue
             </p>
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          {/* Google Button (new) */}
+          <GoogleAuthButton
+            onClick={() => {
+              /* Implement Google Sign-In logic here */
+            }}
+            label="Continue with Google"
+            loading={loading}
+          />
+          {/* Optional divider or spacer between Google button and the email/password form */}
+          <div className="flex items-center my-2">
+            <span className="grow h-px bg-gray-200" />
+            <span className="mx-2 text-xs text-gray-500">or</span>
+            <span className="grow h-px bg-gray-200" />
           </div>
         </div>
 
@@ -72,7 +103,7 @@ export default function SignIn() {
                 emailError
                   ? "border-red-400"
                   : "border-gray-200 dark:border-[#14202b]"
-              } bg-gray-50 dark:bg-[#071620]`}
+              } bg-gray-50 dark:bg-gray-900`}
             >
               <Mail className="text-gray-500 dark:text-gray-300" />
               <input
@@ -104,7 +135,7 @@ export default function SignIn() {
                 passwordError
                   ? "border-red-400"
                   : "border-gray-200 dark:border-[#14202b]"
-              } bg-gray-50 dark:bg-[#071620]`}
+              } bg-gray-50 dark:bg-gray-900`}
             >
               <Lock className="text-gray-500 dark:text-gray-300" />
               <input
@@ -124,7 +155,14 @@ export default function SignIn() {
                 className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-[#08202d]"
                 aria-label={showPassword ? "Hide password" : "Show password"}
               >
-                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                {showPassword ? (
+                  <EyeOff
+                    size={16}
+                    className="text-gray-800 dark:text-gray-300"
+                  />
+                ) : (
+                  <Eye size={16} className="text-gray-800 dark:text-gray-300" />
+                )}
               </button>
             </div>
             {passwordError && (

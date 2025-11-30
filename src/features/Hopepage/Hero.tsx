@@ -140,9 +140,9 @@ export default function Hero() {
           </button>
           <NavLink
             to="/dashboard"
-            className=" text-center px-2 bg-linear-to-r from-blue-500 to-teal-300 text-white  rounded-2xl dark:text-gray-900 ml-2 font-medium hover:from-blue-600 hover:to-teal-500 transition"
+            className=" text-center px-2 py-1 bg-blue-500  text-white  rounded-2xl dark:text-gray-900 ml-2 font-medium hover:bg-blue-400  transition"
           >
-            Start
+            Get Started
           </NavLink>
         </div>
       </header>

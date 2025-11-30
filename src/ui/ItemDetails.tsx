@@ -4,13 +4,14 @@ import { db as noteDB } from "../Database/db";
 import { db as peopleDB, type Person } from "../Database/peopleDB";
 import { db as placeDB, type Place } from "../Database/placesDB";
 import { db as journalDB, type JournalEntry } from "../Database/journalDB";
-import { ArrowLeft } from "lucide-react";
+
 import type Dexie from "dexie";
 import type { Note } from "../type/NoteType";
 import { JournalCard } from "./JournalCard";
 import { NotesCard } from "./NoteCard";
 import { PlacesCard } from "./PlaceCard";
 import { PeopleCard } from "./PeopleCard";
+import GoBackLink from "./GoBackLink";
 
 
 
@@ -106,13 +107,7 @@ console.log(item);
 
   return (
     <div className="p-6 mt-15">
-      <button
-        className="flex items-center mb-4 gap-2 text-sm text-gray-700 dark:text-gray-300"
-        onClick={() => navigate(-1)}
-      >
-        <ArrowLeft size={16} />
-        Back
-      </button>
+     <GoBackLink/>
 
           <div className="border rounded-lg p-6 bg-white dark:bg-gray-900 shadow">
              <h1 className="text-2xl font-semibold text-gray-900 dark:text-white capitalize">

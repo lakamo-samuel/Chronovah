@@ -16,24 +16,32 @@ import ForgotPassword from "./pages/ForgetPassword";
 import OtpVerification from "./pages/OTP";
 import ResetPassword from "./pages/ResetPassword";
 import ProtectedRoute from "./pages/ProtectedRoute";
+import ProfileSetting from "./pages/ProfileSetting";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route index path="/" element={<Homepage />} />
-        
-          <Route element={<ProtectedRoute><AppLayout/></ProtectedRoute>}>
-            <Route path="dashboard" element={<Dashboard />} />
 
-            <Route path="notes" element={<Note />} />
-            <Route path="journal" element={<Journal />} />
-            <Route path="places" element={<Places />} />
-            <Route path="people" element={<People />} />
-            <Route path="settings" element={<Setting />} />
-            <Route path="item/:type/:id" element={<ItemDetails />} />
-          </Route>
-  
+        <Route
+          element={
+            <ProtectedRoute>
+              <AppLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="dashboard" element={<Dashboard />} />
+
+          <Route path="notes" element={<Note />} />
+          <Route path="journal" element={<Journal />} />
+          <Route path="places" element={<Places />} />
+          <Route path="people" element={<People />} />
+          <Route path="settings" element={<Setting />} />
+          <Route path="settings/profile" element={<ProfileSetting />} />
+          <Route path="item/:type/:id" element={<ItemDetails />} />
+        </Route>
+
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/forgot" element={<ForgotPassword />} />
