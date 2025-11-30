@@ -109,7 +109,7 @@ console.log(item);
     <div className="p-6 mt-15">
      <GoBackLink/>
 
-          <div className="border rounded-lg p-6 bg-white dark:bg-gray-900 shadow">
+          <div className=" rounded-lg p-6 bg-white dark:bg-gray-900 shadow">
              <h1 className="text-2xl font-semibold text-gray-900 dark:text-white capitalize">
           {type} Details
              </h1>

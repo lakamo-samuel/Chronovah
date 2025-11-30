@@ -24,7 +24,7 @@ function PersonalInfo() {
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full pl-10 pr-3 bg-gray-50 py-3  dark:text-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+            className="w-full pl-10 pr-3 bg-gray-50 py-3 dark:bg-gray-800   dark:text-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
             placeholder="Enter full name"
           />
         </div>
@@ -41,21 +41,23 @@ function PersonalInfo() {
             type="text"
             value={`"${favQuote}"`}
             onChange={(e) => setFavQuote(e.target.value)}
-            className="w-full pl-10 pr-3 bg-gray-50 py-3  dark:text-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+            className="w-full pl-10 pr-3 bg-gray-50 py-3 dark:bg-gray-800  dark:text-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
             placeholder="Favourite quote"
           />
         </div>
       </div>
-      <Button onClick={handlePersonalInfoSubmit} loading={isLoading}>
-        {isLoading ? (
-          <>
-            {/* <SpinnerIcon className="mr-2" /> */}
-            Saving...
-          </>
-        ) : (
-          "Save Changes"
-        )}
-      </Button>
+      <div className="flex justify-end">
+        <Button onClick={handlePersonalInfoSubmit} loading={isLoading}>
+          {isLoading ? (
+            <>
+              {/* <SpinnerIcon className="mr-2" /> */}
+              Saving...
+            </>
+          ) : (
+            "Save Changes"
+          )}
+        </Button>
+      </div>
     </div>
   );
 }
