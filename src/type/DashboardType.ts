@@ -1,4 +1,4 @@
-type ActivityType = "people" | "places" | "notes" | "journals";
+type  ActivityType = "people" | "places" | "notes" | "journals";
 
 export type ActivityItem = {
   id: number;

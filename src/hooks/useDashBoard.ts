@@ -3,6 +3,7 @@ import type { ActivityItem } from "../type/DashboardType";
 
 interface ActivityCardItem {
   id: number | string;
+  item: string
   title: string;
   createdAt: string;
 }

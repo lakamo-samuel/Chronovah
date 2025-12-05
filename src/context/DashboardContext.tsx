@@ -12,6 +12,7 @@ import type { Note } from "../type/NoteType";
 
 interface ActivityCardItem {
   id: number | string;
+  item: string,
   title: string;
   createdAt: string;
 }
@@ -160,22 +161,26 @@ export function DashboardProvider({ children }: DarkModeProviderProps) {
       next: (snapshot) => {
         setCounts(snapshot.counts);
         setActivities(snapshot.activities);
-        setRecentJournals(snapshot.recentJournals
-          .map((j) => ({
+        setRecentJournals(
+          snapshot.recentJournals.map((j) => ({
             id: String(j.id),
+            item: "journals",
             title: j.mood ?? "No mood",
             createdAt: j.createdAt,
-          })));
+          }))
+        );
         setRecentNotes(
           snapshot.recentNotes.map((n) => ({
             id: String(n.id),
+            item: "notes",
             title: n.title ?? "Untitled",
             createdAt: n.createdAt,
           }))
         );
         setRecentPeople(
        snapshot.recentPeople.map((p) => ({
-            id: String(p.id),
+         id: String(p.id),
+         item: "people",
             title: p.name ?? "Unknown",
             createdAt: p.createdAt,
           })  )
@@ -183,6 +188,7 @@ export function DashboardProvider({ children }: DarkModeProviderProps) {
         setRecentPlaces(
           snapshot.recentPlaces.map((p) => ({
             id: String(p.id),
+            item: "places",
             title: p.name ?? "Unknown",
             createdAt: p.createdAt,
           }))

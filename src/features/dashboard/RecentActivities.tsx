@@ -1,8 +1,10 @@
+import { useNavigate } from "react-router-dom";
 import { useDashboard } from "../../hooks/useDashBoard";
 import type { ActivityItem } from "../../type/DashboardType";
 
 function RecentActivities() {
-  const {activities} = useDashboard()
+  const { activities } = useDashboard()
+  const navigate = useNavigate();
       const typeIcons: Record<ActivityItem["type"], string> = {
         people: "🧍",
         places: "📍",
@@ -18,10 +20,21 @@ function RecentActivities() {
         {activities.length > 0 ? (
           <ul className="space-y-3 text-gray-700 dark:text-gray-300 text-sm">
             {activities.map((item) => (
-              <li key={`${item.type}-${item.id}`}>
+              <li
+                key={`${item.type}-${item.id}`}
+                onClick={() => {
+                  navigate(`/item/${item.type}/${item.id}`);
+                }}
+              
+              >
                 {typeIcons[item.type]}{" "}
-                <span className="font-medium capitalize">{item.type}</span> —{" "}
-                <span>{item.title || "Untitled"}</span>{" "}
+                <span className="font-medium capitalize ">
+                  {item.type}
+                </span>{" "}
+                —{" "}
+                <span className="hover:text-blue-600 hover:underline">
+                  {item.title || "Untitled"}
+                </span>{" "}
                 <span className="text-gray-400 text-xs">
                   ({new Date(item.createdAt).toLocaleDateString()})
                 </span>
