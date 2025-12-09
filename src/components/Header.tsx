@@ -66,9 +66,9 @@ useEffect(() => {
         >
           <Menu size={20} className="dark:*:text-white" />
         </button>
-        <Box className="w-8 h-8 rounded-xl bg-blue-500 text-gray-800 dark:text-gray-100 tracking-wide" />
+        <Box className="w-8 h-8 rounded-xl text-blue-600 dark:text-blue-500 tracking-wide" />
         <h1 className="font-bold text-lg text-gray-800 dark:text-gray-100 tracking-wide">
-          Chronova
+          Chronovah
         </h1>
       </div>
 
