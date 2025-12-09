@@ -122,7 +122,7 @@ export default function Hero() {
 
       <header className="fixed rounded-full top-3 w-full px-4 py-3 max-w-3xl flex justify-between items-center z-30 shadow-md backdrop-blur-lg  ">
         <div className="flex items-center gap-2">
-          <Box className="w-8 h-8 rounded-xl bg-blue-500 text-gray-800 dark:text-gray-100 tracking-wide" />
+          <Box className="w-8 h-8 rounded-xl  text-blue-600 dark:text-blue-500 tracking-wide" />
           <h1 className="font-bold text-lg text-gray-800 dark:text-gray-100 tracking-wide">
             Chronovah
           </h1>
@@ -140,9 +140,9 @@ export default function Hero() {
           </button>
           <NavLink
             to="/dashboard"
-            className=" text-center px-2 py-1 bg-blue-500  text-white  rounded-2xl dark:text-gray-900 ml-2 font-medium hover:bg-blue-400  transition"
+            className=" text-center px-2 py-0.5 bg-blue-500  text-white  rounded-md dark:text-gray-100 ml-2 font-medium hover:bg-blue-400  transition"
           >
-            Get Started
+          Sign-in
           </NavLink>
         </div>
       </header>
@@ -180,7 +180,7 @@ export default function Hero() {
         >
           <span>Keep Track of your </span>
           <br />
-          <span className="bg-linear-to-r from-blue-700 via-sky-500 to-teal-300 bg-clip-text text-transparent">
+          <span className="text-blue-500">
             Life Details
           </span>
         </motion.h1>
@@ -209,7 +209,7 @@ export default function Hero() {
           <div className="flex justify-between">
             <span className="inline-flex items-center gap-2 px-3 ">
               <div>
-                <span className="font-semibold text-blue-600 text-[3rem] dark:text-blue-600 font-mono  dark:shadow-[ 0 0 8px rgba(46, 227, 212, 0.8)]">
+                <span className="font-semibold text-blue-500 text-[3rem] dark:text-blue-500 font-mono  dark:shadow-[ 0 0 8px rgba(46, 227, 212, 0.8)]">
                   {animState.currentTotal.toLocaleString()}+
                 </span>
                 <div className="flex items-center gap-1 text-sm text-blue-600 font-medium">
@@ -227,10 +227,18 @@ export default function Hero() {
                 </div>
               </div>
             </span>
-            <div className="w-2 h-full  top-0 rounded-2xl bg-blue-800 absolute dark:bg-blue-600"></div>
+
+
+
+            <div className="w-2 h-full  top-0 rounded-2xl bg-blue-500 absolute dark:bg-blue-500"></div>
+
+
+
+
+
             <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full ">
               <div>
-                <span className="font-semibold text-blue-600 text-[3rem] dark:text-blue-600 font-mono  dark:shadow-[ 0 0 8px rgba(46, 227, 212, 0.8)]">
+                <span className="font-semibold text-blue-500 text-[3rem] dark:text-blue-500 font-mono  dark:shadow-[ 0 0 8px rgba(46, 227, 212, 0.8)]">
                   {animState.currentActive.toLocaleString()}+
                 </span>
                 <div className="flex items-center gap-1 text-sm text-green-600 font-medium">
