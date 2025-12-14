@@ -10,8 +10,8 @@ Chronovah is a productivity and personal data organization app designed to help 
 
 ## 🛠 Tech Stack
 - React
-- JavaScript
-- CSS
+- Typescript
+- Tailwind
 - Backend (in progress)
 
 ## 📦 Installation
