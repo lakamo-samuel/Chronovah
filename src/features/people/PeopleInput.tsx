@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { db } from "../../Database/peopleDB";
+import SaveBtn from "../../ui/SaveBtn";
 
 function PeopleInput() {
   const [name, setName] = useState("");
@@ -68,12 +69,7 @@ function PeopleInput() {
             onChange={handleImageChange}
           />
         </label>
-        <button
-          onClick={addPerson}
-          className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
-        >
-          Add
-        </button>
+        <SaveBtn onClick={addPerson}/>
       </div>
       {image && (
         <img

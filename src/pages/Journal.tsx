@@ -3,6 +3,8 @@ import { db } from "../Database/journalDB";
 // import { nanoid } from "nanoid";
 import { useLiveQuery } from "dexie-react-hooks";
 import CommonPageHeader from "../components/CommonPageHeader";
+import SaveBtn from "../ui/SaveBtn";
+
 
 const moods = [
   { emoji: "😄", label: "Happy" },
@@ -66,68 +68,64 @@ const deleteEntry = async (id: number) => {
   return (
     <div className="p-4 sm:p-6 mt-20 pb-28 transition-colors duration-300">
       {/* Header */}
-     <CommonPageHeader isSetting={false} heading="Journal"/>
+      <CommonPageHeader isSetting={false} heading="Journal" />
+      <div className=" bg-white dark:bg-[#0B1120] p-6 rounded-lg shadow-md mt-6">
+        {/* Mood Picker */}
+        <div className="flex justify-around mb-6">
+          {moods.map((m) => (
+            <button
+              key={m.label}
+              onClick={() => setSelectedMood(m.label)}
+              className={`text-3xl p-2 rounded-full transition transform ${
+                selectedMood === m.label
+                  ? "bg-blue-100 dark:bg-blue-900 scale-110"
+                  : "hover:bg-gray-100 dark:hover:bg-[#1E293B]"
+              }`}
+            >
+              {m.emoji}
+            </button>
+          ))}
+        </div>
 
-      {/* Mood Picker */}
-      <div className="flex justify-around mb-6">
-        {moods.map((m) => (
-          <button
-            key={m.label}
-            onClick={() => setSelectedMood(m.label)}
-            className={`text-3xl p-2 rounded-full transition transform ${
-              selectedMood === m.label
-                ? "bg-blue-100 dark:bg-blue-900 scale-110"
-                : "hover:bg-gray-100 dark:hover:bg-[#1E293B]"
-            }`}
-          >
-            {m.emoji}
-          </button>
-        ))}
-      </div>
-
-      {/* Journal Input */}
-      <textarea
-        value={note}
-        onChange={(e) => setNote(e.target.value)}
-        placeholder="Write about your day..."
-        rows={6}
-        className="w-full p-3 rounded-md bg-white dark:bg-[#1E293B] text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
-      />
-
-      {/* Tags */}
-      <div className="flex flex-wrap gap-2 mb-4">
-        {tags.map((t) => (
-          <span
-            key={t}
-            className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs"
-          >
-            #{t}
-          </span>
-        ))}
-      </div>
-
-      <div className="flex gap-2 mb-8">
-        <input
-          value={tagInput}
-          onChange={(e) => setTagInput(e.target.value)}
-          placeholder="Add a tag..."
-          className="flex-1 p-2 rounded-md bg-white dark:bg-[#1E293B] text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        {/* Journal Input */}
+        <textarea
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+          placeholder="Write about your day..."
+          rows={6}
+          className="w-full  bg-gray-50 p-3 rounded-md  dark:bg-[#1E293B] text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
         />
-        <button
-          onClick={addTag}
-          className="px-4 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-        >
-          Add
-        </button>
-      </div>
 
+        {/* Tags */}
+        <div className="flex flex-wrap gap-2 mb-4">
+          {tags.map((t) => (
+            <span
+              key={t}
+              className="bg-blue-100  text-blue-700 px-2 py-1 rounded-full text-xs"
+            >
+              #{t}
+            </span>
+          ))}
+        </div>
+
+        <div className="flex gap-2 mb-8">
+          <input
+            value={tagInput}
+            onChange={(e) => setTagInput(e.target.value)}
+            placeholder="Add a tag..."
+            className="flex-1 p-2  bg-gray-50 rounded-md  dark:bg-[#1E293B] text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <button
+            onClick={addTag}
+            className="px-4 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+          >
+            Add
+          </button>
+        </div>
+
+        <SaveBtn onClick={saveEntry} />
+      </div>
       {/* Floating Save Button */}
-      <button
-        onClick={saveEntry}
-        className="fixed bottom-24 right-6 sm:bottom-10 sm:right-10 bg-blue-500 hover:bg-blue-600 text-white p-4 rounded-full shadow-lg transition-transform transform hover:scale-105"
-      >
-        💾
-      </button>
 
       {/* Journal Entries */}
       <div className="mt-8 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">

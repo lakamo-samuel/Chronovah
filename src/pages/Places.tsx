@@ -2,6 +2,8 @@ import { useLiveQuery } from "dexie-react-hooks";
 import { db, type Place } from "../Database/placesDB";
 import { useState } from "react";
 import CommonPageHeader from "../components/CommonPageHeader";
+import SaveBtn from "../ui/SaveBtn";
+
 
 function Places() {
   const places = useLiveQuery(() => db.places.toArray(), []) || [];
@@ -65,12 +67,12 @@ function Places() {
   };
 
   return (
-    <div className="p-4 max-w-5xl mx-auto mt-20 mb-32 space-y-8 text-gray-800 dark:text-gray-100">
+    <div className="p-4  mt-20 mb-32 space-y-8 text-gray-800 dark:text-gray-100">
       {/* Form Section */}
-      <CommonPageHeader isSetting={false} heading="Places"/>
+      <CommonPageHeader isSetting={false} heading="Places" />
       <form
         onSubmit={handleSubmit}
-        className="bg-white dark:bg-[#0B1120] p-6 rounded-2xl shadow-md space-y-4 border border-gray-200 dark:border-gray-800"
+        className="bg-white dark:bg-[#0B1120] p-6 rounded-2xl shadow-md space-y-4 "
       >
         <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
           {editingId ? "Edit Place" : "Add a New Place"}
@@ -82,7 +84,7 @@ function Places() {
             placeholder="Place name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-[#1E293B] rounded-xl p-2 outline-none focus:border-blue-500"
+            className="w-full bg-gray-50 dark:bg-[#1E293B] rounded-xl p-2 outline-none focus:border-blue-500"
             required
           />
 
@@ -91,7 +93,7 @@ function Places() {
             placeholder="Country"
             value={country}
             onChange={(e) => setCountry(e.target.value)}
-            className="w-full border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-[#1E293B] rounded-xl p-2 outline-none focus:border-blue-500"
+            className="w-full bg-gray-50 dark:bg-[#1E293B] rounded-xl p-2 outline-none focus:border-blue-500"
             required
           />
 
@@ -100,13 +102,13 @@ function Places() {
             placeholder="Location (City, Street, etc.)"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
-            className="w-full border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-[#1E293B] rounded-xl p-2 outline-none focus:border-blue-500 sm:col-span-2"
+            className="w-full bg-gray-50 dark:bg-[#1E293B] rounded-xl p-2 outline-none focus:border-blue-500 sm:col-span-2"
           />
 
           <select
             value={type}
             onChange={(e) => setType(e.target.value)}
-            className="w-full border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-[#1E293B] rounded-xl p-2 outline-none focus:border-blue-500"
+            className="w-full  bg-gray-50 dark:bg-[#1E293B] rounded-xl p-2 outline-none focus:border-blue-500"
           >
             <option value="City">City</option>
             <option value="Village">Village</option>
@@ -120,7 +122,7 @@ function Places() {
             placeholder="Notes about this place..."
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            className="w-full border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-[#1E293B] rounded-xl p-2 outline-none focus:border-blue-500 sm:col-span-2"
+            className="w-full   bg-gray-50 dark:bg-[#1E293B] rounded-xl p-2 outline-none focus:border-blue-500 sm:col-span-2"
           />
         </div>
 
@@ -130,7 +132,7 @@ function Places() {
             type="file"
             accept="image/*"
             onChange={handleImageUpload}
-            className="w-full text-sm text-gray-700 dark:text-gray-300"
+            className="w-full text-sm cursor-pointer text-blue-500 dark:text-blue-500"
           />
           {image && (
             <img
@@ -140,13 +142,7 @@ function Places() {
             />
           )}
         </div>
-
-        <button
-          type="submit"
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-xl transition"
-        >
-          {editingId ? "Save Changes" : "Add Place"}
-        </button>
+        <SaveBtn onClick={handleSubmit}/>
       </form>
 
       {/* List Section */}

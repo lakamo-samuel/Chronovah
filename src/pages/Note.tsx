@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { db } from "../Database/db";
 
-import { Plus, Trash2 } from "lucide-react";
+import {  Trash2 } from "lucide-react";
 import { useLiveQuery } from "dexie-react-hooks";
 import type { Note } from "../type/NoteType";
 import { motion, AnimatePresence } from "framer-motion";
 import CommonPageHeader from "../components/CommonPageHeader";
+import SaveBtn from "../ui/SaveBtn";
 
 function Notes() {
   const notes = useLiveQuery(() => db.notes.toArray(), []);
@@ -147,13 +148,14 @@ function Notes() {
           className="w-full bg-transparent outline-none resize-none dark:text-gray-300 text-gray-700"
         />
 
-        <button
+        {/* <button
           onClick={addNote}
           disabled={!newNote.title.trim() && !newNote.content.trim()}
           className="flex items-center gap-2 place-self-end dark:disabled:bg-blue-500 disabled:bg-blue-400 disabled:cursor-not-allowed text-white px-3 py-2 rounded-lg bg-blue-600 transition"
         >
-          <Plus size={18} /> Add
-        </button>
+          Save
+        </button> */}
+        <SaveBtn onClick={addNote}/>
       </motion.div>
 
       {/* Empty state */}

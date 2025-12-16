@@ -20,7 +20,7 @@ export default function Settings() {
     alert("All data cleared successfully.");
   };
   return (
-    <div className="p-6 space-y-8 max-w-4xl mx-auto my-20">
+    <div className="p-6 space-y-8  my-20">
       <CommonPageHeader heading="Setting" isSetting={true} />
       <AppearanceStorage />
       <BackupRestore />
