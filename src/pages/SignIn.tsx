@@ -5,6 +5,7 @@ import { validateEmail, validatePassword } from "../hooks/useValidation";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import { GoogleAuthButton } from "../features/Authentication/Oauth";
+import Spinner from "../ui/Spinner";
 
 
 export default function SignIn() {
@@ -17,7 +18,8 @@ export default function SignIn() {
   const [showPassword, setShowPassword] = useState(false);
   const [touched, setTouched] = useState({ email: false, password: false });
   const [formError, setFormError] = useState<string | null>(null);
-  const { refresh,loading } = useAuth(); 
+  const { refresh } = useAuth(); 
+  const [loading, setIsLoading] = useState<boolean>(false)
 
   const emailError = touched.email ? validateEmail(email) : "";
   const passwordError = touched.password ? validatePassword(password) : "";
@@ -29,6 +31,7 @@ export default function SignIn() {
     if (eErr || pErr) return;
     setFormError(null);
     try {
+      setIsLoading(true);
    const res = await fetch("http://localhost:8000/api/user/signin", {
      method: "POST",
      headers: { "Content-Type": "application/json" },
@@ -43,17 +46,20 @@ export default function SignIn() {
 
    if (!res.ok) {
      setFormError(data.error || "Invalid credentials");
+     setIsLoading(false)
      return;
    }
 
-   // Refresh global user state from /me
+  
    await refresh();
 
-   // Redirect to dashboard
+   
    navigate("/dashboard");
  // eslint-disable-next-line @typescript-eslint/no-explicit-any
  } catch (err: string | any) {
    setFormError(err?.message || "Failed to sign in. Try again.");
+    } finally {
+      setIsLoading(false);
  }
    
   };
@@ -206,13 +212,26 @@ export default function SignIn() {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full py-3 rounded-xl font-semibold transition ${
+            className={`w-full py-3 rounded-xl font-semibold transition flex items-center justify-center gap-2 ${
               loading
                 ? "bg-blue-400 cursor-wait"
                 : "bg-blue-600 hover:bg-blue-700"
             } text-white`}
           >
-            {loading ? "Signing in..." : "Sign in"}
+            {loading ? (
+              <>
+                <Spinner
+                  size="sm"
+                  overlay={false}
+                  color="white"
+                  thickness={2}
+                  
+                />
+                <span>Signing in...</span>
+              </>
+            ) : (
+              "Sign in"
+            )}
           </button>
         </form>
 

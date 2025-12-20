@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import Spinner from "../ui/Spinner";
 
 export default function OtpVerification() {
 
@@ -12,7 +13,7 @@ export default function OtpVerification() {
   const [error, setError] = useState("");
   const [timer, setTimer] = useState(30);
   const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
-
+  const [loading, setIsLoading] = useState<boolean>(false);
   useEffect(() => {
     if (timer <= 0) return;
     const interval = setInterval(() => setTimer((t) => t - 1), 1000);
@@ -37,7 +38,8 @@ export default function OtpVerification() {
     setError("");
 
     // Backend connect here
-   try {
+    try {
+      setIsLoading(true);
      const res = await fetch("http://localhost:8000/api/user/verify-email", {
        method: "PUT",
        headers: { "Content-Type": "application/json" },
@@ -49,7 +51,7 @@ export default function OtpVerification() {
 
      if (!res.ok) {
        setError(data.error || "Invalid verification code");
-
+       setIsLoading(false);
        return;
      }
 
@@ -61,6 +63,8 @@ export default function OtpVerification() {
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
    } catch (err: any) {
      setError(err?.message || "Network error, please try again.");
+    } finally {
+      setIsLoading(false);
    }
   };
 
@@ -111,7 +115,9 @@ export default function OtpVerification() {
             <input
               key={index}
               maxLength={1}
-              ref={(el) => { inputsRef.current[index] = el; }}
+              ref={(el) => {
+                inputsRef.current[index] = el;
+              }}
               value={digit}
               onChange={(e) => handleChange(e.target.value, index)}
               className="w-9 h-9 sm:w-12 sm:h-12 text-center rounded-xl border border-gray-300 dark:border-[#14202b] bg-gray-50 dark:bg-gray-900 text-lg font-semibold text-gray-900 dark:text-gray-100 outline-none"
@@ -121,13 +127,27 @@ export default function OtpVerification() {
 
         {error && <p className="text-xs text-red-500 text-center">{error}</p>}
 
-        <button
-          onClick={handleVerify}
-          className="w-full mt-4 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold"
-        >
+        <button className="w-full mt-4 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold">
           Verify
         </button>
-
+        <button
+          onClick={handleVerify}
+          disabled={loading}
+          className={`w-full py-3 rounded-xl font-semibold transition flex items-center justify-center gap-2 ${
+            loading
+              ? "bg-blue-400 cursor-wait"
+              : "bg-blue-600 hover:bg-blue-700"
+          } text-white`}
+        >
+          {loading ? (
+            <>
+              <Spinner size="sm" overlay={false} color="white" thickness={2} />
+              <span>Verifying...</span>
+            </>
+          ) : (
+            "Verify"
+          )}
+        </button>
         <div className="mt-4 text-center">
           {timer > 0 ? (
             <p className="text-sm text-gray-500 dark:text-gray-400">

@@ -37,7 +37,10 @@ export const useUser =(): UseUserReturn => {
 
   const logout = useCallback(async () => {
     try {
-      await fetch("/auth/logout", { method: "POST", credentials: "include" });
+      await fetch("http://localhost:8000/api/user/logout", {
+        method: "POST",
+        credentials: "include",
+      });
     } catch (err) {
       console.error("Logout failed:", err);
     } finally {

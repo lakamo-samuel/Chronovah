@@ -9,12 +9,13 @@ import {
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import { GoogleAuthButton } from "../features/Authentication/Oauth";
+import Spinner from "../ui/Spinner";
 
 
 export default function SignUp() {
-  const { refresh,loading } = useAuth();
+  const { refresh } = useAuth();
   const navigate = useNavigate();
-
+  const [loading, setIsLoading] = useState<boolean>(false);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -44,7 +45,8 @@ export default function SignUp() {
       return;
 
     setFormError(null);
- try {
+    try {
+   setIsLoading(true)
    const res = await fetch("http://localhost:8000/api/user/signup", {
      method: "POST",
      headers: { "Content-Type": "application/json" },
@@ -60,16 +62,18 @@ export default function SignUp() {
 
    if (!res.ok) {
      setFormError(data.error || "Signup failed");
+     setIsLoading(false)
      return;
    }
 
-   // After signup, the cookie might already be set if you auto-login
-   // Otherwise, redirect to verification page
-   await refresh(); // update user state from /me
-   navigate("/otpverification"); // or "/dashboard" if auto-verified
+
+   await refresh();
+   navigate("/otpverification"); 
  // eslint-disable-next-line @typescript-eslint/no-explicit-any
  } catch (err: any) {
    setFormError(err?.message || "Failed to create account. Try again.");
+    } finally {
+      setIsLoading(false)
  }
  
   };
@@ -223,13 +227,26 @@ export default function SignUp() {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full py-3 rounded-xl font-semibold transition ${
+            className={`w-full py-3 rounded-xl font-semibold transition flex items-center justify-center gap-2 ${
               loading
                 ? "bg-blue-400 cursor-wait"
                 : "bg-blue-600 hover:bg-blue-700"
             } text-white`}
           >
-            {loading ? "Creating..." : "Create account"}
+            {loading ? (
+              <>
+                <Spinner
+                  size="sm"
+                  overlay={false}
+                  color="white"
+                  thickness={2}
+                  
+                />
+                <span>Creating...</span>
+              </>
+            ) : (
+              "Create account"
+            )}
           </button>
         </form>
 

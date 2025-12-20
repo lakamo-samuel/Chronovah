@@ -4,21 +4,20 @@ import { NavLink } from "react-router-dom";
 
 import navItems from "../type/navItems";
 import { useSidebar } from "../hooks/useSidebar";
+import { LogOut } from "lucide-react";
+import { useAuth } from "../hooks/useAuth";
 
 
 function Sidebar() {
 
   const { isOpen } = useSidebar();
-
+  const { logout } = useAuth();
   return (
     <aside
       className={`${
         isOpen ? "w-[260px]" : "w-[80px]"
       } bg-white dark:bg-[#0B1120] border-r top-15 border-t-0 fixed left-0 bottom-0 border-gray-200 dark:border-gray-700 min-h-screen flex flex-col transition-all duration-300`}
     >
-     
-    
-
       {/* Navigation */}
       <nav className="flex-1 flex flex-col mt-6">
         {navItems.map((item) => (
@@ -39,9 +38,12 @@ function Sidebar() {
         ))}
       </nav>
 
-      {/* Footer */}
-      <div className="mt-auto mb-20 text-center text-xs text-gray-500 dark:text-gray-400">
-        {isOpen && "© 2025 LifePanel"}
+      <div
+        onClick={logout}
+        className="p-4 mb-15 flex border-gray-300 border-t dark:border-gray-700 text-xs text-gray-500 dark:text-gray-400  items-center gap-2 cursor-pointer hover:text-red-500"
+      >
+        <LogOut size={16} className="ml-2" />
+       {isOpen && <span>Logout</span>}
       </div>
     </aside>
   );

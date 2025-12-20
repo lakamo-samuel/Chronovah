@@ -21,7 +21,7 @@ function DashHeader() {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="bg-white dark:bg-[#0B1120] rounded-xl shadow-sm p-6 md:p-8 flex justify-between flex-col md:flex-row items-center gap-6 border border-gray-100 dark:border-gray-950"
+      className="bg-white dark:bg-[#0B1120] rounded-xl shadow-sm p-6 md:p-8 flex justify-between flex-col lg:flex-row items-center gap-6 border border-gray-100 dark:border-gray-950"
       aria-label="Dashboard Header"
     >
       <div className=" flex flex-col md:flex-row items-center gap-6 ">

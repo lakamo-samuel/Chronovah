@@ -3,7 +3,8 @@ import { Suspense, lazy } from "react";
 import "./index.css";
 import AppLayout from "./ui/AppLayout";
 import ProtectedRoute from "./pages/ProtectedRoute";
-import Spinner from "./ui/Spinner"; // Optional loading spinner
+import Spinner from "./ui/Spinner";
+
 
 // Lazy load pages
 const Dashboard = lazy(() => import("./pages/Dashboard"));
@@ -25,7 +26,11 @@ const PageNotFound = lazy(() => import("./pages/PageNotFound"));
 function App() {
   return (
     <BrowserRouter>
-      <Suspense fallback={<Spinner />}>
+      <Suspense
+        fallback={
+          <Spinner size="lg" overlay={true} color="blue-500" thickness={4} />
+        }
+      >
         <Routes>
           <Route index path="/" element={<Homepage />} />
 
