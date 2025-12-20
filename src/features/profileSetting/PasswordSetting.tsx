@@ -1,26 +1,22 @@
 import { useState, useMemo } from "react";
 
 import Button from "../../ui/Button";
-import { useDetailsSettings } from "../../services/SettingApiCall";
+
 import PasswordInput from "./PasswordSettingInput";
 import StrengthMeter from "./PasswordStrengthMeter";
 
-
-
-type FormErrors= {
+type FormErrors = {
   oldPassword?: string;
   newPassword?: string;
   confirmPassword?: string;
   form?: string;
 };
 
-
-
 export default function PasswordSetting() {
   const [oldPassword, setOldPassword] = useState<string>("");
   const [newPassword, setNewPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
-  const { isLoading } = useDetailsSettings();
+
   const [errors, setErrors] = useState<FormErrors>({});
 
   // Real-time strength (0-100) for new password
@@ -145,16 +141,9 @@ export default function PasswordSetting() {
           onClick={async () => {
             console.log("click");
           }}
-          loading={isLoading}
+          loading={false}
         >
-          {isLoading ? (
-            <>
-              {/* <SpinnerIcon className="mr-2" /> */}
-              Saving...
-            </>
-          ) : (
-            "Change password"
-          )}
+          Change password
         </Button>
       </div>
     </form>

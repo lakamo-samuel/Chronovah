@@ -1,10 +1,10 @@
 import { Quote, User } from "lucide-react";
 import Button from "../../ui/Button";
 
-import { useDetailsSettings } from "../../services/SettingApiCall";
+
 
 function PersonalInfo() {
-    const {name,setName,favQuote,setFavQuote,isLoading,handlePersonalInfoSubmit} = useDetailsSettings()
+  
 
 
   return (
@@ -22,8 +22,7 @@ function PersonalInfo() {
           <User className="absolute left-3 top-3 text-gray-400" size={18} />
           <input
             type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            
             className="w-full pl-10 pr-3 bg-gray-50 py-3 dark:bg-gray-800   dark:text-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
             placeholder="Enter full name"
           />
@@ -39,23 +38,17 @@ function PersonalInfo() {
           <Quote className="absolute left-3 top-3 text-gray-400" size={18} />
           <input
             type="text"
-            value={favQuote}
-            onChange={(e) => setFavQuote(e.target.value)}
+           
             className="w-full pl-10 pr-3 bg-gray-50 py-3 dark:bg-gray-800  dark:text-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
             placeholder="Favourite quote"
           />
         </div>
       </div>
       <div className="flex justify-end">
-        <Button onClick={handlePersonalInfoSubmit} loading={isLoading}>
-          {isLoading ? (
-            <>
-              {/* <SpinnerIcon className="mr-2" /> */}
-              Saving...
-            </>
-          ) : (
-            "Save Changes"
-          )}
+        <Button onClick={async() =>{}} loading={false}>
+        
+            Save Changes
+        
         </Button>
       </div>
     </div>

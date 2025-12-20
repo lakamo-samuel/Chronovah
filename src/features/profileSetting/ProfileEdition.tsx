@@ -1,7 +1,7 @@
 // src/components/SettingsPage/ProfileEditor.tsx
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Camera } from "lucide-react";
-import { useUser } from "../../hooks/useUser";
+
 
 type setProfileProp = {
     setProfileImg: React.Dispatch<React.SetStateAction<string | null>>,
@@ -9,8 +9,7 @@ type setProfileProp = {
 };
 
 export function ProfileEditor({ profileImg,setProfileImg }: setProfileProp) {
-  const [user] = useUser();
-  const { email, name: currentName } = user;
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [localImg, setLocalImg] = useState<string | null>(profileImg ?? null);
 
@@ -62,8 +61,8 @@ export function ProfileEditor({ profileImg,setProfileImg }: setProfileProp) {
       </div>
 
       <div>
-        <p className="font-medium text-lg text-gray-800 dark:text-gray-100">{currentName || "Your Name"}</p>
-        <p className="text-gray-500 text-sm dark">{email || "your@email.com"}</p>
+        <p className="font-medium text-lg text-gray-800 dark:text-gray-100"> "Your Name"</p>
+        <p className="text-gray-500 text-sm dark"> "your@email.com"</p>
       </div>
     </section>
   );

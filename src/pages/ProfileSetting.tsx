@@ -1,23 +1,13 @@
-import {  useEffect } from "react";
 
-import { useUser } from "../hooks/useUser";
+// import { ProfileEditor } from "../features/profileSetting/ProfileEdition";
 
-import { ProfileEditor } from "../features/profileSetting/ProfileEdition";
-import { useDetailsSettings } from "../services/SettingApiCall";
 import PersonalInfo from "../features/profileSetting/PersonalInfo";
 import PasswordSetting from "../features/profileSetting/PasswordSetting";
 import GoBackLink from "../ui/GoBackLink";
 import DangerZone from "../features/settings/DangerZone";
 
 function ProfileSetting() {
-  const [user] = useUser();
 
-  const { info } = user;
-  const { profileImg, setProfileImg } = useDetailsSettings();
-
-  useEffect(() => {
-    setProfileImg(info.profileImg);
-  }, [setProfileImg, info.profileImg]);
   const handleDeleteAccount = () => {
   console.log("accountDeleted");
 }
@@ -30,7 +20,7 @@ function ProfileSetting() {
 
         <div className="text-2xl font-semibold  -mt-4">Profile Setting</div>
       </div>
-      <ProfileEditor setProfileImg={setProfileImg} profileImg={profileImg} />
+      {/* <ProfileEditor setProfileImg={} profileImg={} /> */}
 
       <PersonalInfo />
 
