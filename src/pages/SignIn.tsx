@@ -5,11 +5,10 @@ import { validateEmail, validatePassword } from "../hooks/useValidation";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import { GoogleAuthButton } from "../features/Authentication/Oauth";
-import { useToken } from "../hooks/useToken";
-import axios from "axios";
+
 
 export default function SignIn() {
-  const {  loading } = useAuth();
+
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
@@ -18,9 +17,8 @@ export default function SignIn() {
   const [showPassword, setShowPassword] = useState(false);
   const [touched, setTouched] = useState({ email: false, password: false });
   const [formError, setFormError] = useState<string | null>(null);
+  const { refresh,loading } = useAuth(); 
 
-  const [token, setToken] = useToken();
-  console.log(token);
   const emailError = touched.email ? validateEmail(email) : "";
   const passwordError = touched.password ? validatePassword(password) : "";
   const handleSubmit = async (e: React.FormEvent) => {
@@ -30,24 +28,34 @@ export default function SignIn() {
     const pErr = validatePassword(password);
     if (eErr || pErr) return;
     setFormError(null);
-
     try {
-      // await signIn(email.trim(), remember);
-      // navigate("/dashboard");
-      
+   const res = await fetch("http://localhost:8000/api/user/signin", {
+     method: "POST",
+     headers: { "Content-Type": "application/json" },
+     body: JSON.stringify({
+       email: email.trim(),
+       password,
+     }),
+     credentials: "include", // important for HttpOnly cookie
+   });
 
-      const response = await axios.post('/api/sign-in', {
-        email: email.trim(),
-        password
-      });
-      const { token } = response.data;
-      setToken(token);
-      navigate('/dashboard', { replace: true });
-      // change route to your app route
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: string | any) {
-      setFormError(err?.message || "Failed to sign in. Try again.");
-    }
+   const data = await res.json();
+
+   if (!res.ok) {
+     setFormError(data.error || "Invalid credentials");
+     return;
+   }
+
+   // Refresh global user state from /me
+   await refresh();
+
+   // Redirect to dashboard
+   navigate("/dashboard");
+ // eslint-disable-next-line @typescript-eslint/no-explicit-any
+ } catch (err: string | any) {
+   setFormError(err?.message || "Failed to sign in. Try again.");
+ }
+   
   };
 
   return (

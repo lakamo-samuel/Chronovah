@@ -30,7 +30,7 @@ function ItemDetails() {
   const [item, setItem] = useState<Person | Note | JournalEntry | Place | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-console.log('hello details');
+
   useEffect(() => {
     let isMounted = true;
 

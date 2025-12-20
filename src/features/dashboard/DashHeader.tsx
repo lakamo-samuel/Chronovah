@@ -1,13 +1,13 @@
 import { motion } from "framer-motion";
-import { useUser } from "../../hooks/useUser";
+
 import { Settings2 } from "lucide-react";
 
 import SettingLinkBtn from "../../ui/SettingLinkBtn";
+import { useAuth } from "../../hooks/useAuth";
 
 function DashHeader() {
- 
-  const [user] = useUser();
-  const { email, name, profileImg } = user || {};
+  const { user } = useAuth();
+  const { email, name } = user || {};
 
   const initials = (name || "User")
     .split(" ")
@@ -26,7 +26,7 @@ function DashHeader() {
     >
       <div className=" flex flex-col md:flex-row items-center gap-6 ">
         <div className="relative">
-          {profileImg ? (
+          {/* {profileImg ? (
             <img
               src={profileImg}
               alt="Profile"
@@ -39,7 +39,14 @@ function DashHeader() {
             >
               {initials}
             </div>
-          )}
+          )} */}
+
+          <div
+            className="w-16 h-16 rounded-full bg-linear-to-tr from-blue-600 to-blue-500 text-white 
+            flex items-center justify-center text-xl font-bold shadow-sm"
+          >
+            {initials}
+          </div>
         </div>
 
         {/* Text Block */}
@@ -59,7 +66,7 @@ function DashHeader() {
       </div>
       <div>
         <SettingLinkBtn to="/settings" icon={<Settings2 size={18} />}>
-        Manage Account
+          Manage Account
         </SettingLinkBtn>
       </div>
     </motion.section>

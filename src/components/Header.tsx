@@ -5,7 +5,8 @@ import { useSidebar } from "../hooks/useSidebar";
 import GlobalSearch from "../ui/GlobalSearch";
 import { useSearch } from "../hooks/useSearch";
 import DesktopSearchInput from "../ui/DesktopSearchInput";
-import { useUser } from "../hooks/useUser";
+
+import { useAuth } from "../hooks/useAuth";
 
 function Header() {
   const { openSearch, setOpenSearch } = useSearch();
@@ -13,8 +14,8 @@ function Header() {
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
 const { toggleSidebar } = useSidebar();
-  const [user] = useUser();
-   const {  name, profileImg } = user || {};
+  const { user } = useAuth();
+   const {  name } = user || {};
  
    const initials = (name || "User")
      .split(" ")
@@ -95,25 +96,30 @@ useEffect(() => {
           )}
         </button>
 
-       
-         <div className=" flex flex-col md:flex-row items-center gap-6 ">
-        <div className="">
-          {profileImg ? (
-            <img
-              src={profileImg}
-              alt="Profile"
-              className="w-9 h-9 rounded-full object-cover border shadow-sm"
-            />
-          ) : (
+        <div className=" flex flex-col md:flex-row items-center gap-6 ">
+          <div className="">
+            {/* {profileImg ? (
+              <img
+                src={profileImg}
+                alt="Profile"
+                className="w-9 h-9 rounded-full object-cover border shadow-sm"
+              />
+            ) : (
+              <div
+                className="w-9 h-9 rounded-full bg-linear-to-tr from-blue-600 to-blue-500 text-white 
+            flex items-center justify-center  font-semibold shadow-sm"
+              >
+                {initials}
+              </div>
+            )} */}
             <div
               className="w-9 h-9 rounded-full bg-linear-to-tr from-blue-600 to-blue-500 text-white 
             flex items-center justify-center  font-semibold shadow-sm"
             >
               {initials}
             </div>
-          )}
           </div>
-          </div>
+        </div>
       </div>
     </header>
   );

@@ -1,37 +1,49 @@
-import { useCallback, useEffect, useState } from "react";
-import { useToken } from "./useToken";
+import { useState, useEffect, useCallback } from "react";
+interface UseUserReturn {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  user: any | null;
+  loading: boolean;
+  refresh: () => void;
+  logout: () => void;
+}
+export const useUser =(): UseUserReturn => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
-export const useUser = () => {
-
-  const [token] = useToken();
-
-  const getPayloadFromToken = (token: string) => {
-
-    const encodePayload = token.split(".")[1];
-    
-    return JSON.parse(atob(encodePayload));
-  };
-
-  const [user, setUser] = useState(() => {
-    if (!token) return null;
-    return getPayloadFromToken(token as string);
-  });
-    
-  const refresh = useCallback(() => {
-    if (!token) {
+  const fetchUserFromBackend = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("http://localhost:8000/api/user/me", {
+        credentials: "include",
+      });
+      if (!res.ok) {
+        setUser(null);
+        return;
+      }
+      const data = await res.json();
+      setUser(data.user);
+    } catch (err) {
+      console.error("Failed to fetch user:", err);
       setUser(null);
-      return;
+    } finally {
+      setLoading(false);
     }
-    setUser(getPayloadFromToken(token));
-  }, [token]);
+  }, []);
 
-    useEffect(() => {
-        if (!token) {
-            setUser(null);
-        } else {
-            setUser(getPayloadFromToken(token as string))
-        }
-    }, [token])
-    
-    return [user, refresh] as const;
+  useEffect(() => {
+    fetchUserFromBackend();
+  }, [fetchUserFromBackend]);
+
+  const logout = useCallback(async () => {
+    try {
+      await fetch("/auth/logout", { method: "POST", credentials: "include" });
+    } catch (err) {
+      console.error("Logout failed:", err);
+    } finally {
+      setUser(null);
+    }
+  }, []);
+
+  return { user, loading, refresh: fetchUserFromBackend, logout };
 };

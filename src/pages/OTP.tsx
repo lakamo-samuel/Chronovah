@@ -1,9 +1,13 @@
 import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 
 export default function OtpVerification() {
+
+  const { refresh } = useAuth();
+  const navigate = useNavigate()
   const [otp, setOtp] = useState(Array(6).fill(""));
   const [error, setError] = useState("");
   const [timer, setTimer] = useState(30);
@@ -27,19 +31,65 @@ export default function OtpVerification() {
     }
   };
 
-  const handleVerify = () => {
+  const handleVerify = async () => {
     const code = otp.join("");
     if (code.length < 6) return setError("Invalid OTP code.");
     setError("");
 
     // Backend connect here
-    console.log("OTP entered:", code);
+   try {
+     const res = await fetch("http://localhost:8000/api/user/verify-email", {
+       method: "PUT",
+       headers: { "Content-Type": "application/json" },
+       body: JSON.stringify({ verificationCode: code }),
+       credentials: "include", // send HttpOnly cookie
+     });
+
+     const data = await res.json();
+
+     if (!res.ok) {
+       setError(data.error || "Invalid verification code");
+
+       return;
+     }
+
+     // Update global user state
+     await refresh();
+
+     // Redirect to dashboard
+     navigate("/dashboard");
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   } catch (err: any) {
+     setError(err?.message || "Network error, please try again.");
+   }
   };
 
-  const resend = () => {
-    setTimer(30);
-    setOtp(Array(6).fill(""));
-  };
+ const resend = async () => {
+   setTimer(30);
+   setOtp(Array(6).fill(""));
+
+   try {
+     const res = await fetch(
+       "http://localhost:8000/api/user/resend-verification",
+       {
+         method: "POST",
+         headers: { "Content-Type": "application/json" },
+         body: JSON.stringify({ email: "lakamosamuel7@gmail.com" }),
+         credentials: "include",
+       }
+     );
+
+     if (!res.ok) {
+       const data = await res.json();
+       setError(data.error || "Failed to resend OTP");
+       return;
+     }
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   } catch (err: any) {
+     setError(err?.message || "Network error");
+   }
+ };
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950 p-6">

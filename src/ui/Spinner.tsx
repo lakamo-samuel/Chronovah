@@ -1,30 +1,11 @@
-function Spinner() {
+
+
+const Spinner = () => {
   return (
-    <div className="text-gray-900">
-      Loading....
+    <div className="flex dark:bg-gray-900 fixed justify-center items-center h-full w-full">
+      <div className="w-5 h-5 md:w-10 md:h-10 border-4 border-t-blue-500 border-b-blue-500 border-l-blue-500 dark:border-r-gray-800 border-r-gray-300 rounded-full animate-spin"></div>
     </div>
   );
-}
+};
 
 export default Spinner;
-
-// const rotate = keyframes`
-//   to {
-//     transform: rotate(1turn)
-//   }
-// `;
-
-// const Spinner = styled.div`
-//   margin: 4.8rem auto;
-
-//   width: 6.4rem;
-//   aspect-ratio: 1;
-//   border-radius: 50%;
-//   background: radial-gradient(farthest-side, var(--color-brand-600) 94%, #0000)
-//       top/10px 10px no-repeat,
-//     conic-gradient(#0000 30%, var(--color-brand-600));
-//   -webkit-mask: radial-gradient(farthest-side, #0000 calc(100% - 10px), #000 0);
-//   animation: ${rotate} 1.5s infinite linear;
-// `;
-
-

@@ -9,14 +9,13 @@ import {
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import { GoogleAuthButton } from "../features/Authentication/Oauth";
-import axios from "axios";
-import { useToken } from "../hooks/useToken";
+
 
 export default function SignUp() {
-  const { loading } = useAuth();
+  const { refresh,loading } = useAuth();
   const navigate = useNavigate();
 
-const [token, setToken] = useToken();
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -26,7 +25,7 @@ const [token, setToken] = useToken();
     email: false,
     password: false,
   });
-  console.log(token);
+
   const [formError, setFormError] = useState<string | null>(null);
 
   const nameError = touched.name ? validateName(name) : "";
@@ -45,24 +44,34 @@ const [token, setToken] = useToken();
       return;
 
     setFormError(null);
+ try {
+   const res = await fetch("http://localhost:8000/api/user/signup", {
+     method: "POST",
+     headers: { "Content-Type": "application/json" },
+     body: JSON.stringify({
+       name: name.trim(),
+       email: email.trim(),
+       password,
+     }),
+     credentials: "include", // important for cookies
+   });
 
-    try {
-      // await signUp(name.trim(), email.trim(), password);
-      // navigate("/dashboard");
+   const data = await res.json();
 
-      const response = await axios.post("/api/sign-up", {
-          name: name.trim(),
-          email: email.trim(),
-          password,
-          
-        });
-        const { token } = response.data;
-        setToken(token);
-        navigate("/dashboard", { replace: true });
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
-      setFormError(err?.message || "Failed to create account. Try again.");
-    }
+   if (!res.ok) {
+     setFormError(data.error || "Signup failed");
+     return;
+   }
+
+   // After signup, the cookie might already be set if you auto-login
+   // Otherwise, redirect to verification page
+   await refresh(); // update user state from /me
+   navigate("/otpverification"); // or "/dashboard" if auto-verified
+ // eslint-disable-next-line @typescript-eslint/no-explicit-any
+ } catch (err: any) {
+   setFormError(err?.message || "Failed to create account. Try again.");
+ }
+ 
   };
 
   return (
