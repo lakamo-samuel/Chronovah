@@ -1,21 +1,290 @@
+/* index.css */
 @import "tailwindcss";
 
+/* Dark mode variant */
 @custom-variant dark (&:where(.dark, .dark *));
-.animate-float{
-    animation: float linear infinite;
-}
-@keyframes float {
-    0%,100%{
-        transform: translateX(5px) translateY(-10px);
-    }
 
-    25%{
-        transform: translateX(-30px) translateY(0px);
-    }
-    50%{
-         transform: translateX(40px) translateY(-20px);
-    }
-    75%{
-         transform: translateX(-20px) translateY(5px);
-    }
+/* Custom screens */
+@theme {
+  --breakpoint-xs: 475px;
 }
+
+/* ===== COLOR VARIABLES ===== */
+@theme {
+  /* Primary palette */
+  --color-primary-50: #eff6ff;
+  --color-primary-100: #dbeafe;
+  --color-primary-200: #bfdbfe;
+  --color-primary-300: #93c5fd;
+  --color-primary-400: #60a5fa;
+  --color-primary-500: #3b82f6;
+  --color-primary-600: #2563eb;
+  --color-primary-700: #1d4ed8;
+  --color-primary-800: #1e40af;
+  --color-primary-900: #1e3a8a;
+  --color-primary-950: #172554;
+
+  /* Secondary palette */
+  --color-secondary-50: #faf5ff;
+  --color-secondary-100: #f3e8ff;
+  --color-secondary-200: #e9d5ff;
+  --color-secondary-300: #d8b4fe;
+  --color-secondary-400: #c084fc;
+  --color-secondary-500: #a855f7;
+  --color-secondary-600: #9333ea;
+  --color-secondary-700: #7e22ce;
+  --color-secondary-800: #6b21a8;
+  --color-secondary-900: #581c87;
+  --color-secondary-950: #3b0764;
+
+  /* Light theme (default) */
+  --color-bg: #ffffff;
+  --color-card: #f9fafb;
+  --color-border: #e5e7eb;
+  --color-text: #111827;
+  --color-text-muted: #6b7280;
+
+  /* Dark theme (override in .dark class) */
+  --color-bg-dark: #0b1120;
+  --color-card-dark: #1e293b;
+  --color-border-dark: #334155;
+  --color-text-dark: #f1f5f9;
+  --color-text-muted-dark: #94a3b8;
+
+  /* Feature colors - Places */
+  --color-places-light: #3b82f6;
+  --color-places-dark: #60a5fa;
+  --color-places-bg: #dbeafe;
+  --color-places-bg-dark: #1e3a8a;
+
+  /* Feature colors - Notes */
+  --color-notes-light: #eab308;
+  --color-notes-dark: #facc15;
+  --color-notes-bg: #fef9c3;
+  --color-notes-bg-dark: #854d0e;
+
+  /* Feature colors - People */
+  --color-people-light: #22c55e;
+  --color-people-dark: #4ade80;
+  --color-people-bg: #dcfce7;
+  --color-people-bg-dark: #14532d;
+
+  /* Feature colors - Journal */
+  --color-journal-light: #a855f7;
+  --color-journal-dark: #c084fc;
+  --color-journal-bg: #f3e8ff;
+  --color-journal-bg-dark: #581c87;
+
+  /* Accent colors */
+  --color-accent-blue: #3b82f6;
+  --color-accent-purple: #a855f7;
+  --color-accent-pink: #ec4899;
+  --color-accent-green: #22c55e;
+  --color-accent-yellow: #eab308;
+  --color-accent-orange: #f97316;
+  --color-accent-red: #ef4444;
+
+  /* Gradients */
+  --gradient-primary: linear-gradient(to right, #3b82f6, #a855f7);
+  --gradient-secondary: linear-gradient(to right, #a855f7, #ec4899);
+  --gradient-places: linear-gradient(to right, #3b82f6, #60a5fa);
+  --gradient-notes: linear-gradient(to right, #eab308, #facc15);
+  --gradient-people: linear-gradient(to right, #22c55e, #4ade80);
+  --gradient-journal: linear-gradient(to right, #a855f7, #c084fc);
+
+  /* Shadows */
+  --shadow-soft: 0 2px 10px rgba(0, 0, 0, 0.05);
+  --shadow-medium: 0 4px 20px rgba(0, 0, 0, 0.08);
+  --shadow-hard: 0 8px 30px rgba(0, 0, 0, 0.12);
+  --shadow-glow: 0 0 20px rgba(59, 130, 246, 0.3);
+}
+
+/* ===== DARK MODE OVERRIDES ===== */
+.dark {
+  --color-bg: var(--color-bg-dark);
+  --color-card: var(--color-card-dark);
+  --color-border: var(--color-border-dark);
+  --color-text: var(--color-text-dark);
+  --color-text-muted: var(--color-text-muted-dark);
+  
+  /* Feature backgrounds in dark mode */
+  --color-places-bg: var(--color-places-bg-dark);
+  --color-notes-bg: var(--color-notes-bg-dark);
+  --color-people-bg: var(--color-people-bg-dark);
+  --color-journal-bg: var(--color-journal-bg-dark);
+}
+
+/* ===== UTILITY CLASSES ===== */
+
+/* Background utilities */
+@utility bg-primary {
+  background-color: var(--color-primary-500);
+}
+@utility bg-primary-* {
+  background-color: var(--color-primary-*);
+}
+@utility bg-secondary-* {
+  background-color: var(--color-secondary-*);
+}
+@utility bg-card {
+  background-color: var(--color-card);
+}
+@utility bg-default {
+  background-color: var(--color-bg);
+}
+@utility bg-places {
+  background-color: var(--color-places-light);
+}
+@utility bg-places-soft {
+  background-color: var(--color-places-bg);
+}
+@utility bg-notes {
+  background-color: var(--color-notes-light);
+}
+@utility bg-notes-soft {
+  background-color: var(--color-notes-bg);
+}
+@utility bg-people {
+  background-color: var(--color-people-light);
+}
+@utility bg-people-soft {
+  background-color: var(--color-people-bg);
+}
+@utility bg-journal {
+  background-color: var(--color-journal-light);
+}
+@utility bg-journal-soft {
+  background-color: var(--color-journal-bg);
+}
+
+/* Text utilities */
+@utility text-primary {
+  color: var(--color-text);
+}
+@utility text-primary-* {
+  color: var(--color-primary-*);
+}
+@utility text-secondary-* {
+  color: var(--color-secondary-*);
+}
+@utility text-muted {
+  color: var(--color-text-muted);
+}
+@utility text-accent-* {
+  color: var(--color-accent-*);
+}
+
+/* Border utilities */
+@utility border-default {
+  border-color: var(--color-border);
+}
+@utility border-primary-* {
+  border-color: var(--color-primary-*);
+}
+
+/* Gradient utilities */
+@utility bg-gradient-primary {
+  background-image: var(--gradient-primary);
+}
+@utility bg-gradient-secondary {
+  background-image: var(--gradient-secondary);
+}
+@utility bg-gradient-places {
+  background-image: var(--gradient-places);
+}
+@utility bg-gradient-notes {
+  background-image: var(--gradient-notes);
+}
+@utility bg-gradient-people {
+  background-image: var(--gradient-people);
+}
+@utility bg-gradient-journal {
+  background-image: var(--gradient-journal);
+}
+
+/* Shadow utilities */
+@utility shadow-soft {
+  box-shadow: var(--shadow-soft);
+}
+@utility shadow-medium {
+  box-shadow: var(--shadow-medium);
+}
+@utility shadow-hard {
+  box-shadow: var(--shadow-hard);
+}
+@utility shadow-glow {
+  box-shadow: var(--shadow-glow);
+}
+
+/* Animation utilities */
+@utility animate-float {
+  animation: float 20s ease-in-out infinite;
+}
+@utility animate-float-slow {
+  animation: float-slow 25s ease-in-out infinite;
+}
+@utility animate-pulse-slow {
+  animation: pulse-slow 4s ease-in-out infinite;
+}
+@utility animate-bounce-slow {
+  animation: bounce-slow 2s ease-in-out infinite;
+}
+@utility animate-slide-in {
+  animation: slide-in 0.3s ease-out;
+}
+@utility animate-slide-up {
+  animation: slide-up 0.4s ease-out;
+}
+@utility animate-scale-in {
+  animation: scale-in 0.3s ease-out;
+}
+@utility animate-spin-slow {
+  animation: spin-slow 8s linear infinite;
+}
+
+/* ===== KEYFRAMES ===== */
+@keyframes float {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(10px, -10px); }
+  50% { transform: translate(-5px, 15px); }
+  75% { transform: translate(-15px, -5px); }
+}
+
+@keyframes float-slow {
+  0%, 100% { transform: translate(0, 0); }
+  33% { transform: translate(15px, -15px); }
+  66% { transform: translate(-15px, 15px); }
+}
+
+@keyframes pulse-slow {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.6; }
+}
+
+@keyframes bounce-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(10px); }
+}
+
+@keyframes slide-in {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes slide-up {
+  0% { transform: translateY(20px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes scale-in {
+  0% { transform: scale(0.9); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes spin-slow {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ===== CUSTOM SCREENS ===== */
+@variant xs (@media (min-width: 475px));
