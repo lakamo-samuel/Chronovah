@@ -5,14 +5,13 @@ import { useLiveQuery } from "dexie-react-hooks";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { db } from "../../Database/journalDB";
-
 import JournalStats from "./JournalStats";
 import CommonPageHeader from "../../components/CommonPageHeader";
 import type { JournalEntry, MoodType } from "../../type/JournalType";
 import JournalEditor from "./JournalEditor";
 import JournalCard from "./JournalCard";
 
-export default function JournalLIst() {
+export default function JournalList() {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -55,40 +54,46 @@ export default function JournalLIst() {
         longestStreak: 0,
         moodCounts: {} as Record<MoodType, number>,
       };
-    // Alternative with Date objects
+
     let currentStreak = 0;
     let longestStreak = 0;
     let streak = 0;
     let lastDate: Date | null = null;
 
-    entries
-      .slice()
-      .reverse()
-      .forEach((entry) => {
-        const entryDate = new Date(entry.createdAt);
-        entryDate.setHours(0, 0, 0, 0);
+    // Sort entries by date for streak calculation
+    const sortedEntries = [...entries].sort(
+      (a, b) =>
+        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+    );
 
-        if (lastDate) {
-          const dayDiff =
-            (entryDate.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24);
-          if (dayDiff === 1) {
-            streak++;
-          } else if (dayDiff > 1) {
-            streak = 1;
-          }
-        } else {
+    sortedEntries.forEach((entry) => {
+      const entryDate = new Date(entry.createdAt);
+      entryDate.setHours(0, 0, 0, 0);
+
+      if (lastDate) {
+        const dayDiff =
+          (entryDate.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24);
+        if (dayDiff === 1) {
+          streak++;
+        } else if (dayDiff > 1) {
           streak = 1;
         }
+      } else {
+        streak = 1;
+      }
 
-        longestStreak = Math.max(longestStreak, streak);
-        lastDate = entryDate;
-      });
+      longestStreak = Math.max(longestStreak, streak);
+      lastDate = entryDate;
+    });
 
     // Check if today has an entry for current streak
-    const today = new Date().setHours(0, 0, 0, 0);
-    const hasToday = entries.some(
-      (e) => new Date(e.createdAt).setHours(0, 0, 0, 0) === today,
-    );
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const hasToday = entries.some((e) => {
+      const entryDate = new Date(e.createdAt);
+      entryDate.setHours(0, 0, 0, 0);
+      return entryDate.getTime() === today.getTime();
+    });
     currentStreak = hasToday ? streak : 0;
 
     const moodCounts = entries.reduce(
@@ -195,20 +200,21 @@ export default function JournalLIst() {
     searchTerm || selectedMood !== "all" || selectedTags.length > 0;
 
   return (
-    <div className="min-h-screen  pt-20 pb-24 px-4 sm:px-6">
-      <div className="">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+    <div className="min-h-screen bg-default pt-16 sm:pt-20 pb-24 px-3 sm:px-4 md:px-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Header - Mobile Optimized */}
+        <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-3 mb-4 sm:mb-6">
           <CommonPageHeader isSetting={false} heading="Journal" />
 
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2 self-end xs:self-auto">
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className={`p-2 rounded-lg border transition-colors ${
+              className={`p-2.5 rounded-lg border transition-colors ${
                 showFilters || hasActiveFilters
                   ? "bg-primary-500 text-white border-primary-500"
                   : "bg-card border-default text-muted hover:text-primary"
               }`}
+              aria-label="Toggle filters"
             >
               <Filter size={18} />
             </button>
@@ -216,16 +222,22 @@ export default function JournalLIst() {
             <motion.button
               whileTap={{ scale: 0.95 }}
               onClick={handleAddEntry}
-              className="flex items-center gap-2 px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-xl transition-colors"
+              className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2.5 bg-primary-500 hover:bg-primary-600 text-white rounded-lg sm:rounded-xl transition-colors text-sm sm:text-base"
             >
               <Plus size={18} />
-              <span>New Entry</span>
+              <span className="whitespace-nowrap">New Entry</span>
             </motion.button>
           </div>
         </div>
 
-        {/* Stats */}
-        {stats && <JournalStats stats={stats} />}
+        {/* Stats - Scrollable on mobile if needed */}
+        {stats && (
+          <div className="overflow-x-auto pb-2 -mx-3 px-3 sm:mx-0 sm:px-0">
+            <div className="min-w-max sm:min-w-0">
+              <JournalStats stats={stats} />
+            </div>
+          </div>
+        )}
 
         {/* Editor Modal */}
         <AnimatePresence>
@@ -259,7 +271,7 @@ export default function JournalLIst() {
                   <div className="flex flex-wrap gap-2">
                     <button
                       onClick={() => setSelectedMood("all")}
-                      className={`px-3 py-1 rounded-lg text-sm ${
+                      className={`px-3 py-1.5 rounded-lg text-xs sm:text-sm transition-colors ${
                         selectedMood === "all"
                           ? "bg-primary-500 text-white"
                           : "bg-default text-muted hover:text-primary"
@@ -272,7 +284,7 @@ export default function JournalLIst() {
                         <button
                           key={mood}
                           onClick={() => setSelectedMood(mood as MoodType)}
-                          className={`px-3 py-1 rounded-lg text-sm ${
+                          className={`px-3 py-1.5 rounded-lg text-xs sm:text-sm transition-colors ${
                             selectedMood === mood
                               ? "bg-primary-500 text-white"
                               : "bg-default text-muted hover:text-primary"
@@ -302,7 +314,7 @@ export default function JournalLIst() {
                                 : [...prev, tag],
                             )
                           }
-                          className={`px-3 py-1 rounded-lg text-sm ${
+                          className={`px-3 py-1.5 rounded-lg text-xs sm:text-sm transition-colors ${
                             selectedTags.includes(tag)
                               ? "bg-primary-500 text-white"
                               : "bg-default text-muted hover:text-primary"
@@ -329,7 +341,7 @@ export default function JournalLIst() {
         </AnimatePresence>
 
         {/* Search and view controls */}
-        <div className="mt-6 flex flex-col sm:flex-row gap-3">
+        <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
             <Search
               className="absolute left-3 top-1/2 -translate-y-1/2 text-muted"
@@ -340,19 +352,20 @@ export default function JournalLIst() {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search journal entries..."
-              className="w-full pl-10 pr-4 py-3 bg-card border border-default rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500/50 text-primary"
+              className="w-full pl-10 pr-10 py-3 bg-card border border-default rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500/50 text-primary text-sm sm:text-base"
             />
             {searchTerm && (
               <button
                 onClick={() => setSearchTerm("")}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-primary"
+                aria-label="Clear search"
               >
                 <X size={16} />
               </button>
             )}
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2 self-end sm:self-auto">
             <div className="flex items-center gap-1 bg-card rounded-lg p-1 border border-default">
               <button
                 onClick={() => setViewMode("grid")}
@@ -361,6 +374,7 @@ export default function JournalLIst() {
                     ? "bg-primary-500 text-white"
                     : "text-muted hover:text-primary"
                 }`}
+                aria-label="Grid view"
               >
                 <Grid3X3 size={18} />
               </button>
@@ -371,6 +385,7 @@ export default function JournalLIst() {
                     ? "bg-primary-500 text-white"
                     : "text-muted hover:text-primary"
                 }`}
+                aria-label="List view"
               >
                 <List size={18} />
               </button>
@@ -379,27 +394,34 @@ export default function JournalLIst() {
         </div>
 
         {/* Results count */}
-        <div className="mt-4 text-sm text-muted">
+        <div className="mt-3 text-xs sm:text-sm text-muted">
           {filteredEntries.length}{" "}
           {filteredEntries.length === 1 ? "entry" : "entries"} found
         </div>
 
-        {/* Entries grid */}
+        {/* Entries grid/list */}
         {!entries ? (
-          <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500" />
+          <div className="flex justify-center items-center h-48 sm:h-64">
+            <div className="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-b-2 border-primary-500" />
           </div>
         ) : filteredEntries.length === 0 ? (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center py-20"
+            className="text-center py-12 sm:py-20"
           >
-            <BookOpen size={64} className="mx-auto text-muted opacity-30" />
-            <h3 className="text-lg font-semibold text-primary mt-6 mb-2">
+            <BookOpen
+              size={48}
+              className="mx-auto text-muted opacity-30 sm:hidden"
+            />
+            <BookOpen
+              size={64}
+              className="mx-auto text-muted opacity-30 hidden sm:block"
+            />
+            <h3 className="text-base sm:text-lg font-semibold text-primary mt-4 sm:mt-6 mb-2">
               {hasActiveFilters ? "No entries found" : "No journal entries yet"}
             </h3>
-            <p className="text-muted max-w-md mx-auto mb-6">
+            <p className="text-xs sm:text-sm text-muted max-w-xs sm:max-w-md mx-auto mb-4 sm:mb-6 px-4">
               {hasActiveFilters
                 ? "Try adjusting your filters"
                 : "Start documenting your thoughts and feelings"}
@@ -407,7 +429,7 @@ export default function JournalLIst() {
             {!hasActiveFilters && (
               <button
                 onClick={handleAddEntry}
-                className="px-6 py-3 bg-primary-500 hover:bg-primary-600 text-white rounded-xl transition-colors"
+                className="px-4 sm:px-6 py-2.5 sm:py-3 bg-primary-500 hover:bg-primary-600 text-white rounded-lg sm:rounded-xl transition-colors text-sm sm:text-base"
               >
                 Write Your First Entry
               </button>
@@ -417,9 +439,9 @@ export default function JournalLIst() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className={`mt-6 ${
+            className={`mt-4 sm:mt-6 ${
               viewMode === "grid"
-                ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+                ? "grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4"
                 : "space-y-3"
             }`}
           >
