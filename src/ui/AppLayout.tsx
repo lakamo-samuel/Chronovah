@@ -24,7 +24,7 @@ function AppLayout() {
 
       {/* Main content */}
       <main className="bg-gray-100 dark:bg-gray-950 p-4 md:p-6 overflow-y-auto">
-        <div className="max-w-[1200px] mx-auto flex flex-col gap-6">
+        <div className="min-w-[1200px] mx-auto flex flex-col gap-6">
           <Outlet />
         </div>
       </main>

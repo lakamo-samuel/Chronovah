@@ -1,28 +1,24 @@
 // pages/Notes/index.tsx
 import { useState, useMemo, useEffect } from "react";
-import { db } from "../Database/db";
 import {
   Plus,
   Search,
+  BookOpen,
+  Edit3,
+  SortDesc,
   Grid3X3,
   List,
-  Pin,
-  Filter,
   X,
-  Calendar,
-  Tag,
-  SortDesc,
-  Sparkles,
-  BookOpen,
-  ChevronDown,
 } from "lucide-react";
 import { useLiveQuery } from "dexie-react-hooks";
-import type { Note, NoteColor } from "../types/NoteType";
-import { motion, AnimatePresence } from "framer-motion";
-import CommonPageHeader from "../components/CommonPageHeader";
-import NoteCard from "../components/NoteCard";
 import { useNavigate } from "react-router-dom";
-import NoteStats from "../components/NoteStats";
+import { AnimatePresence, motion } from "framer-motion";
+import type { Note, NoteColor } from "../../type/NoteType";
+import { db } from "../../Database/db";
+import NoteCard from "./NoteCard";
+import NoteEditor from "./NoteEditor";
+import CommonPageHeader from "../../components/CommonPageHeader";
+import NoteStats from "./NoteStats";
 
 type SortOption = "updated" | "created" | "title" | "wordCount";
 type FilterOption = "all" | "pinned" | "favorites" | "recent";
@@ -35,14 +31,20 @@ export default function Notes() {
   const [sortBy, setSortBy] = useState<SortOption>("updated");
   const [filterBy, setFilterBy] = useState<FilterOption>("all");
   const [selectedColor, setSelectedColor] = useState<NoteColor | "all">("all");
-  const [showFilters, setShowFilters] = useState(false);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [availableTags, setAvailableTags] = useState<string[]>([]);
+  const [showQuickCreate, setShowQuickCreate] = useState(false);
+  const [editingNote, setEditingNote] = useState<Partial<Note> | null>(null);
 
-  const notes = useLiveQuery(
-    () => db.notes.orderBy("isPinned").reverse().toArray(),
-    [],
-  );
+  const notes = useLiveQuery(async () => {
+    const allNotes = await db.notes.orderBy("isPinned").reverse().toArray();
+    // Sort by isPinned first, then by updatedAt
+    return allNotes.sort((a, b) => {
+      if (a.isPinned && !b.isPinned) return -1;
+      if (!a.isPinned && b.isPinned) return 1;
+      return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
+    });
+  }, []);
 
   // Extract all unique tags from notes
   useEffect(() => {
@@ -70,7 +72,8 @@ export default function Notes() {
       favoriteNotes: notes.filter((n) => n.isFavorite).length,
       totalWords: notes.reduce(
         (acc, note) =>
-          acc + (note.wordCount || note.content.split(/\s+/).length),
+          acc +
+          (note.wordCount || note.content.split(/\s+/).filter(Boolean).length),
         0,
       ),
     };
@@ -125,7 +128,7 @@ export default function Notes() {
 
     // Apply sorting
     filtered.sort((a, b) => {
-      // Pinned notes always on top
+      // Pinned notes always on top (already handled, but just in case)
       if (a.isPinned && !b.isPinned) return -1;
       if (!a.isPinned && b.isPinned) return 1;
 
@@ -152,7 +155,7 @@ export default function Notes() {
 
   const handleCreateNote = async () => {
     const now = new Date().toISOString();
-    const newNote: Note = {
+    const newNote: Omit<Note, "id"> = {
       title: "",
       content: "",
       createdAt: now,
@@ -164,14 +167,42 @@ export default function Notes() {
       readTime: 0,
     };
 
-    const id = await db.notes.add(newNote);
+    const id = await db.notes.add(newNote as Note);
     navigate(`/notes/${id}`);
   };
 
-  const toggleTag = (tag: string) => {
-    setSelectedTags((prev) =>
-      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag],
-    );
+  const handleQuickCreate = () => {
+    setEditingNote({
+      title: "",
+      content: "",
+      tags: [],
+    });
+    setShowQuickCreate(true);
+  };
+
+  const handleQuickSave = async (note: Partial<Note>) => {
+    const now = new Date().toISOString();
+    const newNote: Omit<Note, "id"> = {
+      title: note.title || "",
+      content: note.content || "",
+      createdAt: now,
+      updatedAt: now,
+      isPinned: false,
+      isFavorite: false,
+      tags: note.tags || [],
+      wordCount: note.content?.split(/\s+/).filter(Boolean).length || 0,
+      readTime: Math.max(
+        1,
+        Math.ceil(
+          (note.content?.split(/\s+/).filter(Boolean).length || 0) / 200,
+        ),
+      ),
+      color: note.color,
+    };
+
+    await db.notes.add(newNote as Note);
+    setShowQuickCreate(false);
+    setEditingNote(null);
   };
 
   const clearFilters = () => {
@@ -189,29 +220,58 @@ export default function Notes() {
     selectedTags.length > 0;
 
   return (
-    <div className="min-h-screen bg-default pt-20 pb-24 px-4 sm:px-6">
-      <div className="max-w-7xl mx-auto">
+    <div className=" bg-defaul  pt-20 pb-24 px-4 sm:px-6">
+      <div className="min-w-full">
         {/* Header with stats */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <CommonPageHeader isSetting={false} heading="Notes" />
 
-          <motion.button
-            whileTap={{ scale: 0.95 }}
-            onClick={handleCreateNote}
-            className="flex items-center justify-center gap-2 px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-xl transition-colors shadow-soft hover:shadow-medium sm:w-auto w-full"
-          >
-            <Plus size={18} />
-            <span>New Note</span>
-          </motion.button>
+          <div className="flex gap-2">
+            {/* Quick Create Button */}
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              onClick={handleQuickCreate}
+              className="flex items-center justify-center gap-2 px-4 py-2 bg-card border border-default text-primary hover:bg-default rounded-xl transition-colors"
+              aria-label="Quick note"
+            >
+              <Edit3 size={18} />
+              <span className="hidden sm:inline">Quick Note</span>
+            </motion.button>
+
+            {/* Full Editor Button */}
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              onClick={handleCreateNote}
+              className="flex items-center justify-center gap-2 px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-xl transition-colors shadow-soft hover:shadow-medium"
+              aria-label="New note"
+            >
+              <Plus size={18} />
+              <span>New Note</span>
+            </motion.button>
+          </div>
         </div>
 
         {/* Stats Cards */}
         {stats && <NoteStats stats={stats} />}
 
+        {/* Quick Create Modal */}
+        <AnimatePresence>
+          {showQuickCreate && (
+            <NoteEditor
+              note={editingNote}
+              onSave={handleQuickSave}
+              onClose={() => {
+                setShowQuickCreate(false);
+                setEditingNote(null);
+              }}
+            />
+          )}
+        </AnimatePresence>
+
         {/* Search and filters bar */}
         <div className="mt-6 space-y-3">
-          {/* Search row */}
           <div className="flex flex-col sm:flex-row gap-3">
+            {/* Search input */}
             <div className="relative flex-1">
               <Search
                 className="absolute left-3 top-1/2 -translate-y-1/2 text-muted"
@@ -219,9 +279,9 @@ export default function Notes() {
               />
               <input
                 type="text"
-                placeholder="Search notes by title, content, or tags..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search notes by title, content, or tags..."
                 className="w-full pl-10 pr-4 py-3 bg-card border border-default rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500/50 text-primary"
               />
               {searchTerm && (
@@ -234,191 +294,81 @@ export default function Notes() {
               )}
             </div>
 
-            <div className="flex gap-2">
+            {/* View mode toggle */}
+            <div className="flex items-center gap-1 bg-card rounded-lg p-1 border border-default self-start">
               <button
-                onClick={() => setShowFilters(!showFilters)}
-                className={`px-4 py-2 rounded-xl border transition-colors flex items-center gap-2 ${
-                  showFilters || hasActiveFilters
-                    ? "bg-primary-500 text-white border-primary-500"
-                    : "bg-card border-default text-muted hover:text-primary"
+                onClick={() => setViewMode("grid")}
+                className={`p-2 rounded-md transition-colors ${
+                  viewMode === "grid"
+                    ? "bg-primary-500 text-white"
+                    : "text-muted hover:text-primary-500"
+                }`}
+                aria-label="Grid view"
+              >
+                <Grid3X3 size={18} />
+              </button>
+              <button
+                onClick={() => setViewMode("list")}
+                className={`p-2 rounded-md transition-colors ${
+                  viewMode === "list"
+                    ? "bg-primary-500 text-white"
+                    : "text-muted hover:text-primary-500"
+                }`}
+                aria-label="List view"
+              >
+                <List size={18} />
+              </button>
+            </div>
+
+            {/* Sort dropdown */}
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as SortOption)}
+              className="px-4 py-2 bg-card border border-default rounded-xl text-muted focus:outline-none focus:ring-2 focus:ring-primary-500/50 appearance-none cursor-pointer"
+              aria-label="Sort by"
+            >
+              <option value="updated">Last updated</option>
+              <option value="created">Date created</option>
+              <option value="title">Title</option>
+              <option value="wordCount">Word count</option>
+            </select>
+          </div>
+        </div>
+        {/* After the sort dropdown, add this tag filter section */}
+        {availableTags.length > 0 && (
+          <div className="flex flex-wrap items-center gap-2 mt-3 pt-3 border-t border-default">
+            <span className="text-xs font-medium text-muted mr-1">
+              Filter by tag:
+            </span>
+            {availableTags.map((tag) => (
+              <button
+                key={tag}
+                onClick={() => {
+                  setSelectedTags((prev) =>
+                    prev.includes(tag)
+                      ? prev.filter((t) => t !== tag)
+                      : [...prev, tag],
+                  );
+                }}
+                className={`px-3 py-1 rounded-full text-xs transition-colors ${
+                  selectedTags.includes(tag)
+                    ? "bg-primary-500 text-white"
+                    : "bg-default text-muted hover:text-primary hover:bg-card"
                 }`}
               >
-                <Filter size={18} />
-                <span className="hidden sm:inline">Filters</span>
-                {hasActiveFilters && (
-                  <span className="bg-white text-primary-500 text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                    {selectedTags.length +
-                      (filterBy !== "all" ? 1 : 0) +
-                      (selectedColor !== "all" ? 1 : 0)}
-                  </span>
-                )}
+                #{tag}
               </button>
-
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as SortOption)}
-                className="px-4 py-2 bg-card border border-default rounded-xl text-muted focus:outline-none focus:ring-2 focus:ring-primary-500/50 appearance-none cursor-pointer"
+            ))}
+            {selectedTags.length > 0 && (
+              <button
+                onClick={() => setSelectedTags([])}
+                className="text-xs text-muted hover:text-primary ml-2"
               >
-                <option value="updated">Last updated</option>
-                <option value="created">Date created</option>
-                <option value="title">Title</option>
-                <option value="wordCount">Word count</option>
-              </select>
-
-              <div className="flex items-center gap-1 bg-card rounded-lg p-1 border border-default">
-                <button
-                  onClick={() => setViewMode("grid")}
-                  className={`p-2 rounded-md transition-colors ${
-                    viewMode === "grid"
-                      ? "bg-primary-500 text-white"
-                      : "text-muted hover:text-primary-500"
-                  }`}
-                >
-                  <Grid3X3 size={18} />
-                </button>
-                <button
-                  onClick={() => setViewMode("list")}
-                  className={`p-2 rounded-md transition-colors ${
-                    viewMode === "list"
-                      ? "bg-primary-500 text-white"
-                      : "text-muted hover:text-primary-500"
-                  }`}
-                >
-                  <List size={18} />
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Expanded filters panel */}
-          <AnimatePresence>
-            {showFilters && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: "auto", opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                className="overflow-hidden"
-              >
-                <div className="bg-card border border-default rounded-xl p-4 space-y-4">
-                  {/* Quick filters */}
-                  <div>
-                    <label className="text-xs font-medium text-muted uppercase tracking-wider mb-2 block">
-                      Quick Filters
-                    </label>
-                    <div className="flex flex-wrap gap-2">
-                      {[
-                        { value: "all", label: "All notes", icon: BookOpen },
-                        { value: "pinned", label: "Pinned", icon: Pin },
-                        {
-                          value: "favorites",
-                          label: "Favorites",
-                          icon: Sparkles,
-                        },
-                        {
-                          value: "recent",
-                          label: "Last 7 days",
-                          icon: Calendar,
-                        },
-                      ].map((filter) => {
-                        const Icon = filter.icon;
-                        return (
-                          <button
-                            key={filter.value}
-                            onClick={() =>
-                              setFilterBy(filter.value as FilterOption)
-                            }
-                            className={`px-3 py-1.5 rounded-lg text-sm flex items-center gap-1 transition-colors ${
-                              filterBy === filter.value
-                                ? "bg-primary-500 text-white"
-                                : "bg-default text-muted hover:text-primary"
-                            }`}
-                          >
-                            <Icon size={14} />
-                            <span>{filter.label}</span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  {/* Color filters */}
-                  <div>
-                    <label className="text-xs font-medium text-muted uppercase tracking-wider mb-2 block">
-                      Color
-                    </label>
-                    <div className="flex flex-wrap gap-2">
-                      {[
-                        "all",
-                        "default",
-                        "red",
-                        "orange",
-                        "yellow",
-                        "green",
-                        "blue",
-                        "purple",
-                        "pink",
-                      ].map((color) => (
-                        <button
-                          key={color}
-                          onClick={() =>
-                            setSelectedColor(color as NoteColor | "all")
-                          }
-                          className={`w-8 h-8 rounded-full transition-all ${
-                            color === "all"
-                              ? "bg-card border border-default text-muted flex items-center justify-center"
-                              : `bg-${color}-500`
-                          } ${selectedColor === color ? "ring-2 ring-primary-500 ring-offset-2" : ""}`}
-                        >
-                          {color === "all" && <Filter size={14} />}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Tag filters */}
-                  {availableTags.length > 0 && (
-                    <div>
-                      <label className="text-xs font-medium text-muted uppercase tracking-wider mb-2 block">
-                        Tags
-                      </label>
-                      <div className="flex flex-wrap gap-2">
-                        {availableTags.map((tag) => (
-                          <button
-                            key={tag}
-                            onClick={() => toggleTag(tag)}
-                            className={`px-3 py-1.5 rounded-lg text-sm flex items-center gap-1 transition-colors ${
-                              selectedTags.includes(tag)
-                                ? "bg-primary-500 text-white"
-                                : "bg-default text-muted hover:text-primary"
-                            }`}
-                          >
-                            <Tag size={14} />
-                            <span>{tag}</span>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Clear filters button */}
-                  {hasActiveFilters && (
-                    <div className="pt-2 border-t border-default">
-                      <button
-                        onClick={clearFilters}
-                        className="text-sm text-primary-500 hover:text-primary-600 flex items-center gap-1"
-                      >
-                        <X size={14} />
-                        <span>Clear all filters</span>
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </motion.div>
+                Clear all
+              </button>
             )}
-          </AnimatePresence>
-        </div>
-
+          </div>
+        )}
         {/* Results count */}
         <div className="mt-4 flex items-center justify-between text-sm text-muted">
           <span>{filteredNotes.length} notes found</span>
@@ -430,39 +380,62 @@ export default function Notes() {
           )}
         </div>
 
-        {/* Notes grid/list */}
-        {!filteredNotes ? (
-          <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500" />
-          </div>
-        ) : filteredNotes.length === 0 ? (
+        {/* Empty state with create options */}
+        {filteredNotes.length === 0 ? (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-center py-20"
           >
-            <div className="relative">
-              <BookOpen size={64} className="mx-auto text-muted opacity-30" />
-              <Search
-                size={32}
-                className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-muted"
-              />
+            <div className="relative inline-block">
+              <BookOpen size={64} className="text-muted opacity-30" />
+              {hasActiveFilters ? (
+                <Search
+                  size={32}
+                  className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-muted"
+                />
+              ) : (
+                <Plus
+                  size={32}
+                  className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-primary-500"
+                />
+              )}
             </div>
+
             <h3 className="text-lg font-semibold text-primary mt-6 mb-2">
-              No notes found
+              {hasActiveFilters ? "No notes found" : "No notes yet"}
             </h3>
-            <p className="text-muted max-w-md mx-auto">
+
+            <p className="text-muted max-w-md mx-auto mb-6">
               {hasActiveFilters
                 ? "Try adjusting your filters or search terms"
-                : "Create your first note to get started"}
+                : "Start capturing your thoughts, ideas, and memories"}
             </p>
-            {hasActiveFilters && (
+
+            {hasActiveFilters ? (
               <button
                 onClick={clearFilters}
-                className="mt-4 text-primary-500 hover:text-primary-600 text-sm"
+                className="text-primary-500 hover:text-primary-600 text-sm"
               >
                 Clear all filters
               </button>
+            ) : (
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <button
+                  onClick={handleQuickCreate}
+                  className="flex items-center justify-center gap-2 px-6 py-3 bg-card border border-default text-primary hover:bg-default rounded-xl transition-colors"
+                >
+                  <Edit3 size={18} />
+                  <span>Quick Note</span>
+                </button>
+                <button
+                  onClick={handleCreateNote}
+                  className="flex items-center justify-center gap-2 px-6 py-3 bg-primary-500 hover:bg-primary-600 text-white rounded-xl transition-colors"
+                >
+                  <Plus size={18} />
+                  <span>Create Detailed Note</span>
+                </button>
+              </div>
             )}
           </motion.div>
         ) : (

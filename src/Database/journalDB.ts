@@ -1,19 +1,20 @@
+// Database/journalDB.ts
 import Dexie, { type Table } from "dexie";
+import type { JournalEntry } from "../type/JournalType";
 
-export interface JournalEntry {
-  id?: number;
-  mood: string;
-  note: string;
-  tags: string[];
-  createdAt: string;
-}
-
-const db = new Dexie("JournalDatabase") as Dexie & {
+const db = new Dexie("ChronovahDB") as Dexie & {
   journal: Table<JournalEntry, number>;
 };
 
-db.version(1).stores({
-  journal: "++id, mood, note, tags, createdAt",
+db.version(2).stores({
+  journal: `
+    ++id, 
+    mood,
+    createdAt, 
+    updatedAt, 
+    isFavorite,
+    *tags
+  `,
 });
 
 export { db };

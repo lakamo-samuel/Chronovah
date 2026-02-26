@@ -4,11 +4,13 @@ import "./index.css";
 import AppLayout from "./ui/AppLayout";
 import ProtectedRoute from "./pages/ProtectedRoute";
 import Spinner from "./ui/Spinner";
-
+import PlaceDetail from "./features/Places/PlaceDetail";
+import JournalDetail from "./features/Journal/JournalDetail";
 
 // Lazy load pages
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Note = lazy(() => import("./pages/Note"));
+const NoteDetail = lazy(() => import("./features/Note/NoteDetail"));
 const Journal = lazy(() => import("./pages/Journal"));
 const Places = lazy(() => import("./pages/Places"));
 const People = lazy(() => import("./pages/People"));
@@ -43,8 +45,12 @@ function App() {
           >
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="notes" element={<Note />} />
+            <Route path="notes/:id" element={<NoteDetail />} /> {/* Add this */}
             <Route path="journal" element={<Journal />} />
+            <Route path="journal/:id" element={<JournalDetail />} />
             <Route path="places" element={<Places />} />
+            // In your routes, add:
+            <Route path="places/:id" element={<PlaceDetail />} />
             <Route path="people" element={<People />} />
             <Route path="settings" element={<Setting />} />
             <Route path="settings/profile" element={<ProfileSetting />} />

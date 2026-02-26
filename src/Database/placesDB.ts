@@ -1,22 +1,24 @@
-import Dexie, {  type Table } from "dexie";
+// Database/placesDB.ts
+import Dexie, { type Table } from "dexie";
+import type { Place } from "../type/PlaceType";
 
-export interface Place {
-  id?: number;
-  name: string;
-  country: string;
-  location: string;
-  type: string;
-  notes: string;
-  image: string;  
-  createdAt: string;
-}
-
-const db = new Dexie("PlacesDatabase") as Dexie & {
-  places: Table  <Place, number>;
+const db = new Dexie("ChronovahDB") as Dexie & {
+  places: Table<Place, number>;
 };
 
-db.version(1).stores({
-  places: "++id, name, country, location, type, createdAt",
+db.version(2).stores({
+  places: `
+    ++id, 
+    name,
+    country,
+    type,
+    visitedDate,
+    createdAt,
+    updatedAt,
+    isFavorite,
+    *tags
+  `,
 });
 
 export { db };
+export type { Place };
