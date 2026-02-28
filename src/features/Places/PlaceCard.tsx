@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 
 import { db, type Place } from "../../Database/placesDB";
-import { useState } from "react";
+
 import { useNavigate } from "react-router-dom";
 
 interface PlaceCardProps {
@@ -26,7 +26,7 @@ interface PlaceCardProps {
 }
 
 export default function PlaceCard({ place, onEdit, onDelete }: PlaceCardProps) {
-  const [isHovered, setIsHovered] = useState(false);
+
 const navigate = useNavigate();
   const toggleFavorite = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -53,8 +53,6 @@ const navigate = useNavigate();
       exit={{ opacity: 0, scale: 0.9 }}
       whileHover={{ y: -4 }}
       onClick={() => navigate(`/places/${place.id}`)}
-      onHoverStart={() => setIsHovered(true)}
-      onHoverEnd={() => setIsHovered(false)}
       className="bg-card rounded-xl border border-default overflow-hidden hover:shadow-hard transition-all group"
     >
       {/* Image section */}
