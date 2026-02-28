@@ -1,6 +1,6 @@
 // Database/peopleDB.ts
 import Dexie, { type Table } from "dexie";
-import type { Person } from "../types/PeopleType";
+import type { Person } from "../type/PeopleType";
 
 const db = new Dexie("ChronovahDB") as Dexie & {
   people: Table<Person, number>;
