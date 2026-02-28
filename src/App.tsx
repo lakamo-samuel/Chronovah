@@ -6,6 +6,7 @@ import ProtectedRoute from "./pages/ProtectedRoute";
 import Spinner from "./ui/Spinner";
 import PlaceDetail from "./features/Places/PlaceDetail";
 import JournalDetail from "./features/Journal/JournalDetail";
+import PersonDetail from "./features/people/PersonDetail";
 
 // Lazy load pages
 const Dashboard = lazy(() => import("./pages/Dashboard"));
@@ -52,6 +53,7 @@ function App() {
             // In your routes, add:
             <Route path="places/:id" element={<PlaceDetail />} />
             <Route path="people" element={<People />} />
+            <Route path="people/:id" element={<PersonDetail />} />
             <Route path="settings" element={<Setting />} />
             <Route path="settings/profile" element={<ProfileSetting />} />
             <Route path="item/:type/:id" element={<ItemDetails />} />
