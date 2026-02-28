@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { db as noteDB } from "../Database/db";
 import { db as peopleDB, type Person } from "../Database/peopleDB";
 import { db as placeDB, type Place } from "../Database/placesDB";
-import { db as journalDB, type JournalEntry } from "../Database/journalDB";
+import { db as journalDB } from "../Database/journalDB";
 
 import type Dexie from "dexie";
 import type { Note } from "../type/NoteType";
@@ -12,6 +12,7 @@ import { NotesCard } from "./NoteCard";
 import { PlacesCard } from "./PlaceCard";
 import { PeopleCard } from "./PeopleCard";
 import GoBackLink from "./GoBackLink";
+import type { JournalEntry } from "../type/JournalType";
 
 
 

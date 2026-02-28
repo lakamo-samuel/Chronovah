@@ -4,11 +4,12 @@ import { Activity, Book, MapPin, NotebookPen } from "lucide-react";
 import { db as peopleDB, type Person } from "../Database/peopleDB";
 import { db as placeDB, type Place } from "../Database/placesDB";
 import { db as noteDB } from "../Database/db";
-import { db as journalDB, type JournalEntry } from "../Database/journalDB";
+import { db as journalDB } from "../Database/journalDB";
 import { useEffect, useState } from "react";
 import type { ActivityItem } from "../type/DashboardType";
 import { liveQuery } from "dexie";
 import type { Note } from "../type/NoteType";
+import type { JournalEntry } from "../type/JournalType";
 
 interface ActivityCardItem {
   id: number | string;

@@ -1,4 +1,4 @@
-import type { JournalEntry } from "../Database/journalDB";
+import type { JournalEntry } from "../type/JournalType";
 
 export function JournalCard({ item }: { item: JournalEntry }) {
   return (
