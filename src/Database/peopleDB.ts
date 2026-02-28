@@ -1,20 +1,25 @@
+// Database/peopleDB.ts
 import Dexie, { type Table } from "dexie";
+import type { Person } from "../types/PeopleType";
 
-export interface Person {
-  id?: number;
-  name: string;
-  description: string;
-  image?: string;
-  relation: string;
-  createdAt: string;
-}
-
-const db = new Dexie("PeopleDatabase") as Dexie & {
+const db = new Dexie("ChronovahDB") as Dexie & {
   people: Table<Person, number>;
 };
 
-db.version(1).stores({
-  people: "++id, name, description,relation, image, createdAt",
+db.version(2).stores({
+  people: `
+    ++id, 
+    name,
+    relation,
+    birthday,
+    email,
+    company,
+    createdAt,
+    updatedAt,
+    isFavorite,
+    *tags
+  `,
 });
 
 export { db };
+export type { Person };
