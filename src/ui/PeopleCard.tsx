@@ -1,4 +1,4 @@
-import type { Person } from "../Database/peopleDB";
+import type { Person } from "../type/PeopleType";
 
 export function PeopleCard({ item }: { item: Person }) {
   return (

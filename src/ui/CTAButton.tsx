@@ -1,29 +1,42 @@
 import { motion } from "framer-motion";
-import { ArrowDownRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
-function CTAButton() {
+type Align = "center" | "hero";
+
+interface CTAButtonProps {
+  /** `hero`: centered on small screens, left-aligned from md up */
+  align?: Align;
+}
+
+function CTAButton({ align = "center" }: CTAButtonProps) {
+  const isHero = align === "hero";
+  const wrap = isHero
+    ? "flex flex-col items-center md:items-start gap-3"
+    : "flex flex-col items-center gap-4 mb-12";
+
   return (
-    <div className="flex flex-col items-center gap-4 mb-12">
+    <div className={wrap}>
       <motion.button
+        type="button"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.6 }}
-        whileTap={{ scale: 0.92 }}
-        className=" font-semibold max-w-md  bg-blue-500  text-white px-8 py-4 rounded-lg shadow-lg hover:from-blue-600 hover:to-teal-500 hover:scale-x-110 duration-1000  text-lg transition-all flex   items-center justify-center gap-2 dark:text-gray-100"
-        onClick={() => (window.location.href = "/dashboard")}
+        transition={{ delay: 0.35 }}
+        whileTap={{ scale: 0.98 }}
+        className="inline-flex max-w-md items-center justify-center gap-2 rounded-xl bg-primary-600 px-8 py-3.5 text-base font-semibold text-white shadow-medium transition-colors hover:bg-primary-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 focus-visible:ring-offset-default dark:hover:bg-primary-500"
+        onClick={() => {
+          window.location.href = "/dashboard";
+        }}
       >
-        <span> Get Started</span>
-        <span>
-          <ArrowDownRight />
-        </span>
+        <span>Get started</span>
+        <ArrowRight className="h-5 w-5" strokeWidth={2} />
       </motion.button>
       <motion.p
-        initial={{ opacity: 0, }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1.12, delay: 0.2 }}
-        className="text-gray-600 text-sm dark:text-gray-300"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.4, delay: 0.45 }}
+        className={`text-sm text-muted ${isHero ? "text-center md:text-left max-w-md" : ""}`}
       >
-        No payment required . Totally free
+        Free to start. No payment required.
       </motion.p>
     </div>
   );

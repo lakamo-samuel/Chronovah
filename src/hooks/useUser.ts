@@ -1,31 +1,61 @@
+// hooks/useUser.ts
 import { useState, useEffect, useCallback } from "react";
-interface UseUserReturn {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  user: any | null;
-  loading: boolean;
-  refresh: () => void;
-  logout: () => void;
+import { authService } from "../services/auth.service";
+import { protectedAxios } from "../../axios";
+import { syncManager } from "../lib/sync";
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  avatar?: string;
+  username?: string;
+  bio?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
-export const useUser =(): UseUserReturn => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [user, setUser] = useState<any>(null);
+
+interface UseUserReturn {
+  user: User | null;
+  loading: boolean;
+  error: string | null;
+  refresh: () => Promise<void>;
+  logout: () => Promise<void>;
+  updateUser: (userData: Partial<User>) => Promise<void>;
+}
+
+export const useUser = (): UseUserReturn => {
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchUserFromBackend = useCallback(async () => {
     setLoading(true);
+    setError(null);
+
     try {
-      const res = await fetch("http://localhost:8000/api/user/me", {
-        credentials: "include",
-      });
-      if (!res.ok) {
-        setUser(null);
-        return;
+      const response = await protectedAxios.get("/user/me");
+      // Extract user from nested data structure { statusCode, data: {...}, message, success }
+      const userData = response.data.data || response.data.user || response.data;
+      setUser(userData);
+      
+      // Pull user data from server
+      if (userData?.id) {
+        syncManager.pullUserData(userData.id);
       }
-      const data = await res.json();
-      setUser(data.user);
-    } catch (err) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
       console.error("Failed to fetch user:", err);
       setUser(null);
+
+      if (err.response?.status === 401) {
+        // Unauthorized - user is not logged in
+        setError(null); // This is expected, don't show error
+      } else if (!err.response) {
+        setError("Network error. Please check your connection.");
+      } else {
+        setError(err.response?.data?.error || "Failed to fetch user data");
+      }
     } finally {
       setLoading(false);
     }
@@ -36,17 +66,51 @@ export const useUser =(): UseUserReturn => {
   }, [fetchUserFromBackend]);
 
   const logout = useCallback(async () => {
+    setLoading(true);
+
     try {
-      await fetch("http://localhost:8000/api/user/logout", {
-        method: "POST",
-        credentials: "include",
-      });
-    } catch (err) {
-      console.error("Logout failed:", err);
-    } finally {
+      // Clear local data before logging out
+      if (user?.id) {
+        await syncManager.clearUserData(user.id);
+      }
+      
+      await authService.signOut();
       setUser(null);
+      // Optionally redirect to login page
+      window.location.href = "/signin";
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      console.error("Logout failed:", err);
+      setError(err.message || "Logout failed");
+    } finally {
+      setLoading(false);
+    }
+  }, [user?.id]);
+
+  const updateUser = useCallback(async (userData: Partial<User>) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await protectedAxios.patch("/user/update", userData);
+      // Extract user from nested data structure
+      const updatedUser = response.data.data || response.data.user || response.data;
+      setUser(updatedUser);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      console.error("Failed to update user:", err);
+      setError(err.response?.data?.error || "Failed to update user");
+    } finally {
+      setLoading(false);
     }
   }, []);
 
-  return { user, loading, refresh: fetchUserFromBackend, logout };
+  return {
+    user,
+    loading,
+    error,
+    refresh: fetchUserFromBackend,
+    logout,
+    updateUser,
+  };
 };

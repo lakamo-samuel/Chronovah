@@ -30,47 +30,26 @@ import {
   Paperclip,
   Hash,
 } from "lucide-react";
-import { useLiveQuery } from "dexie-react-hooks";
-import ReactMarkdown from "react-markdown";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import type { Note, NoteColor } from "../../type/NoteType";
-import { db } from "../../Database/db";
-
-// Create a wrapper component for SyntaxHighlighter to fix type issues
-const CodeBlock = ({
-  language,
-  value,
-}: {
-  language: string;
-  value: string;
-}) => {
-  return (
-    <SyntaxHighlighter
-      style={vscDarkPlus}
-      language={language}
-      PreTag="div"
-      customStyle={{
-        margin: 0,
-        borderRadius: "0.5rem",
-        fontSize: "0.875rem",
-      }}
-    >
-      {value}
-    </SyntaxHighlighter>
-  );
-};
+import MarkdownContent from "../../components/MarkdownContent";
+import Spinner from "../../ui/Spinner";
+import ConfirmationModal from "../../components/ConfirmationModal";
+import { useToast } from "../../hooks/useToast";
+import { useNotes } from "../../hooks/useNotes";
 
 export default function NoteDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const noteId = Number(id);
+  const { success } = useToast();
+  const { getNote, updateNote, deleteNote } = useNotes();
 
+  const [note, setNote] = useState<Note | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState<Partial<Note>>({});
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [showColorPicker, setShowColorPicker] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [tagInput, setTagInput] = useState("");
@@ -79,17 +58,19 @@ export default function NoteDetail() {
   const editorRef = useRef<HTMLTextAreaElement>(null);
   const titleRef = useRef<HTMLInputElement>(null);
 
-  const note = useLiveQuery(() => db.notes.get(noteId), [noteId]);
-
-  // Initialize draft with note data
+  // Load note
   useEffect(() => {
-    if (note) {
-      setDraft({
-        ...note,
-        tags: note.tags || [],
-      });
-    }
-  }, [note]);
+    const loadNote = async () => {
+      if (!id) return;
+      try {
+        const fetchedNote = await getNote(id);
+        setNote(fetchedNote || null);
+      } catch (error) {
+        console.error('Failed to load note:', error);
+      }
+    };
+    loadNote();
+  }, [id, getNote]);
 
   // Auto-save functionality
   useEffect(() => {
@@ -99,9 +80,8 @@ export default function NoteDetail() {
       if (JSON.stringify(draft) !== JSON.stringify(note)) {
         setIsSaving(true);
         try {
-          await db.notes.update(note.id as number, {
+          await updateNote(note.id, {
             ...draft,
-            updatedAt: new Date().toISOString(),
             wordCount: draft.content?.split(/\s+/).filter(Boolean).length || 0,
             readTime: Math.max(
               1,
@@ -120,7 +100,7 @@ export default function NoteDetail() {
     }, 2000);
 
     return () => clearTimeout(saveTimer);
-  }, [draft, note, isEditing]);
+  }, [draft, note, isEditing, updateNote]);
 
   const handleContentChange = (
     field: keyof Note,
@@ -134,9 +114,8 @@ export default function NoteDetail() {
 
     setIsSaving(true);
     try {
-      await db.notes.update(note.id, {
+      await updateNote(note.id, {
         ...draft,
-        updatedAt: new Date().toISOString(),
         wordCount: draft.content?.split(/\s+/).filter(Boolean).length || 0,
         readTime: Math.max(
           1,
@@ -155,26 +134,32 @@ export default function NoteDetail() {
   };
 
   const handleDelete = async () => {
-    if (note?.id) {
-      await db.notes.delete(note.id);
+    if (!note?.id) return;
+    setIsDeleting(true);
+    try {
+      await deleteNote(note.id);
+      success("Note deleted successfully");
       navigate("/notes");
+    } catch (error) {
+      console.error("Failed to delete note:", error);
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteConfirm(false);
     }
   };
 
   const togglePinned = async () => {
     if (note?.id) {
-      await db.notes.update(note.id, {
+      await updateNote(note.id, {
         isPinned: !note.isPinned,
-        updatedAt: new Date().toISOString(),
       });
     }
   };
 
   const toggleFavorite = async () => {
     if (note?.id) {
-      await db.notes.update(note.id, {
+      await updateNote(note.id, {
         isFavorite: !note.isFavorite,
-        updatedAt: new Date().toISOString(),
       });
     }
   };
@@ -378,9 +363,9 @@ export default function NoteDetail() {
 
           <div className="flex items-center gap-2">
             {isSaving && (
-              <div className="flex items-center gap-1 text-xs text-muted">
-                <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-primary-500" />
-                <span>Saving...</span>
+              <div className="flex items-center gap-2 text-xs text-muted">
+                <Spinner overlay={false} size="xs" />
+                <span>Saving…</span>
               </div>
             )}
 
@@ -536,63 +521,72 @@ export default function NoteDetail() {
         >
           {/* Formatting toolbar (only in edit mode) */}
           {isEditing && (
-            <div className="flex items-center gap-1 p-2 border-b border-default bg-default/50">
-              <button
-                onClick={() => insertFormatting("bold")}
-                className="p-1.5 rounded hover:bg-card text-muted hover:text-primary transition-colors"
-                title="Bold"
-              >
-                <Bold size={16} />
-              </button>
-              <button
-                onClick={() => insertFormatting("italic")}
-                className="p-1.5 rounded hover:bg-card text-muted hover:text-primary transition-colors"
-                title="Italic"
-              >
-                <Italic size={16} />
-              </button>
-              <div className="w-px h-4 bg-default mx-1" />
-              <button
-                onClick={() => insertFormatting("h1")}
-                className="p-1.5 rounded hover:bg-card text-muted hover:text-primary transition-colors"
-                title="Heading 1"
-              >
-                <Heading1 size={16} />
-              </button>
-              <button
-                onClick={() => insertFormatting("h2")}
-                className="p-1.5 rounded hover:bg-card text-muted hover:text-primary transition-colors"
-                title="Heading 2"
-              >
-                <Heading2 size={16} />
-              </button>
-              <div className="w-px h-4 bg-default mx-1" />
-              <button
-                onClick={() => insertFormatting("ul")}
-                className="p-1.5 rounded hover:bg-card text-muted hover:text-primary transition-colors"
-                title="Bullet list"
-              >
-                <List size={16} />
-              </button>
-              <button
-                onClick={() => insertFormatting("ol")}
-                className="p-1.5 rounded hover:bg-card text-muted hover:text-primary transition-colors"
-                title="Numbered list"
-              >
-                <ListOrdered size={16} />
-              </button>
-              <div className="flex-1" />
-              <button
-                onClick={() => setIsPreview(!isPreview)}
-                className={`p-1.5 rounded transition-colors ${
-                  isPreview
-                    ? "bg-primary-500 text-white"
-                    : "text-muted hover:text-primary"
-                }`}
-                title="Toggle preview"
-              >
-                <Eye size={16} />
-              </button>
+            <div className="px-4 md:px-8 pt-4">
+              <div className="flex items-center gap-1 p-2 border border-default rounded-lg bg-default/50 overflow-x-auto">
+                <button
+                  type="button"
+                  onClick={() => insertFormatting("bold")}
+                  className="p-1.5 rounded hover:bg-card text-muted hover:text-primary transition-colors flex-shrink-0"
+                  title="Bold"
+                >
+                  <Bold size={16} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => insertFormatting("italic")}
+                  className="p-1.5 rounded hover:bg-card text-muted hover:text-primary transition-colors flex-shrink-0"
+                  title="Italic"
+                >
+                  <Italic size={16} />
+                </button>
+                <div className="w-px h-4 bg-default mx-1 flex-shrink-0" />
+                <button
+                  type="button"
+                  onClick={() => insertFormatting("h1")}
+                  className="p-1.5 rounded hover:bg-card text-muted hover:text-primary transition-colors flex-shrink-0"
+                  title="Heading 1"
+                >
+                  <Heading1 size={16} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => insertFormatting("h2")}
+                  className="p-1.5 rounded hover:bg-card text-muted hover:text-primary transition-colors flex-shrink-0"
+                  title="Heading 2"
+                >
+                  <Heading2 size={16} />
+                </button>
+                <div className="w-px h-4 bg-default mx-1 flex-shrink-0" />
+                <button
+                  type="button"
+                  onClick={() => insertFormatting("ul")}
+                  className="p-1.5 rounded hover:bg-card text-muted hover:text-primary transition-colors flex-shrink-0"
+                  title="Bullet list"
+                >
+                  <List size={16} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => insertFormatting("ol")}
+                  className="p-1.5 rounded hover:bg-card text-muted hover:text-primary transition-colors flex-shrink-0"
+                  title="Numbered list"
+                >
+                  <ListOrdered size={16} />
+                </button>
+                <div className="flex-1 min-w-2" />
+                <button
+                  type="button"
+                  onClick={() => setIsPreview(!isPreview)}
+                  className={`p-1.5 rounded transition-colors flex-shrink-0 ${
+                    isPreview
+                      ? "bg-primary-500 text-white"
+                      : "text-muted hover:text-primary"
+                  }`}
+                  title="Toggle preview"
+                >
+                  <Eye size={16} />
+                </button>
+              </div>
             </div>
           )}
 
@@ -620,34 +614,19 @@ export default function NoteDetail() {
                 ref={editorRef}
                 value={draft.content || ""}
                 onChange={(e) => handleContentChange("content", e.target.value)}
-                placeholder="Write your note here... (Markdown supported)"
+                placeholder="Write your note here… (Markdown supported)"
                 rows={20}
-                className="w-full bg-transparent focus:outline-none text-primary resize-none leading-relaxed font-mono text-sm"
+                className="w-full px-3 py-2 bg-default border border-default rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/50 text-primary resize-none leading-relaxed text-sm sm:text-base min-h-[280px]"
               />
             ) : (
-              <div className="prose dark:prose-invert max-w-none">
-                <ReactMarkdown
-                  components={{
-                    code({ className, children }) {
-                      const match = /language-(\w+)/.exec(className || "");
-                      const language = match ? match[1] : "text";
-                      const code = String(children).replace(/\n$/, "");
-
-                      return match ? (
-                        <CodeBlock language={language} value={code} />
-                      ) : (
-                        <code className="bg-default px-1 py-0.5 rounded text-sm">
-                          {children}
-                        </code>
-                      );
-                    },
-                  }}
-                >
-                  {isEditing && isPreview
-                    ? draft.content || ""
-                    : note.content || ""}
-                </ReactMarkdown>
-              </div>
+              <MarkdownContent
+                emptyFallback="*No content yet.*"
+                className="text-primary"
+              >
+                {isEditing && isPreview
+                  ? draft.content || ""
+                  : note.content || ""}
+              </MarkdownContent>
             )}
           </div>
         </motion.div>
@@ -683,45 +662,17 @@ export default function NoteDetail() {
       </div>
 
       {/* Delete confirmation modal */}
-      <AnimatePresence>
-        {showDeleteConfirm && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-card rounded-xl border border-default p-6 max-w-md w-full"
-            >
-              <h3 className="text-lg font-semibold text-primary mb-2">
-                Delete Note
-              </h3>
-              <p className="text-muted mb-6">
-                Are you sure you want to delete "{note.title || "Untitled"}"?
-                This action cannot be undone.
-              </p>
-              <div className="flex justify-end gap-3">
-                <button
-                  onClick={() => setShowDeleteConfirm(false)}
-                  className="px-4 py-2 text-muted hover:text-primary transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleDelete}
-                  className="px-4 py-2 bg-accent-red hover:bg-red-600 text-white rounded-lg transition-colors"
-                >
-                  Delete
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <ConfirmationModal
+        isOpen={showDeleteConfirm}
+        title="Delete Note"
+        message={`Are you sure you want to delete "${note?.title || "Untitled"}"? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        isDangerous={true}
+        onConfirm={handleDelete}
+        onCancel={() => setShowDeleteConfirm(false)}
+        isLoading={isDeleting}
+      />
     </div>
   );
 }

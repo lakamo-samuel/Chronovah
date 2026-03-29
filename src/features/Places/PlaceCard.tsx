@@ -15,24 +15,21 @@ import {
   Heart,
 } from "lucide-react";
 
-import { db, type Place } from "../../Database/placesDB";
-
-import { useNavigate } from "react-router-dom";
+import type { Place } from "../../type/PlaceType";
 
 interface PlaceCardProps {
   place: Place;
   onEdit: () => void;
   onDelete: () => void;
+  onClick: () => void;
+  onUpdate: (id: string, updates: Partial<Place>) => Promise<void>;
 }
 
-export default function PlaceCard({ place, onEdit, onDelete }: PlaceCardProps) {
-
-const navigate = useNavigate();
+export default function PlaceCard({ place, onEdit, onDelete, onClick, onUpdate }: PlaceCardProps) {
   const toggleFavorite = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    await db.places.update(place.id!, {
+    await onUpdate(place.id!, {
       isFavorite: !place.isFavorite,
-      updatedAt: new Date().toISOString(),
     });
   };
 
@@ -52,7 +49,7 @@ const navigate = useNavigate();
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.9 }}
       whileHover={{ y: -4 }}
-      onClick={() => navigate(`/places/${place.id}`)}
+      onClick={onClick}
       className="bg-card rounded-xl border border-default overflow-hidden hover:shadow-hard transition-all group"
     >
       {/* Image section */}

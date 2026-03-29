@@ -4,9 +4,7 @@ import {
   Database,
   Globe,
   Shield,
-  ArrowRight,
   CheckCircle,
-  Clock,
   Cloud,
   WifiOff,
   Download,
@@ -19,8 +17,6 @@ interface StepProps {
   description: string;
   icon: JSX.Element;
   details: string[];
-  color: string;
-  gradient: string;
 }
 
 export default function HowItWorks() {
@@ -30,56 +26,48 @@ export default function HowItWorks() {
 
   const steps: StepProps[] = [
     {
-      title: "Create Your Space",
-      description: "Start your digital sanctuary in seconds",
-      icon: <Smartphone size={32} />,
+      title: "Create your space",
+      description: "Sign in and land in one dashboard",
+      icon: <Smartphone size={28} strokeWidth={1.75} />,
       details: [
-        "Sign up free, no credit card",
-        "Choose your workspace style",
-        "Import existing data easily",
-        "Works on all devices",
+        "Account is free to start",
+        "Same layout on phone and desktop",
+        "Optional import later",
+        "No separate “workspace” apps",
       ],
-      color: "text-blue-500",
-      gradient: "from-blue-500 to-cyan-500",
     },
     {
-      title: "Add Everything",
-      description: "Your life, organized your way",
-      icon: <Database size={32} />,
+      title: "Add what matters",
+      description: "Places, notes, people, journal—where you need them",
+      icon: <Database size={28} strokeWidth={1.75} />,
       details: [
-        "Save places with photos",
-        "Write notes & journal entries",
-        "Connect with people",
-        "Tag and categorize everything",
+        "Add entries in any order",
+        "Tags and search across types",
+        "Photos and text together",
+        "Everything stays in your library",
       ],
-      color: "text-purple-500",
-      gradient: "from-purple-500 to-pink-500",
     },
     {
-      title: "Access Anywhere",
-      description: "Online or offline, always there",
-      icon: <Globe size={32} />,
+      title: "Use it anywhere",
+      description: "Designed for spotty connections",
+      icon: <Globe size={28} strokeWidth={1.75} />,
       details: [
-        "Works without internet",
-        "Syncs when you're back online",
-        "Mobile & desktop friendly",
-        "Real-time updates",
+        "Read and edit offline",
+        "Sync when the network returns",
+        "Browser-based PWA-style flow",
+        "No mandatory always-online mode",
       ],
-      color: "text-emerald-500",
-      gradient: "from-emerald-500 to-teal-500",
     },
     {
-      title: "Stay Private",
-      description: "Your data belongs to you",
-      icon: <Shield size={32} />,
+      title: "Keep control",
+      description: "Your device is the source of truth",
+      icon: <Shield size={28} strokeWidth={1.75} />,
       details: [
-        "End-to-end encryption",
-        "No third-party tracking",
-        "Export your data anytime",
-        "You control what's shared",
+        "Data stored locally first",
+        "Export when you want",
+        "No ads in the product UI",
+        "You choose what to back up",
       ],
-      color: "text-amber-500",
-      gradient: "from-amber-500 to-orange-500",
     },
   ];
 
@@ -136,17 +124,11 @@ const itemVariants = {
     <section
       id="how-it-works"
       ref={sectionRef}
-      className="relative px-4 sm:px-6 lg:px-8 py-24 md:py-32 bg-white dark:bg-gray-950 overflow-hidden"
+      className="relative px-4 sm:px-6 lg:px-8 py-24 md:py-32 bg-default overflow-hidden border-b border-default"
       aria-labelledby="how-it-works-title"
     >
-      {/* Background decoration */}
-      <div className="absolute inset-0 pointer-events-none">
-        {/* Dotted pattern */}
-        <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] dark:bg-[radial-gradient(#1f2937_1px,transparent_1px)] [background-size:32px_32px] opacity-50" />
-
-        {/* Gradient line */}
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-500/20 to-transparent" />
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-purple-500/20 to-transparent" />
+      <div className="absolute inset-0 pointer-events-none opacity-40 dark:opacity-25">
+        <div className="absolute inset-0 bg-[radial-gradient(var(--color-border)_1px,transparent_1px)] [background-size:28px_28px]" />
       </div>
 
       <div className="relative max-w-7xl mx-auto">
@@ -157,35 +139,17 @@ const itemVariants = {
           transition={{ duration: 0.6 }}
           className="text-center mb-20"
         >
-          {/* Eyebrow */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={isInView ? { opacity: 1, scale: 1 } : {}}
-            transition={{ delay: 0.2 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 text-blue-700 dark:text-blue-300 text-sm font-medium mb-6 border border-blue-200 dark:border-blue-800"
-          >
-            <Clock size={16} />
-            <span>Simple, powerful, private</span>
-          </motion.div>
-
-          {/* Title */}
           <h2
             id="how-it-works-title"
-            className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6"
+            className="font-serif text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-primary mb-5"
           >
-            <span className="bg-gradient-to-r from-gray-900 to-gray-600 dark:from-gray-100 dark:to-gray-400 bg-clip-text text-transparent">
-              How it
-            </span>
-            <br />
-            <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 dark:from-blue-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
-              works
-            </span>
+            How it{" "}
+            <span className="text-primary-600 dark:text-primary-400">works</span>
           </h2>
 
-          {/* Description */}
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
-            Four simple steps to a more organized life. No complicated setup, no
-            learning curve — just start adding what matters to you.
+          <p className="text-lg text-muted max-w-2xl mx-auto leading-relaxed">
+            Four straight steps from empty account to regular use. No gamified
+            onboarding—just structure that matches the app itself.
           </p>
         </motion.div>
 
@@ -206,76 +170,48 @@ const itemVariants = {
             >
               {/* Step connector line (except last) */}
               {index < steps.length - 1 && (
-                <div className="hidden lg:block absolute top-16 left-[60%] w-[80%] h-px bg-gradient-to-r from-gray-300 to-transparent dark:from-gray-700 to-transparent">
-                  <motion.div
-                    animate={{
-                      x: activeStep === index ? ["0%", "100%"] : "0%",
-                      opacity: activeStep === index ? [0, 1, 0] : 0,
-                    }}
-                    transition={{ duration: 1, repeat: Infinity }}
-                    className="absolute top-1/2 -translate-y-1/2 w-2 h-2 bg-blue-500 rounded-full"
-                  />
-                </div>
+                <div className="hidden lg:block absolute top-16 left-[58%] w-[82%] h-px bg-default border-t border-dashed border-default" />
               )}
 
-              {/* Step number */}
-              <div className="absolute -top-3 -left-3 w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold flex items-center justify-center text-lg shadow-lg">
+              <div className="absolute z-10 -top-3 -left-3 w-9 h-9 rounded-full bg-primary-600 text-white font-semibold flex items-center justify-center text-sm border-2 border-default">
                 {index + 1}
               </div>
 
-              {/* Card */}
               <div
                 className={`
-                relative h-full bg-gray-50 dark:bg-gray-900/50 rounded-2xl p-8
-                border border-gray-200 dark:border-gray-800
+                relative h-full bg-card rounded-2xl p-7 sm:p-8
+                border border-default
                 transition-all duration-300
-                ${activeStep === index ? "scale-105 shadow-2xl border-transparent" : "scale-100"}
+                ${activeStep === index ? "shadow-medium ring-1 ring-primary-500/20" : ""}
               `}
               >
-                {/* Gradient border on hover */}
-                <div
-                  className={`
-                  absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100
-                  bg-gradient-to-r ${step.gradient} p-[2px] -z-10
-                  transition-opacity duration-300
-                `}
-                >
-                  <div className="absolute inset-0 bg-white dark:bg-gray-900 rounded-2xl" />
+                <div className="w-14 h-14 rounded-xl mb-6 flex items-center justify-center bg-primary-500/10 border border-default text-primary-600">
+                  {step.icon}
                 </div>
 
-                {/* Icon */}
-                <div
-                  className={`
-                  w-16 h-16 rounded-2xl mb-6 flex items-center justify-center
-                  bg-gradient-to-r ${step.gradient} bg-opacity-10
-                  group-hover:scale-110 transition-transform duration-300
-                `}
-                >
-                  <div className="text-white">{step.icon}</div>
-                </div>
-
-                {/* Content */}
-                <h3 className="text-2xl font-bold mb-2 text-gray-900 dark:text-white">
+                <h3 className="text-xl font-semibold mb-2 text-primary">
                   {step.title}
                 </h3>
-                <p className="text-gray-600 dark:text-gray-300 mb-4">
+                <p className="text-muted mb-4 text-[15px] leading-relaxed">
                   {step.description}
                 </p>
 
-                {/* Details list */}
                 <ul className="space-y-2">
                   {step.details.map((detail, i) => (
                     <motion.li
                       key={i}
-                      initial={{ opacity: 0.7, x: 0 }}
+                      initial={{ opacity: 0.85, x: 0 }}
                       animate={{
-                        opacity: activeStep === index ? 1 : 0.7,
-                        x: activeStep === index ? 5 : 0,
+                        opacity: activeStep === index ? 1 : 0.85,
+                        x: activeStep === index ? 3 : 0,
                       }}
-                      transition={{ delay: i * 0.1 }}
-                      className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400"
+                      transition={{ delay: i * 0.05 }}
+                      className="flex items-start gap-2.5 text-sm text-muted"
                     >
-                      <CheckCircle size={14} className={step.color} />
+                      <CheckCircle
+                        size={14}
+                        className="text-primary-600 shrink-0 mt-0.5"
+                      />
                       <span>{detail}</span>
                     </motion.li>
                   ))}
@@ -293,32 +229,23 @@ const itemVariants = {
           className="relative"
         >
           {/* Main feature card */}
-          <div className="bg-gradient-to-br from-gray-900 to-gray-800 dark:from-gray-950 dark:to-gray-900 rounded-3xl p-12 text-white overflow-hidden">
-            {/* Background pattern */}
-            <div className="absolute inset-0 opacity-10">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,#ffffff22_1px,transparent_1px)] bg-[size:24px_24px]" />
-            </div>
-
+          <div className="relative rounded-2xl border border-default bg-card p-10 md:p-12 text-primary overflow-hidden">
             <div className="relative z-10 max-w-4xl mx-auto text-center">
-              {/* Badge */}
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm text-white/90 text-sm font-medium mb-8 border border-white/20">
-                <WifiOff size={14} />
-                <span>Offline-first architecture</span>
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-default border border-default text-muted text-xs font-medium mb-8">
+                <WifiOff size={14} className="text-primary-600" />
+                <span>Offline-capable by design</span>
               </div>
 
-              {/* Title */}
-              <h3 className="text-3xl md:text-4xl font-bold mb-6">
-                Works offline,{" "}
-                <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                  syncs when online
+              <h3 className="font-serif text-2xl md:text-3xl font-semibold mb-4 text-primary">
+                Works without a connection,{" "}
+                <span className="text-primary-600 dark:text-primary-400">
+                  syncs when you are back online
                 </span>
               </h3>
 
-              {/* Description */}
-              <p className="text-lg text-white/80 mb-12 max-w-2xl mx-auto">
-                Your data is always available, even without internet. Edit,
-                create, and organize — everything syncs automatically when
-                you're back online.
+              <p className="text-muted mb-12 max-w-2xl mx-auto leading-relaxed">
+                Local storage comes first. You can add and edit with no network;
+                synchronization runs when connectivity is available again.
               </p>
 
               {/* Features grid */}
@@ -331,52 +258,29 @@ const itemVariants = {
                     transition={{ delay: 0.8 + i * 0.1 }}
                     className="text-center"
                   >
-                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-white/10 backdrop-blur-sm mb-4">
-                      <feature.icon size={24} className="text-white" />
+                    <div className="inline-flex items-center justify-center w-11 h-11 rounded-lg bg-default border border-default mb-4">
+                      <feature.icon
+                        size={22}
+                        className="text-primary-600"
+                      />
                     </div>
-                    <h4 className="font-semibold mb-1">{feature.label}</h4>
-                    <p className="text-sm text-white/60">
-                      {feature.description}
-                    </p>
+                    <h4 className="font-medium text-primary mb-1">
+                      {feature.label}
+                    </h4>
+                    <p className="text-sm text-muted">{feature.description}</p>
                   </motion.div>
                 ))}
               </div>
 
               {/* Dexie.js mention */}
-              <div className="mt-12 pt-8 border-t border-white/10">
-                <p className="text-sm text-white/40">
-                  Powered by Dexie.js • Your data stays on your device until
-                  you're ready to sync
+              <div className="mt-12 pt-8 border-t border-default">
+                <p className="text-sm text-muted">
+                  IndexedDB via Dexie—data remains on your device unless you
+                  export or sync explicitly.
                 </p>
               </div>
             </div>
           </div>
-
-          {/* Floating elements for visual interest */}
-          <div className="absolute -top-4 -right-4 w-24 h-24 bg-blue-500 rounded-full blur-2xl opacity-20 animate-pulse" />
-          <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-purple-500 rounded-full blur-2xl opacity-20 animate-pulse" />
-        </motion.div>
-
-        {/* Bottom CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ delay: 1.2 }}
-          className="text-center mt-20"
-        >
-          <a
-            href="#get-started"
-            className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl group"
-          >
-            <span>Start your organized life today</span>
-            <ArrowRight
-              size={18}
-              className="group-hover:translate-x-1 transition-transform"
-            />
-          </a>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-4">
-            No credit card required • Free forever • Export anytime
-          </p>
         </motion.div>
       </div>
     </section>

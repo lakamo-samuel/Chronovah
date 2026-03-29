@@ -3,11 +3,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import GlobalSearchItem from "./GlobalSearchItem";
 import { highlight } from "../utils/hightlight";
-
-import { db as peopleDB } from "../Database/peopleDB";
-import { db as placeDB } from "../Database/placesDB";
-import { db as notesDB } from "../Database/db";
-import { db as journalDB } from "../Database/journalDB";
+import { db } from "../database/db";
 import SearchInput from "./SearchInput";
 import { useSearch } from "../hooks/useSearch";
 
@@ -58,40 +54,40 @@ const { query } = useSearch();
     const lower = text.toLowerCase();
 
     const [people, places, notes, journals] = await Promise.all([
-      peopleDB.people
-        .filter((p) => p.name.toLowerCase().includes(lower))
+      db.people
+        .filter((p: any) => p.name.toLowerCase().includes(lower))
         .toArray(),
-      placeDB.places
-        .filter((p) => p.name.toLowerCase().includes(lower))
+      db.places
+        .filter((p: any) => p.name.toLowerCase().includes(lower))
         .toArray(),
-      notesDB.notes
-        .filter((n) => n.title.toLowerCase().includes(lower))
+      db.notes
+        .filter((n: any) => n.title.toLowerCase().includes(lower))
         .toArray(),
-      journalDB.journal
-        .filter((j) => j.mood.toLowerCase().includes(lower))
+      db.journal
+        .filter((j: any) => j.mood.toLowerCase().includes(lower))
         .toArray(),
     ]);
 
     const mapped = [
-      ...people.map((p) => ({
+      ...people.map((p: any) => ({
         type: "People",
         label: p.name,
         highlighted: highlight(p.name, text),
         id: p.id,
       })),
-      ...places.map((p) => ({
+      ...places.map((p: any) => ({
         type: "Places",
         label: p.name,
         highlighted: highlight(p.name, text),
         id: p.id,
       })),
-      ...notes.map((n) => ({
+      ...notes.map((n: any) => ({
         type: "Notes",
         label: n.title,
         highlighted: highlight(n.title, text),
         id: n.id,
       })),
-      ...journals.map((j) => ({
+      ...journals.map((j: any) => ({
         type: "Journals",
         label: j.mood,
         highlighted: highlight(j.mood, text),

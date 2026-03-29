@@ -1,30 +1,73 @@
-import { Trash2 } from "lucide-react";
+import { useState } from 'react';
+import { Trash2 } from 'lucide-react';
+import ConfirmationModal from '../../components/ConfirmationModal';
+import Button from '../../ui/Button';
+import type { ReactNode } from 'react';
 
-import type { ReactNode } from "react";
-interface Prop{
-  onClick: () => void;
-  children: ReactNode,
-
+interface DangerZoneProps {
+  onClick: () => Promise<void> | void;
+  children: ReactNode;
+  title?: string;
+  description?: string;
+  confirmText?: string;
 }
-function DangerZone({onClick,children}: Prop) {
-     
+
+function DangerZone({
+  onClick,
+  children,
+  title = 'Are you absolutely sure?',
+  description = 'This action cannot be undone. Please proceed with caution.',
+  confirmText = 'Delete',
+}: DangerZoneProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleConfirm = async () => {
+    setIsLoading(true);
+    try {
+      await onClick();
+    } finally {
+      setIsLoading(false);
+      setIsOpen(false);
+    }
+  };
 
   return (
-    <div className="bg-red-50 dark:bg-red-950 dark:border rounded-2xl p-5 shadow space-y-3">
-      <h2 className="text-lg font-semibold text-red-600">Danger Zone</h2>
-      <p className="text-sm text-gray-700 dark:text-gray-300">
-        This action in irrevesible. Please proceed with caution.
-      </p>
+    <>
+      <div className="bg-red-50 dark:bg-red-950/20 rounded-2xl p-6 border border-red-200 dark:border-red-800/50 space-y-4">
+        <div>
+          <h2 className="text-lg font-ui-lg-bold text-red-600 dark:text-red-400">
+            Danger Zone
+          </h2>
+          <p className="text-sm text-red-700 dark:text-red-300 mt-1">
+            This action is irreversible. Please proceed with caution.
+          </p>
+        </div>
 
-      <div className="flex justify-end">
-        <button
-          onClick={onClick}
-          className="bg-red-600 hover:bg-red-700 text-white px-4 py-3 rounded-xl flex items-center gap-2 transition"
-        >
-          <Trash2 size={16} /> {children}
-        </button>
+        <div className="flex justify-end">
+          <Button
+            onClick={() => setIsOpen(true)}
+            className="bg-red-600 hover:bg-red-700 text-white flex items-center gap-2"
+          >
+            <Trash2 size={16} />
+            {children}
+          </Button>
+        </div>
       </div>
-    </div>
+
+      {/* Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={isOpen}
+        title={title}
+        message={description}
+        confirmText={confirmText}
+        cancelText="Cancel"
+        isDangerous={true}
+        onConfirm={handleConfirm}
+        onCancel={() => setIsOpen(false)}
+        isLoading={isLoading}
+      />
+    </>
   );
 }
 

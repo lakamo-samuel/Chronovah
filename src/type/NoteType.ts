@@ -1,6 +1,7 @@
 // types/NoteType.ts
 export interface Note {
-  id?: number;
+  id: string;        // ← uuid string
+  userId: string;     // ← add this
   title: string;
   content: string;
   createdAt: string;

@@ -10,6 +10,7 @@ import { DashboardProvider } from './context/DashboardContext.tsx'
 
 import { SearchProvider } from './context/SearchContext.tsx'
 import { AuthProvider } from './context/AuthContext.tsx'
+import { SyncProvider } from './context/SyncContext.tsx'
 
 const updateSW = registerSW({
   onNeedRefresh() {
@@ -24,15 +25,17 @@ const updateSW = registerSW({
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <AuthProvider>
-      <DarkModeProvider>
-        <SidebarProvider>
-          <DashboardProvider>
-            <SearchProvider>
-              <App />
-            </SearchProvider>
-          </DashboardProvider>
-        </SidebarProvider>
-      </DarkModeProvider>
+      <SyncProvider>
+        <DarkModeProvider>
+          <SidebarProvider>
+            <DashboardProvider>
+              <SearchProvider>
+                <App />
+              </SearchProvider>
+            </DashboardProvider>
+          </SidebarProvider>
+        </DarkModeProvider>
+      </SyncProvider>
     </AuthProvider>
   </StrictMode>
 );

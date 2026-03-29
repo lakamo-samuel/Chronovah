@@ -1,11 +1,11 @@
-// types/PeopleType.ts
 export interface Person {
-  id?: number;
+  id: string; // ← uuid string
+  userId: string; // ← add this
   name: string;
   nickname?: string;
   description: string;
   image?: string;
-  images?: string[]; // Multiple images
+  images?: string[];
   relation: string;
   birthday?: string;
   email?: string;

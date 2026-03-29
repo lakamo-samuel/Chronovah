@@ -86,15 +86,13 @@ export default function CTAComponent() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ delay: 0.3 }}
-                className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6"
+                className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6"
               >
                 <span className="bg-gradient-to-r from-gray-900 to-gray-600 dark:from-gray-100 dark:to-gray-400 bg-clip-text text-transparent">
-                  Start your
+                  Start your organized life
                 </span>
                 <br className="hidden xs:block" />
-                <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 dark:from-blue-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
-                  organized life
-                </span>
+                <span className="bg-blue-600 dark:bg-blue-400  bg-clip-text text-transparent"></span>
               </motion.h2>
 
               {/* Shorter description for mobile */}
@@ -168,7 +166,7 @@ export default function CTAComponent() {
                   />
                   <button
                     type="submit"
-                    className="w-full xs:w-auto px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-sm sm:text-base font-medium rounded-xl transition-all duration-300 shadow-md hover:shadow-lg whitespace-nowrap"
+                    className="w-full xs:w-auto px-4 sm:px-6 py-2.5 sm:py-3 bg-blue-600 hover:bg-blue-700 dark:bg-blue-400 text-white text-sm sm:text-base font-medium rounded-xl transition-all duration-300 shadow-md hover:shadow-lg whitespace-nowrap"
                   >
                     {isSubmitted ? "✓ Sent!" : "Notify me"}
                   </button>
@@ -214,7 +212,7 @@ export default function CTAComponent() {
               initial={{ opacity: 0, x: 20 }}
               animate={isInView ? { opacity: 1, x: 0 } : {}}
               transition={{ delay: 0.4 }}
-              className="relative bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/30 dark:to-purple-950/30 p-6 sm:p-8 lg:p-12 order-1 md:order-2"
+              className="relative bg-gradient-to-br from-blue-50 to-blue-50 dark:from-blue-950/30 dark:to-purple-950/30 p-6 sm:p-8 lg:p-12 order-1 md:order-2"
             >
               <div className="space-y-4 sm:space-y-6">
                 <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6">
@@ -263,7 +261,7 @@ export default function CTAComponent() {
                       {[1, 2, 3].map((i) => (
                         <div
                           key={i}
-                          className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 border-2 border-white dark:border-gray-900"
+                          className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-gradient-to-r from-blue-500 to-blue-500 border-2 border-white dark:border-gray-900"
                         />
                       ))}
                     </div>

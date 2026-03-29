@@ -10,31 +10,39 @@ import {
   Filter,
   
 } from "lucide-react";
-import { useLiveQuery } from "dexie-react-hooks";
+import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import { db } from "../../Database/placesDB";
 import CommonPageHeader from "../../components/CommonPageHeader";
 import PlaceEditor from "./PlaceEditor";
 import PlaceStats from "./PlaceStats";
 import PlaceCard from "./PlaceCard";
 import type { Place, PlaceType } from "../../type/PlaceType";
+import Spinner from "../../ui/Spinner";
+import { useToast } from "../../hooks/useToast";
+import { ToastContainer } from "../../components/Toast";
+import ConfirmationModal from "../../components/ConfirmationModal";
+import { usePlaces } from "../../hooks/usePlaces";
 
 type SortOption = "name" | "country" | "visitedDate" | "createdAt";
 
 export default function Places() {
+  const navigate = useNavigate();
+  const { toasts, removeToast, success, error } = useToast();
+  const { places, createPlace, updatePlace, deletePlace } = usePlaces();
+
+  // State for UI
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [sortBy, setSortBy] = useState<SortOption>("createdAt");
-  const [selectedType, setSelectedType] = useState<PlaceType | "all">("all");
+  const [selectedType, setSelectedType] = useState("all");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [availableTags, setAvailableTags] = useState<string[]>([]);
-  const [showEditor, setShowEditor] = useState(false);
-  const [editingPlace, setEditingPlace] = useState<Partial<Place> | null>(null);
+  const [sortBy, setSortBy] = useState<SortOption>("createdAt");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showFilters, setShowFilters] = useState(false);
-
-  // Fetch all places
-  const places = useLiveQuery(() => db.places.toArray(), []);
+  const [editingPlace, setEditingPlace] = useState<Place | null>(null);
+  const [showEditor, setShowEditor] = useState(false);
+  const [pendingDeletePlace, setPendingDeletePlace] = useState<Place | null>(null);
+  const [isDeleteLoading, setIsDeleteLoading] = useState(false);
 
   // Extract unique tags from places
   useEffect(() => {
@@ -143,45 +151,57 @@ export default function Places() {
   };
 
   const handleSavePlace = async (placeData: Partial<Place>) => {
-    const now = new Date().toISOString();
+    try {
+      if (editingPlace?.id) {
+        // Update existing place
+        await updatePlace(editingPlace.id, placeData);
+        success(`${placeData.name} updated successfully`);
+      } else {
+        // Add new place
+        await createPlace({
+          name: placeData.name || "",
+          country: placeData.country || "",
+          location: placeData.location,
+          type: placeData.type || "City",
+          notes: placeData.notes,
+          images: placeData.images || [],
+          visitedDate: placeData.visitedDate,
+          isFavorite: false,
+          tags: placeData.tags || [],
+          rating: placeData.rating,
+          cost: placeData.cost,
+          currency: placeData.currency,
+          website: placeData.website,
+          phone: placeData.phone,
+          openingHours: placeData.openingHours,
+        });
+        success(`${placeData.name} added successfully`);
+      }
 
-    if (editingPlace?.id) {
-      // Update existing place
-      await db.places.update(editingPlace.id, {
-        ...placeData,
-        updatedAt: now,
-      });
-    } else {
-      // Add new place
-      const newPlace: Omit<Place, "id"> = {
-        name: placeData.name || "",
-        country: placeData.country || "",
-        location: placeData.location,
-        type: placeData.type || "City",
-        notes: placeData.notes,
-        images: placeData.images || [],
-        visitedDate: placeData.visitedDate,
-        createdAt: now,
-        updatedAt: now,
-        isFavorite: false,
-        tags: placeData.tags || [],
-        rating: placeData.rating,
-        cost: placeData.cost,
-        currency: placeData.currency,
-        website: placeData.website,
-        phone: placeData.phone,
-        openingHours: placeData.openingHours,
-      };
-      await db.places.add(newPlace as Place);
+      setShowEditor(false);
+      setEditingPlace(null);
+    } catch (err) {
+      console.log(err);
+      error("Failed to save place. Please try again.");
     }
-
-    setShowEditor(false);
-    setEditingPlace(null);
   };
 
-  const handleDeletePlace = async (id: number) => {
-    if (window.confirm("Are you sure you want to delete this place?")) {
-      await db.places.delete(id);
+  const handleDeletePlace = (place: Place) => {
+    setPendingDeletePlace(place);
+  };
+
+  const confirmDeletePlace = async () => {
+    if (!pendingDeletePlace) return;
+    setIsDeleteLoading(true);
+    try {
+      await deletePlace(pendingDeletePlace.id!);
+      success("Place deleted successfully");
+    } catch (err) {
+      console.log(err);
+      error("Failed to delete place. Please try again.");
+    } finally {
+      setIsDeleteLoading(false);
+      setPendingDeletePlace(null);
     }
   };
 
@@ -197,6 +217,7 @@ export default function Places() {
 
   return (
     <div className="min-h-screen  pt-20 pb-24 px-4 sm:px-6">
+      <ToastContainer toasts={toasts} onClose={removeToast} />
       <div className="">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
@@ -405,7 +426,7 @@ export default function Places() {
         {/* Places grid/list */}
         {!places ? (
           <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500" />
+            <Spinner overlay={false} size="lg" />
           </div>
         ) : filteredPlaces.length === 0 ? (
           <motion.div
@@ -447,13 +468,27 @@ export default function Places() {
                   key={place.id}
                   place={place}
                   onEdit={() => handleEditPlace(place)}
-                  onDelete={() => handleDeletePlace(place.id!)}
+                  onDelete={() => handleDeletePlace(place)}
+                  onClick={() => navigate(`/places/${place.id}`)}
+                  onUpdate={updatePlace}
                 />
               ))}
             </AnimatePresence>
           </motion.div>
         )}
       </div>
+
+      <ConfirmationModal
+        isOpen={!!pendingDeletePlace}
+        title="Delete Place"
+        message={`Are you sure you want to delete "${pendingDeletePlace?.name ?? "this place"}"? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        isDangerous={true}
+        onConfirm={confirmDeletePlace}
+        onCancel={() => setPendingDeletePlace(null)}
+        isLoading={isDeleteLoading}
+      />
     </div>
   );
 }

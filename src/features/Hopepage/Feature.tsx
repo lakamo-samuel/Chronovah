@@ -4,31 +4,25 @@ import {
   Users,
   NotebookPen,
   Book,
-  Sparkles,
   ArrowRight,
   Globe,
   Lock,
   Zap,
   Heart,
-  Star,
   Camera,
-  Coffee,
 } from "lucide-react";
 import { useRef, useState, type JSX } from "react";
-import Header from "../../components/Header";
 
 interface Feature {
   title: string;
   description: string;
-  longDescription: string;
   icon: JSX.Element;
   benefits: string[];
-  stats?: string;
-  color: string;
-  darkColor: string;
-  bgColor: string;
-  darkBgColor: string;
-  gradient: string;
+  caption: string;
+  /** Uses theme feature bg vars (swap automatically in .dark) */
+  iconBg: string;
+  /** Icon + link accent: light + dark variants from index.css */
+  accent: string;
 }
 
 export default function Features() {
@@ -39,71 +33,66 @@ export default function Features() {
   const features: Feature[] = [
     {
       title: "Places",
-      description: "Your personal travel diary & location journal",
-      longDescription:
-        "Save locations, memories, photos, and places you've been. Create collections, add notes, and relive your journeys.",
-      icon: <MapPin size={28} />,
-      benefits: ["Offline maps", "Photo albums", "Route tracking", "Favorites"],
-      stats: "12k+ places saved",
-      color: "text-blue-600",
-      darkColor: "dark:text-blue-400",
-      bgColor: "bg-blue-50",
-      darkBgColor: "dark:bg-blue-950/30",
-      gradient: "from-blue-500 to-cyan-500",
+      description: "Trips, spots, and context you care about",
+      icon: <MapPin size={26} strokeWidth={1.75} />,
+      benefits: ["Per-place notes", "Tags", "Photos", "Works offline"],
+      caption: "Travel & everyday places",
+      iconBg: "bg-places-soft",
+      accent: "places",
     },
     {
       title: "Notes",
-      description: "Your second brain for ideas & inspiration",
-      longDescription:
-        "Capture ideas, reminders, lists, and everything on your mind. Organize with tags, search instantly, never lose a thought.",
-      icon: <NotebookPen size={28} />,
-      benefits: ["Rich text", "Tags & categories", "Search", "Export"],
-      stats: "50k+ notes created",
-      color: "text-amber-600",
-      darkColor: "dark:text-amber-400",
-      bgColor: "bg-amber-50",
-      darkBgColor: "dark:bg-amber-950/30",
-      gradient: "from-amber-500 to-orange-500",
+      description: "Capture thought without switching apps",
+      icon: <NotebookPen size={26} strokeWidth={1.75} />,
+      benefits: ["Markdown", "Tags", "Search", "Pin & favorites"],
+      caption: "Ideas and reference in one place",
+      iconBg: "bg-notes-soft",
+      accent: "notes",
     },
     {
       title: "People",
-      description: "Never forget a face or a birthday again",
-      longDescription:
-        "Store details about friends, family, clients, and relationships. Track important dates, preferences, and interactions.",
-      icon: <Users size={28} />,
-      benefits: [
-        "Birthday reminders",
-        "Relationship tags",
-        "Interaction log",
-        "Groups",
-      ],
-      stats: "8k+ connections",
-      color: "text-emerald-600",
-      darkColor: "dark:text-emerald-400",
-      bgColor: "bg-emerald-50",
-      darkBgColor: "dark:bg-emerald-950/30",
-      gradient: "from-emerald-500 to-teal-500",
+      description: "Contacts with context, not just names",
+      icon: <Users size={26} strokeWidth={1.75} />,
+      benefits: ["Roles & tags", "Important dates", "Notes", "Photos"],
+      caption: "Relationships you actually use",
+      iconBg: "bg-people-soft",
+      accent: "people",
     },
     {
       title: "Journal",
-      description: "Understand yourself through daily reflection",
-      longDescription:
-        "Track your thoughts, mood, and daily emotional progress. Identify patterns, celebrate growth, and practice mindfulness.",
-      icon: <Book size={28} />,
-      benefits: [
-        "Mood tracking",
-        "Gratitude log",
-        "Weekly summaries",
-        "Private",
-      ],
-      stats: "15k+ entries",
-      color: "text-purple-600",
-      darkColor: "dark:text-purple-400",
-      bgColor: "bg-purple-50",
-      darkBgColor: "dark:bg-purple-950/30",
-      gradient: "from-purple-500 to-pink-500",
+      description: "Short entries that add up over time",
+      icon: <Book size={26} strokeWidth={1.75} />,
+      benefits: ["Mood", "Private by default", "Favorites", "Searchable"],
+      caption: "Reflection without friction",
+      iconBg: "bg-journal-soft",
+      accent: "journal",
     },
   ];
+
+  const accentClass: Record<
+    Feature["accent"],
+    { text: string; bullet: string }
+  > = {
+    places: {
+      text: "text-[var(--color-places-light)] dark:text-[var(--color-places-dark)]",
+      bullet:
+        "bg-[var(--color-places-light)] dark:bg-[var(--color-places-dark)]",
+    },
+    notes: {
+      text: "text-[var(--color-notes-light)] dark:text-[var(--color-notes-dark)]",
+      bullet: "bg-[var(--color-notes-light)] dark:bg-[var(--color-notes-dark)]",
+    },
+    people: {
+      text: "text-[var(--color-people-light)] dark:text-[var(--color-people-dark)]",
+      bullet:
+        "bg-[var(--color-people-light)] dark:bg-[var(--color-people-dark)]",
+    },
+    journal: {
+      text: "text-[var(--color-journal-light)] dark:text-[var(--color-journal-dark)]",
+      bullet:
+        "bg-[var(--color-journal-light)] dark:bg-[var(--color-journal-dark)]",
+    },
+  };
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -136,40 +125,11 @@ export default function Features() {
     <section
       id="features"
       ref={sectionRef}
-      className="relative px-4 sm:px-6 lg:px-8 py-24 md:py-32 bg-gradient-to-b from-white to-gray-50 dark:from-gray-950 dark:to-gray-900 overflow-hidden"
+      className="relative px-4 sm:px-6 lg:px-8 py-24 md:py-32 overflow-hidden border-b border-default bg-gradient-to-b from-primary-500/[0.08] via-default to-default dark:from-primary-400/[0.14] dark:via-[color-mix(in_oklab,var(--color-card)_65%,var(--color-bg))] dark:to-default"
       aria-labelledby="features-title"
     >
-      <Header />
-      {/* Animated background patterns */}
       <div className="absolute inset-0 pointer-events-none">
-        {/* Grid pattern */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:48px_48px]" />
-
-        {/* Gradient orbs */}
-        <motion.div
-          animate={{
-            x: [0, 100, 0],
-            y: [0, -100, 0],
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            ease: "linear",
-          }}
-          className="absolute top-20 left-20 w-96 h-96 bg-blue-200/20 dark:bg-blue-500/5 rounded-full blur-3xl"
-        />
-        <motion.div
-          animate={{
-            x: [0, -100, 0],
-            y: [0, 100, 0],
-          }}
-          transition={{
-            duration: 25,
-            repeat: Infinity,
-            ease: "linear",
-          }}
-          className="absolute bottom-20 right-20 w-96 h-96 bg-purple-200/20 dark:bg-purple-500/5 rounded-full blur-3xl"
-        />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,var(--color-border)_1px,transparent_1px),linear-gradient(to_bottom,var(--color-border)_1px,transparent_1px)] bg-size-[48px_48px] opacity-40 dark:opacity-25" />
       </div>
 
       <div className="relative max-w-7xl mx-auto">
@@ -178,58 +138,43 @@ export default function Features() {
           initial={{ opacity: 0, y: -20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
-          className="text-center mb-20"
+          className="mb-20 text-center md:text-left"
         >
-          {/* Eyebrow */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={isInView ? { opacity: 1, scale: 1 } : {}}
-            transition={{ delay: 0.2 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 text-blue-700 dark:text-blue-300 text-sm font-medium mb-6 border border-blue-200 dark:border-blue-800"
-          >
-            <Sparkles size={16} className="text-blue-500" />
-            <span>Everything in one place</span>
-          </motion.div>
-
-          {/* Title */}
           <h2
             id="features-title"
-            className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6"
+            className="font-serif text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-primary mb-5 md:max-w-4xl"
           >
-            <span className="bg-gradient-to-r from-gray-900 to-gray-600 dark:from-gray-100 dark:to-gray-400 bg-clip-text text-transparent">
-              Your life,
-            </span>
-            <br />
-            <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 dark:from-blue-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
-              beautifully organized
+            One workspace for{" "}
+            <span className="bg-gradient-to-r from-primary-600 to-secondary-500 bg-clip-text text-transparent dark:from-primary-400 dark:to-secondary-400">
+              places, notes, people, and journal
             </span>
           </h2>
 
-          {/* Description */}
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
-            Chronovah brings together everything that matters — places you've
-            been, people you love, thoughts you cherish, and moments you want to
-            remember.
+          <p className="text-lg text-muted max-w-2xl mx-auto md:mx-0 leading-relaxed">
+            The same areas you use inside the app, presented clearly. Structured
+            personal data you control—shown here in your current theme.
           </p>
 
-          {/* Quick stats */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 0.4 }}
-            className="flex flex-wrap items-center justify-center gap-8 mt-10"
+            className="flex flex-wrap items-center justify-center md:justify-start gap-x-8 gap-y-3 mt-10"
           >
             {[
-              { icon: Globe, label: "Offline-first", color: "text-blue-500" },
-              { icon: Lock, label: "Privacy focused", color: "text-green-500" },
-              { icon: Zap, label: "Lightning fast", color: "text-yellow-500" },
-              { icon: Heart, label: "Made with love", color: "text-red-500" },
+              { icon: Globe, label: "Offline-first" },
+              { icon: Lock, label: "Local-first storage" },
+              { icon: Zap, label: "Fast, lightweight UI" },
+              { icon: Heart, label: "Built for daily use" },
             ].map((stat, i) => (
               <div
                 key={i}
-                className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400"
+                className="flex items-center gap-2 text-sm text-muted"
               >
-                <stat.icon size={18} className={stat.color} />
+                <stat.icon
+                  size={16}
+                  className="shrink-0 text-primary-600 dark:text-primary-400"
+                />
                 <span>{stat.label}</span>
               </div>
             ))}
@@ -254,97 +199,65 @@ export default function Features() {
               {/* Main card */}
               <div
                 className={`
-                relative h-full bg-white dark:bg-gray-900 rounded-2xl p-8
-                border border-gray-200 dark:border-gray-800
-                transition-all duration-500 hover:shadow-2xl
-                ${activeFeature === index ? "scale-105 shadow-xl" : "scale-100"}
+                relative h-full rounded-2xl p-7 sm:p-8
+                border border-default bg-card
+                shadow-soft transition-shadow duration-300 hover:shadow-medium
+                dark:border-white/10
+                ${activeFeature === index ? "ring-1 ring-primary-500/30 shadow-medium dark:ring-primary-400/35" : ""}
               `}
               >
-                {/* Gradient overlay on hover */}
-                <div
-                  className={`
-                  absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-5
-                  bg-gradient-to-br ${feature.gradient} transition-opacity duration-500
-                `}
-                />
-
-                {/* Icon with animated background */}
                 <div className="relative mb-6">
                   <div
                     className={`
-                    absolute inset-0 rounded-xl blur-md
-                    bg-gradient-to-r ${feature.gradient} opacity-20
-                    group-hover:opacity-30 transition-opacity duration-500
-                  `}
-                  />
-                  <div
-                    className={`
-                    relative w-14 h-14 rounded-xl flex items-center justify-center
-                    ${feature.bgColor} ${feature.darkBgColor}
-                    group-hover:scale-110 transition-transform duration-300
+                    relative flex h-12 w-12 items-center justify-center rounded-lg
+                    ${feature.iconBg}
+                    border border-default dark:border-white/10
                   `}
                   >
-                    <div className={`${feature.color} ${feature.darkColor}`}>
+                    <div className={accentClass[feature.accent].text}>
                       {feature.icon}
                     </div>
                   </div>
                 </div>
 
-                {/* Content */}
-                <h3 className="text-2xl font-bold mb-2 text-gray-900 dark:text-white">
+                <h3 className="text-xl font-semibold mb-1.5 text-primary">
                   {feature.title}
                 </h3>
-                <p className="text-gray-600 dark:text-gray-300 mb-4">
+                <p className="text-sm text-muted mb-3">{feature.caption}</p>
+                <p className="text-[15px] mb-5 leading-relaxed text-primary">
                   {feature.description}
                 </p>
 
-                {/* Benefits list */}
                 <div className="space-y-2 mb-6">
                   {feature.benefits.map((benefit, i) => (
                     <div
                       key={i}
-                      className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400"
+                      className="flex items-center gap-2.5 text-sm text-muted"
                     >
                       <div
-                        className={`w-1 h-1 rounded-full bg-gradient-to-r ${feature.gradient}`}
+                        className={`h-1.5 w-1.5 shrink-0 rounded-full ${accentClass[feature.accent].bullet}`}
                       />
                       <span>{benefit}</span>
                     </div>
                   ))}
                 </div>
 
-                {/* Stats tag */}
-                <div className="inline-block px-3 py-1 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300">
-                  {feature.stats}
-                </div>
-
-                {/* Learn more link - appears on hover */}
                 <motion.div
-                  initial={{ opacity: 0, x: -10 }}
+                  initial={{ opacity: 0, x: -6 }}
                   animate={{
                     opacity: activeFeature === index ? 1 : 0,
-                    x: activeFeature === index ? 0 : -10,
+                    x: activeFeature === index ? 0 : -6,
                   }}
-                  className="absolute bottom-8 right-8"
+                  className="absolute bottom-7 right-7 sm:bottom-8 sm:right-8"
                 >
                   <div
-                    className={`flex items-center gap-1 text-sm font-medium ${feature.color}`}
+                    className={`flex items-center gap-1 text-sm font-medium ${accentClass[feature.accent].text}`}
                   >
-                    <span>Learn more</span>
+                    <span>Overview</span>
                     <ArrowRight size={14} />
                   </div>
                 </motion.div>
               </div>
-
-              {/* Decorative corner gradient on hover */}
-              <div
-                className={`
-                absolute -top-2 -right-2 w-20 h-20 
-                bg-gradient-to-br ${feature.gradient} 
-                rounded-full opacity-0 group-hover:opacity-20 blur-xl
-                transition-opacity duration-500 -z-10
-              `}
-              />
             </motion.div>
           ))}
         </motion.div>
@@ -356,34 +269,34 @@ export default function Features() {
           transition={{ delay: 0.8, duration: 0.6 }}
           className="mt-24 text-center"
         >
-          <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/30 dark:to-purple-950/30 rounded-3xl p-12 border border-gray-200 dark:border-gray-800">
-            <div className="max-w-3xl mx-auto">
-              <h3 className="text-3xl font-bold mb-4 text-gray-900 dark:text-white">
-                Ready to get organized?
+          <div className="rounded-2xl border border-default bg-card p-10 md:p-12 shadow-soft dark:border-white/10">
+            <div className="mx-auto max-w-2xl text-center">
+              <h3 className="mb-3 font-serif text-2xl font-semibold text-primary md:text-3xl">
+                Ready to try it?
               </h3>
-              <p className="text-lg text-gray-600 dark:text-gray-300 mb-8">
-                Join thousands of users who've already simplified their digital
-                life. Start free, no credit card required.
+              <p className="mb-8 leading-relaxed text-muted">
+                Create an account to use the same features described here. No
+                credit card required to get started.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <div className="flex flex-col justify-center gap-3 sm:flex-row">
                 <a
                   href="#get-started"
-                  className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary-600 px-7 py-3.5 font-medium text-white shadow-soft transition-colors hover:bg-primary-700 dark:hover:bg-primary-500"
                 >
-                  <span>Get started free</span>
+                  <span>Get started</span>
                   <ArrowRight size={18} />
                 </a>
                 <a
                   href="#demo"
-                  className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-white font-semibold rounded-xl transition-all duration-300 border border-gray-200 dark:border-gray-700"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-default bg-default px-7 py-3.5 font-medium text-primary transition-colors hover:bg-card dark:border-white/15 dark:bg-card/90 dark:hover:bg-card"
                 >
-                  <Camera size={18} />
-                  <span>Watch demo</span>
+                  <Camera size={18} strokeWidth={1.75} />
+                  <span>See how it works</span>
                 </a>
               </div>
 
               {/* Trust indicators */}
-              <div className="flex items-center justify-center gap-6 mt-8 text-sm text-gray-500 dark:text-gray-400">
+              {/* <div className="flex items-center justify-center gap-6 mt-8 text-sm text-gray-500 dark:text-gray-400">
                 <div className="flex items-center gap-1">
                   <Star size={14} className="text-yellow-500 fill-yellow-500" />
                   <span>4.9/5 from 2k+ reviews</span>
@@ -392,7 +305,7 @@ export default function Features() {
                   <Coffee size={14} className="text-brown-500" />
                   <span>Loved by productivity enthusiasts</span>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         </motion.div>

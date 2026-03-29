@@ -2,10 +2,10 @@ import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 function GoBackLink() {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
   return (
     <button
-      className="flex items-center mb-4 gap-2 text-sm text-gray-700 dark:text-gray-300"
+      className="flex items-center gap-2 text-sm font-ui-sm-bold text-muted hover:text-primary transition-colors"
       onClick={() => navigate(-1)}
     >
       <ArrowLeft size={16} />

@@ -1,33 +1,36 @@
 // pages/Journal/index.tsx
 import { useState, useMemo, useEffect } from "react";
 import { Plus, Search, Grid3X3, List, X, BookOpen, Filter } from "lucide-react";
-import { useLiveQuery } from "dexie-react-hooks";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import { db } from "../../Database/journalDB";
+import ConfirmationModal from "../../components/ConfirmationModal";
 import JournalStats from "./JournalStats";
 import CommonPageHeader from "../../components/CommonPageHeader";
 import type { JournalEntry, MoodType } from "../../type/JournalType";
 import JournalEditor from "./JournalEditor";
 import JournalCard from "./JournalCard";
+import Spinner from "../../ui/Spinner";
+import { useToast } from "../../hooks/useToast";
+import { ToastContainer } from "../../components/Toast";
+import { useJournal } from "../../hooks/useJournal";
 
 export default function JournalList() {
   const navigate = useNavigate();
+  const { toasts, removeToast, success, error } = useToast();
+  const { entries, createEntry, updateEntry, deleteEntry } = useJournal();
+
+  // State for UI
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [selectedMood, setSelectedMood] = useState<MoodType | "all">("all");
+  const [selectedMood, setSelectedMood] = useState("all");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [availableTags, setAvailableTags] = useState<string[]>([]);
-  const [showEditor, setShowEditor] = useState(false);
-  const [editingEntry, setEditingEntry] =
-    useState<Partial<JournalEntry> | null>(null);
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showFilters, setShowFilters] = useState(false);
-
-  const entries = useLiveQuery(
-    () => db.journal.orderBy("createdAt").reverse().toArray(),
-    [],
-  );
+  const [editingEntry, setEditingEntry] = useState<JournalEntry | null>(null);
+  const [showEditor, setShowEditor] = useState(false);
+  const [pendingDeleteEntry, setPendingDeleteEntry] = useState<JournalEntry | null>(null);
+  const [isDeleteLoading, setIsDeleteLoading] = useState(false);
 
   // Extract unique tags
   useEffect(() => {
@@ -155,37 +158,41 @@ export default function JournalList() {
   };
 
   const handleSaveEntry = async (entryData: Partial<JournalEntry>) => {
-    const now = new Date().toISOString();
+    try {
+      if (editingEntry?.id) {
+        // Update existing
+        await updateEntry(editingEntry.id, entryData);
+        success("Journal entry updated successfully");
+      } else {
+        // Add new
+        await createEntry(entryData as Omit<JournalEntry, 'id' | 'userId' | 'createdAt' | 'updatedAt'>);
+        success("Journal entry created successfully");
+      }
 
-    if (editingEntry?.id) {
-      // Update existing
-      await db.journal.update(editingEntry.id, {
-        ...entryData,
-        updatedAt: now,
-      });
-    } else {
-      // Add new
-      const newEntry: Omit<JournalEntry, "id"> = {
-        mood: entryData.mood!,
-        note: entryData.note!,
-        tags: entryData.tags || [],
-        createdAt: now,
-        updatedAt: now,
-        isFavorite: entryData.isFavorite || false,
-        weather: entryData.weather,
-        location: entryData.location,
-        images: entryData.images,
-      };
-      await db.journal.add(newEntry as JournalEntry);
+      setShowEditor(false);
+      setEditingEntry(null);
+    } catch (err) {
+      console.log(err)
+      error("Failed to save journal entry. Please try again.");
     }
-
-    setShowEditor(false);
-    setEditingEntry(null);
   };
 
-  const handleDeleteEntry = async (id: number) => {
-    if (window.confirm("Are you sure you want to delete this entry?")) {
-      await db.journal.delete(id);
+  const handleDeleteEntry = (entry: JournalEntry) => {
+    setPendingDeleteEntry(entry);
+  };
+
+  const confirmDeleteEntry = async () => {
+    if (!pendingDeleteEntry) return;
+    setIsDeleteLoading(true);
+    try {
+      await deleteEntry(pendingDeleteEntry.id!);
+      success("Journal entry deleted successfully");
+    } catch (err) {
+      console.log(err);
+      error("Failed to delete journal entry. Please try again.");
+    } finally {
+      setIsDeleteLoading(false);
+      setPendingDeleteEntry(null);
     }
   };
 
@@ -200,8 +207,9 @@ export default function JournalList() {
     searchTerm || selectedMood !== "all" || selectedTags.length > 0;
 
   return (
-    <div className="min-h-screen bg-default pt-16 sm:pt-20 pb-24 px-3 sm:px-4 md:px-6">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen pt-16 sm:pt-20 pb-24 px-3 sm:px-4 md:px-6">
+      <ToastContainer toasts={toasts} onClose={removeToast} />
+      <div className="">
         {/* Header - Mobile Optimized */}
         <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-3 mb-4 sm:mb-6">
           <CommonPageHeader isSetting={false} heading="Journal" />
@@ -402,7 +410,11 @@ export default function JournalList() {
         {/* Entries grid/list */}
         {!entries ? (
           <div className="flex justify-center items-center h-48 sm:h-64">
-            <div className="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-b-2 border-primary-500" />
+            <Spinner
+              overlay={false}
+              size="md"
+              className="sm:h-8 sm:w-8"
+            />
           </div>
         ) : filteredEntries.length === 0 ? (
           <motion.div
@@ -451,14 +463,27 @@ export default function JournalList() {
                   key={entry.id}
                   entry={entry}
                   onEdit={() => handleEditEntry(entry)}
-                  onDelete={() => handleDeleteEntry(entry.id!)}
+                  onDelete={() => handleDeleteEntry(entry)}
                   onClick={() => navigate(`/journal/${entry.id}`)}
+                  onUpdate={updateEntry}
                 />
               ))}
             </AnimatePresence>
           </motion.div>
         )}
       </div>
+
+      <ConfirmationModal
+        isOpen={!!pendingDeleteEntry}
+        title="Delete Journal Entry"
+        message={`Are you sure you want to delete "${pendingDeleteEntry?.mood ?? "this entry"}"? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        isDangerous={true}
+        onConfirm={confirmDeleteEntry}
+        onCancel={() => setPendingDeleteEntry(null)}
+        isLoading={isDeleteLoading}
+      />
     </div>
   );
 }

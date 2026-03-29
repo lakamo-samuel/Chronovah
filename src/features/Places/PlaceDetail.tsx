@@ -25,14 +25,17 @@ import {
   Navigation,
 } from "lucide-react";
 import { useLiveQuery } from "dexie-react-hooks";
-import { db, type Place } from "../../Database/placesDB";
-
+import { db } from "../../database/db";
 import PlaceEditor from "./PlaceEditor";
+import ConfirmationModal from "../../components/ConfirmationModal";
+import { useToast } from "../../hooks/useToast";
+import type { Place } from "../../type/PlaceType";
 
 export default function PlaceDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const placeId = Number(id);
+  const { success } = useToast();
+  const placeId = id;
 
   const [showEditor, setShowEditor] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
@@ -40,8 +43,12 @@ export default function PlaceDetail() {
     null,
   );
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  const place = useLiveQuery(() => db.places.get(placeId), [placeId]);
+  const place = useLiveQuery(() => {
+    if (!placeId) return undefined;
+    return db.places.where("id").equals(placeId).first();
+  }, [placeId]);
 
   const toggleFavorite = async () => {
     if (place?.id) {
@@ -53,9 +60,17 @@ export default function PlaceDetail() {
   };
 
   const handleDelete = async () => {
-    if (place?.id) {
+    if (!place?.id) return;
+    setIsDeleting(true);
+    try {
       await db.places.delete(place.id);
+      success("Place deleted successfully");
       navigate("/places");
+    } catch (error) {
+      console.error("Failed to delete place:", error);
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteConfirm(false);
     }
   };
 
@@ -81,8 +96,8 @@ export default function PlaceDetail() {
 
   if (!place) {
     return (
-      <div className="min-h-screen bg-default pt-20 px-4">
-        <div className="max-w-4xl mx-auto text-center py-20">
+      <div className="min-h-screen  pt-20 px-4">
+        <div className=" text-center py-20">
           <MapPin size={48} className="mx-auto text-muted mb-4" />
           <h2 className="text-xl font-semibold text-primary mb-2">
             Place not found
@@ -511,45 +526,17 @@ export default function PlaceDetail() {
       </AnimatePresence>
 
       {/* Delete Confirmation Modal */}
-      <AnimatePresence>
-        {showDeleteConfirm && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-card rounded-xl border border-default p-6 max-w-md w-full"
-            >
-              <h3 className="text-lg font-semibold text-primary mb-2">
-                Delete Place
-              </h3>
-              <p className="text-muted mb-6">
-                Are you sure you want to delete "{place.name}"? This action
-                cannot be undone.
-              </p>
-              <div className="flex justify-end gap-3">
-                <button
-                  onClick={() => setShowDeleteConfirm(false)}
-                  className="px-4 py-2 text-muted hover:text-primary transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleDelete}
-                  className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors"
-                >
-                  Delete
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <ConfirmationModal
+        isOpen={showDeleteConfirm}
+        title="Delete Place"
+        message={`Are you sure you want to delete "${place?.name}"? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        isDangerous={true}
+        onConfirm={handleDelete}
+        onCancel={() => setShowDeleteConfirm(false)}
+        isLoading={isDeleting}
+      />
     </div>
   );
 }

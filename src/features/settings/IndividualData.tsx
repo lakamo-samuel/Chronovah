@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
+import ConfirmationModal from "../../components/ConfirmationModal";
+import { useToast } from "../../hooks/useToast";
 
 type TableName = "people" | "places" | "notes" | "journals";
 type Props = {
@@ -8,6 +10,7 @@ type Props = {
   dbMap: Record<TableName, any>;
 };
 function IndividualData({ name, data, dbMap }: Props) {
+  const { success, error } = useToast();
   const [selected, setSelected] = useState<
     Record<TableName, string | number | "">
   >({
@@ -16,19 +19,55 @@ function IndividualData({ name, data, dbMap }: Props) {
     notes: "",
     journals: "",
   });
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showClearModal, setShowClearModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleDelete = async (table: TableName, id: string | number) => {
-    if (!id) return alert("Please select an item first.");
-    if (!confirm("Delete this item permanently?")) return;
-
-    const targetTable = dbMap[table];
-    await targetTable.delete(Number(id));
+  const handleDelete = async (id: string | number) => {
+    if (!id) {
+      error("Please select an item first.");
+      return;
+    }
+    setShowDeleteModal(true);
   };
 
-  const handleClearTable = async (table: TableName) => {
-    if (!confirm(`Clear all ${table}? This cannot be undone.`)) return;
-    const targetTable = dbMap[table];
-    await targetTable.clear();
+  const confirmDelete = async () => {
+    const id = selected[name.toLowerCase() as TableName];
+    if (!id) return;
+
+    setIsLoading(true);
+    try {
+      const targetTable = dbMap[name.toLowerCase() as TableName];
+      await targetTable.delete(Number(id));
+      success(`${name.slice(0, -1)} deleted successfully`);
+      setSelected((prev) => ({
+        ...prev,
+        [name.toLowerCase() as TableName]: "",
+      }));
+    } catch (err) {
+      error(`Failed to delete ${name.slice(0, -1).toLowerCase()}`);
+    } finally {
+      setIsLoading(false);
+      setShowDeleteModal(false);
+    }
+  };
+
+  const handleClearTable = async () => {
+    setShowClearModal(true);
+  };
+
+  const confirmClearTable = async () => {
+    setIsLoading(true);
+    try {
+      const targetTable = dbMap[name.toLowerCase() as TableName];
+      await targetTable.clear();
+      success(`All ${name.toLowerCase()} cleared successfully`);
+    } catch (err) {
+      error(`Failed to clear ${name.toLowerCase()}`);
+    } finally {
+      setIsLoading(false);
+      setShowClearModal(false);
+    }
   };
   return (
     <div className="bg-white dark:bg-[#0B1120] rounded-2xl p-5 shadow space-y-3">
@@ -58,23 +97,42 @@ function IndividualData({ name, data, dbMap }: Props) {
 
       <div className="flex gap-4 text-sm pt-2">
         <button
-          onClick={() => {
-            handleDelete(
-              name.toLowerCase() as TableName,
-              selected[name.toLowerCase() as TableName]
-            );
-          }}
+          onClick={() => handleDelete(selected[name.toLowerCase() as TableName])}
           className="text-red-500 dark:text-red-600 hover:underline cursor-pointer"
         >
           Delete Selected
         </button>
         <button
-          onClick={() => handleClearTable(name.toLowerCase() as TableName)}
+          onClick={() => handleClearTable()}
           className="text-red-500 dark:text-red-600 hover:underline cursor-pointer"
         >
           Clear All
         </button>
       </div>
+
+      <ConfirmationModal
+        isOpen={showDeleteModal}
+        title="Delete Item"
+        message={`Are you sure you want to delete this ${name.slice(0, -1).toLowerCase()}? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        isDangerous={true}
+        onConfirm={confirmDelete}
+        onCancel={() => setShowDeleteModal(false)}
+        isLoading={isLoading}
+      />
+
+      <ConfirmationModal
+        isOpen={showClearModal}
+        title="Clear All Data"
+        message={`Are you sure you want to clear all ${name.toLowerCase()}? This action cannot be undone.`}
+        confirmText="Clear All"
+        cancelText="Cancel"
+        isDangerous={true}
+        onConfirm={confirmClearTable}
+        onCancel={() => setShowClearModal(false)}
+        isLoading={isLoading}
+      />
     </div>
   );
 }

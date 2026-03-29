@@ -1,12 +1,12 @@
-// types/PlaceType.ts
 export interface Place {
-  id?: number;
+  id: string; // ← uuid string
+  userId: string; // ← add this
   name: string;
   country: string;
   location?: string;
   type: PlaceType;
   notes?: string;
-  images: string[]; // Support multiple images
+  images: string[];
   visitedDate?: string;
   createdAt: string;
   updatedAt: string;
@@ -44,3 +44,8 @@ export interface PlaceStats {
   favoritePlaces: number;
   typesCount: Record<string, number>;
 }
+
+
+
+
+
