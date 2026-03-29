@@ -9,6 +9,14 @@ type Props = {
   data: any[];
   dbMap: Record<TableName, any>;
 };
+/**
+ * Render a control panel for managing items of a single table, providing a selector to choose an item to delete and controls to delete the selected item or clear the entire table.
+ *
+ * @param name - Plural table name shown in the UI (e.g., "people", "places", "notes", "journals")
+ * @param data - Array of items to display in the select input; each item should include an `id` and either `title` or `name` for labeling
+ * @param dbMap - Mapping from table name to a database interface exposing `delete(id)` and `clear()` methods used by the component's actions
+ * @returns The rendered JSX for the individual data management UI, including selection, delete/clear buttons, and confirmation modals
+ */
 function IndividualData({ name, data, dbMap }: Props) {
   const { success, error } = useToast();
   const [selected, setSelected] = useState<

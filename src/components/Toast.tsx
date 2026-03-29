@@ -16,6 +16,13 @@ interface ToastProps {
   onClose: (id: string) => void;
 }
 
+/**
+ * Render a toast notification for the given toast data, using type-specific icon and styling, supporting automatic dismissal when `toast.duration` is set and manual dismissal via the close button.
+ *
+ * @param toast - Toast data (`id`, `type`, `message`, optional `duration`) used to display content and determine styling.
+ * @param onClose - Callback invoked with the toast `id` to dismiss the toast.
+ * @returns A JSX element representing the rendered toast notification.
+ */
 function Toast({ toast, onClose }: ToastProps) {
   useEffect(() => {
     if (!toast.duration) return;
@@ -87,6 +94,13 @@ interface ToastContainerProps {
   onClose: (id: string) => void;
 }
 
+/**
+ * Render a fixed stack of animated toast notifications at the bottom-right of the viewport.
+ *
+ * @param toasts - Active toast messages to render in the container
+ * @param onClose - Callback invoked with a toast `id` to dismiss that toast
+ * @returns A React element representing the positioned toast container with animated toasts
+ */
 export function ToastContainer({ toasts, onClose }: ToastContainerProps) {
   return (
     <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm">

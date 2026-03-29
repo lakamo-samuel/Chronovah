@@ -15,6 +15,17 @@ import {
 } from "lucide-react";
 import CTAButton from "../../ui/CTAButton";
 
+/**
+ * Renders a call-to-action section with animated entrance effects, feature highlights,
+ * benefit list, social proof, an email signup form, and footer links.
+ *
+ * The component manages local state for the controlled email input and a transient
+ * submission indicator used to update the submit button label. Submitting the form
+ * will log the entered email to the console, clear the input, and set the submission
+ * indicator for a short duration.
+ *
+ * @returns The CTA section as a React element
+ */
 export default function CTAComponent() {
   const sectionRef = useRef<HTMLElement>(null);
   const isInView = useInView(sectionRef, { once: true, amount: 0.1 });

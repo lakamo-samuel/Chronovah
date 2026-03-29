@@ -22,6 +22,13 @@ import { GoogleAuthButton } from "../features/Authentication/Oauth";
 import Spinner from "../ui/Spinner";
 import { authService, type SignUpCredentials } from "../services/auth.service";
 
+/**
+ * Render the sign-up page with client-side validation, password-strength feedback, animated visuals, and account creation flow.
+ *
+ * The component manages form state for full name, email, password, and confirm password; validates inputs and requires a minimum password strength before allowing submission; displays inline validation errors and a password strength indicator; submits credentials via `authService.signUp`, shows a success overlay on successful sign-up, calls `refresh()` from auth context, and navigates to `/otpverification` after a brief delay. UI elements include social sign-in button, animated background shapes, and accessible form controls with show/hide password toggles.
+ *
+ * @returns The SignUp page React element.
+ */
 export default function SignUp() {
   const { refresh } = useAuth();
   const navigate = useNavigate();

@@ -1,6 +1,11 @@
-
 import type { Place } from "../type/PlaceType";
 
+/**
+ * Render a card displaying a Place's name and, when present, its location and country.
+ *
+ * @param item - The Place to display; `location` and `country` are rendered only if they are present.
+ * @returns A JSX element representing the place card.
+ */
 export function PlacesCard({ item }: { item: Place }) {
   return (
     <div className="space-y-3">

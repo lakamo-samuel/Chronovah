@@ -9,6 +9,13 @@ import { useState } from "react";
 import { db } from "../database/db";
 import { useAuth } from "../hooks/useAuth";
 
+/**
+ * Render the settings page with sections for appearance, backup/restore, individual data management, and a danger-zone control to clear all user data.
+ *
+ * The component opens a confirmation modal when the user requests to clear data. When confirmed, it deletes all records scoped to the authenticated user (people, places, notes, journal) and shows success or error toasts; it also manages modal visibility and loading state during the operation.
+ *
+ * @returns The Settings page React element.
+ */
 export default function Settings() {
   const { success, error } = useToast();
   const { user } = useAuth();

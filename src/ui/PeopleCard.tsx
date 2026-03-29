@@ -1,5 +1,11 @@
 import type { Person } from "../type/PeopleType";
 
+/**
+ * Renders a styled card displaying a Person's name and any available description or relation.
+ *
+ * @param item - The `Person` to display in the card.
+ * @returns A React element containing the person's name and, when present, their description and relation (shown as "Phone: {relation}").
+ */
 export function PeopleCard({ item }: { item: Person }) {
   return (
     <div className="space-y-3">

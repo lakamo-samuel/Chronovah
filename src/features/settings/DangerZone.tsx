@@ -12,6 +12,18 @@ interface DangerZoneProps {
   confirmText?: string;
 }
 
+/**
+ * Render a danger zone panel with a trigger button and a confirmation modal for destructive actions.
+ *
+ * When the confirmation is accepted, the provided `onClick` handler is invoked; a loading state is shown while it runs and the modal closes after completion.
+ *
+ * @param onClick - Handler to invoke after the user confirms the action
+ * @param children - Content shown inside the trigger button (label or elements)
+ * @param title - Modal title shown when confirming (defaults to `'Are you absolutely sure?'`)
+ * @param description - Modal message describing the action (defaults to `'This action cannot be undone. Please proceed with caution.'`)
+ * @param confirmText - Text for the modal confirm button (defaults to `'Delete'`)
+ * @returns A React element that renders the danger panel, trigger button, and confirmation modal
+ */
 function DangerZone({
   onClick,
   children,

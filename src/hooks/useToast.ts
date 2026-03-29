@@ -1,6 +1,17 @@
 import React from "react";
 import type { ToastMessage, ToastType } from "../components/Toast";
 
+/**
+ * Provides utilities for managing toast notifications and access to the current list of toasts.
+ *
+ * @returns An object containing:
+ * - `toasts`: the current array of `ToastMessage` entries.
+ * - `removeToast(id)`: removes the toast with the given `id`.
+ * - `success(message, duration?)`: adds a success toast with `message`; `duration` defaults to 4000.
+ * - `error(message, duration?)`: adds an error toast with `message`; `duration` defaults to 4000.
+ * - `info(message, duration?)`: adds an info toast with `message`; `duration` defaults to 4000.
+ * - `warning(message, duration?)`: adds a warning toast with `message`; `duration` defaults to 4000.
+ */
 export function useToast() {
   const [toasts, setToasts] = React.useState<ToastMessage[]>([]);
 

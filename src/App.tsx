@@ -28,6 +28,13 @@ const OtpVerification = lazy(() => import("./pages/OTP"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const PageNotFound = lazy(() => import("./pages/PageNotFound"));
 
+/**
+ * Root application component that configures client-side routes, lazy-loaded pages, and the app layout.
+ *
+ * When an authenticated user is available, it triggers migration of that user's legacy databases.
+ *
+ * @returns The rendered application UI (JSX element) with routing and suspense boundaries.
+ */
 function App() {
   const { user } = useAuth();
 

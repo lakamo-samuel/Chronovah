@@ -25,6 +25,21 @@ const sizeStyles = {
   lg: 'px-6 py-3 text-base font-ui-base-bold',
 };
 
+/**
+ * Renders a configurable button with support for loading state, icon, visual variants, sizes, and full-width mode.
+ *
+ * @param onClick - Optional click handler; may be synchronous or return a promise.
+ * @param loading - When `true`, shows a spinning loader, disables the button, and sets `aria-busy`.
+ * @param children - Button label or content.
+ * @param variant - Visual variant to apply (`'primary' | 'secondary' | 'danger'`).
+ * @param size - Size preset to apply (`'sm' | 'md' | 'lg'`).
+ * @param fullWidth - When `true`, makes the button expand to the full container width.
+ * @param icon - Optional icon node displayed when not in loading state.
+ * @param className - Additional CSS class names appended to the computed classes.
+ * @param disabled - When `true`, disables the button (also disabled while `loading`).
+ * @param type - Native button type attribute (`'button' | 'submit' | 'reset'`).
+ * @returns The rendered button element.
+ */
 function Button({
   onClick,
   loading = false,

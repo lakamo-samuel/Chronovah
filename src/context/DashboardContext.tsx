@@ -31,6 +31,16 @@ type DashboardSnapshot = {
   recentJournals: JournalEntry[];
 };
 
+/**
+ * Provides dashboard state and live updates to descendant components via DashboardContext.
+ *
+ * Subscribes to a live query to keep counts, recent activity items, and per-entity recent lists in sync,
+ * and exposes `stats`, `activities`, `recentNotes`, `recentPeople`, `recentPlaces`, and `recentJournals`
+ * through the context value.
+ *
+ * @param children - React children to render inside the provider
+ * @returns The DashboardContext.Provider element that supplies dashboard data to its descendants
+ */
 export function DashboardProvider({ children }: DarkModeProviderProps) {
   
   const [recentNotes, setRecentNotes] = useState<ActivityCardItem[]>([]);

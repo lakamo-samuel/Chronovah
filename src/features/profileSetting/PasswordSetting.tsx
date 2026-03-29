@@ -11,7 +11,14 @@ type FormErrors = {
   form?: string;
 };
 
- function PasswordSetting() {
+ /**
+ * Render a "Change Password" form with controlled inputs, inline validation, a password strength meter, and submission handling.
+ *
+ * The component manages input state for current/new/confirm passwords, displays field-level and form-level errors, submits a change request to the settings API, shows a transient success message on success, and disables the submit button while the request is in progress.
+ *
+ * @returns A JSX element containing the password form, including password inputs, conditional strength meter, error/success banners, and a submit button.
+ */
+function PasswordSetting() {
   const [oldPassword, setOldPassword] = useState<string>("");
   const [newPassword, setNewPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");

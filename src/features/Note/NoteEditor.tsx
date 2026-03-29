@@ -30,6 +30,14 @@ type ColorOption =
   | "purple"
   | "pink";
 
+/**
+ * Modal UI for creating or editing a Markdown note that supports title, content, tags, color selection, live preview, and save/cancel actions.
+ *
+ * @param note - Optional initial note values used to populate the editor fields.
+ * @param onSave - Called with the note data ({ title, content, tags, color? }) when the user saves.
+ * @param onClose - Called when the user cancels or closes the editor.
+ * @returns The NoteEditor React element.
+ */
 export default function NoteEditor({ note, onSave, onClose }: NoteEditorProps) {
   const [title, setTitle] = useState(note?.title || "");
   const [content, setContent] = useState(note?.content || "");

@@ -25,6 +25,13 @@ import { usePlaces } from "../../hooks/usePlaces";
 
 type SortOption = "name" | "country" | "visitedDate" | "createdAt";
 
+/**
+ * Render the Places management page that lists places and provides search, filtering, sorting, grid/list views, add/edit modal, and delete confirmation.
+ *
+ * Manages UI state and derived data from the `usePlaces()` hook, shows toast notifications, and navigates to individual place details.
+ *
+ * @returns The React element for the Places page.
+ */
 export default function Places() {
   const navigate = useNavigate();
   const { toasts, removeToast, success, error } = useToast();

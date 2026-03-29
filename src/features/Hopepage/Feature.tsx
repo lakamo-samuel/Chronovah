@@ -25,6 +25,13 @@ interface Feature {
   accent: string;
 }
 
+/**
+ * Render the "Features" section: a responsive grid of feature cards (Places, Notes, People, Journal) with entrance animations, hover-activated overview prompts, and a bottom call-to-action.
+ *
+ * Each card displays an icon, caption, description, and benefit bullets styled by theme-aware accent classes; hovering a card reveals an "Overview" prompt and applies an active ring/shadow.
+ *
+ * @returns The feature section JSX element.
+ */
 export default function Features() {
   const [activeFeature, setActiveFeature] = useState<number | null>(null);
   const sectionRef = useRef<HTMLElement>(null);

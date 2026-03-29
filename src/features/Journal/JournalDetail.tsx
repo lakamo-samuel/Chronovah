@@ -38,6 +38,17 @@ const moods: Record<string, { emoji: string; color: string; bgColor: string }> =
     Terrible: { emoji: "😭", color: "text-red-500", bgColor: "bg-red-500/10" },
   };
 
+/**
+ * Display a journal entry's details and provide controls for favoriting, editing, sharing, and deleting.
+ *
+ * Renders a detailed view for the journal entry identified by the current route `id`. If the entry exists,
+ * the component shows a mood banner, formatted timestamps, the entry content (rendered as Markdown), images,
+ * optional metadata (weather, location), and tags. It also exposes interactive controls: toggle favorite,
+ * open an edit modal, open a share menu (copy current URL), and show a delete confirmation. If no entry is found,
+ * a fallback message with a navigation button back to the journal list is shown.
+ *
+ * @returns A React element that renders the journal entry detail page with its interactive controls and fallback UI.
+ */
 export default function JournalDetail() {
   const { id } = useParams();
   const navigate = useNavigate();

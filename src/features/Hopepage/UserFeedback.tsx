@@ -63,6 +63,13 @@ const feedbacks: Feedback[] = [
   },
 ];
 
+/**
+ * Render the feedback section with responsive carousel behavior.
+ *
+ * Renders a desktop carousel that auto-scrolls when the section is in view and not hovered, and a mobile carousel with manual navigation controls (previous/next buttons and dot indicators). Each testimonial is rendered as a FeedbackCard.
+ *
+ * @returns The JSX element for the testimonials/feedback section.
+ */
 export default function UserFeedback() {
   const controls = useAnimationControls();
   const [isPaused, setPaused] = useState(false);
@@ -216,7 +223,16 @@ export default function UserFeedback() {
   );
 }
 
-// Feedback Card Component
+/**
+ * Render a testimonial card showing rating, quoted text, and user information.
+ *
+ * Displays the rating as stars, the testimonial text in quotation marks, and the user area
+ * which shows either the user's avatar (if provided) or a fallback initial, plus the user's
+ * name. Optionally renders the user's role and the testimonial date when present.
+ *
+ * @param feedback - The testimonial data used to populate the card
+ * @returns The rendered feedback card element
+ */
 function FeedbackCard({ feedback }: { feedback: Feedback }) {
   return (
     <motion.div

@@ -8,6 +8,11 @@ import HowItWorks from "../features/Hopepage/HowItWork";
 import Faq from "../features/Hopepage/Faq";
 import FaqButton from "../ui/FaqButton";
 
+/**
+ * Renders the homepage by composing header, hero, features, how-it-works, user feedback, FAQ, CTA, footer, and FAQ button in that order.
+ *
+ * @returns A JSX element containing the assembled homepage sections
+ */
 function Homepage() {
   return (
     <>

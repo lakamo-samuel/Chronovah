@@ -1,6 +1,13 @@
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
+/**
+ * Renders a button that navigates back one step in the router history.
+ *
+ * The button displays a left arrow icon and the text "Back".
+ *
+ * @returns A button element that, when clicked, navigates back one history entry.
+ */
 function GoBackLink() {
   const navigate = useNavigate();
   return (

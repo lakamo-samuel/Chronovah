@@ -13,6 +13,13 @@ import { useToast } from "../../hooks/useToast";
 import { ToastContainer } from "../../components/Toast";
 import { usePeople } from "../../hooks/usePeople";
 
+/**
+ * Renders the People list page with search, relation/tag filters, view toggles (grid/list), summary stats, and modals for adding/editing and deleting people.
+ *
+ * The component manages local UI state (search, filters, view mode, editor/delete modals), derives available tags/relations and stats from the people data, and shows feedback toasts for create/update/delete operations.
+ *
+ * @returns The People page React element
+ */
 export default function PeopleList() {
   const navigate = useNavigate();
   const { toasts, removeToast, success, error } = useToast();

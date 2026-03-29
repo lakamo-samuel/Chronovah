@@ -19,6 +19,18 @@ interface NoteCardProps {
   onUpdate: (id: string, updates: Partial<Note>) => Promise<void>;
 }
 
+/**
+ * Render a clickable note preview card with pin/favorite controls, metadata, attachments/tags, and two layout variants.
+ *
+ * Displays the provided `note` in either a "list" or "grid" layout, shows a truncated content preview, read time,
+ * updated date, attachments/tags indicators, and action buttons to toggle pinned and favorite states.
+ *
+ * @param note - The note data to display.
+ * @param viewMode - Layout mode: `"grid"` or `"list"`.
+ * @param onClick - Callback invoked when the card body is clicked.
+ * @param onUpdate - Async callback invoked by the pin and favorite buttons with `(id, updates)` to persist state changes.
+ * @returns The rendered note card element.
+ */
 export default function NoteCard({ note, viewMode, onClick, onUpdate }: NoteCardProps) {
   const togglePinned = async (e: React.MouseEvent) => {
     e.stopPropagation();

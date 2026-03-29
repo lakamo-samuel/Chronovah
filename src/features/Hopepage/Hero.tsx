@@ -43,6 +43,13 @@ const HERO_DOTS = [
   { left: 8, top: 45, size: 3, delay: 6, duration: 27 },
 ];
 
+/**
+ * Render the landing Hero section with animated entrance, floating decorative dots, headline copy, CTA, metrics, and a responsive accent panel.
+ *
+ * The component observes its section entering the viewport to trigger staggered animations and renders theme-aware layered backgrounds and decorative animations that adapt to light/dark mode.
+ *
+ * @returns The Hero section as a JSX element
+ */
 export default function Hero() {
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);

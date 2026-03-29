@@ -13,6 +13,27 @@ interface ConfirmationModalProps {
   isLoading?: boolean;
 }
 
+/**
+ * Render a confirmation modal dialog with a title, message, and confirm/cancel actions.
+ *
+ * The modal is not rendered when `isOpen` is `false`. When visible, it shows an optional
+ * danger icon and applies danger styling if `isDangerous` is `true`. The cancel and confirm
+ * buttons are disabled while `isLoading` is `true`; the confirm button label becomes
+ * `"Processing..."` during loading. `confirmText` and `cancelText` default to `"Confirm"`
+ * and `"Cancel"` respectively.
+ *
+ * @param isOpen - Whether the modal is visible
+ * @param title - Modal title displayed in the header
+ * @param message - Body message displayed in the modal
+ * @param confirmText - Label for the confirm button (default: `"Confirm"`)
+ * @param cancelText - Label for the cancel button (default: `"Cancel"`)
+ * @param isDangerous - When `true`, shows a danger icon and applies danger styling
+ * @param onConfirm - Callback invoked when the confirm button is clicked; may return a `Promise`
+ * @param onCancel - Callback invoked when the cancel button or close icon is clicked
+ * @param isLoading - When `true`, disables actions and shows a processing state for confirm
+ *
+ * @returns The rendered modal element, or `null` when not open
+ */
 export default function ConfirmationModal({
   isOpen,
   title,
