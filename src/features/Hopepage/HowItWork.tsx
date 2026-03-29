@@ -19,6 +19,14 @@ interface StepProps {
   details: string[];
 }
 
+/**
+ * Renders the "How it works" section that presents four onboarding steps and an offline-first feature showcase.
+ *
+ * The component includes animated step cards with hover highlighting, a connector layout across large screens,
+ * and a feature card describing offline and sync behavior.
+ *
+ * @returns The section's JSX element
+ */
 export default function HowItWorks() {
   const [activeStep, setActiveStep] = useState<number | null>(null);
   const sectionRef = useRef<HTMLElement>(null);

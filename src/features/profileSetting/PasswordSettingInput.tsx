@@ -10,6 +10,20 @@ type PasswordInputProps = {
   showToggle?: boolean;
 };
 
+/**
+ * Renders a labeled password input with an optional show/hide toggle and optional error message.
+ *
+ * The input is controlled via `value` and `onChange`. When the toggle is enabled, users can switch
+ * between masked and visible input. If `error` is provided, it is displayed below the input.
+ *
+ * @param label - Text for the input label
+ * @param value - Controlled input value
+ * @param onChange - Change handler for the input
+ * @param placeholder - Optional placeholder text shown when the input is empty
+ * @param error - Optional error message to display below the input
+ * @param showToggle - If `true`, renders a button to toggle password visibility (defaults to `true`)
+ * @returns The rendered password input element
+ */
 function PasswordInput({
   label,
   value,

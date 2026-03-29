@@ -12,6 +12,13 @@ interface FormErrors {
   favoriteQuote?: string;
 }
 
+/**
+ * Renders a personal information editor for the current user with avatar upload, field validation, and profile updates.
+ *
+ * Renders controlled inputs for name, username, bio, and favorite quote; provides image selection with local preview and upload; validates fields and shows per-field error messages; submits profile changes to the settings API and synchronizes successful updates with the user context. Displays loading state during uploads/updates and a transient success message on successful profile save.
+ *
+ * @returns The component's JSX element.
+ */
 function PersonalInfo() {
   const { user, updateUser } = useUser();
   const { success, error: showError } = useToast();

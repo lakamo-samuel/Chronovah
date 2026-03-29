@@ -37,6 +37,15 @@ import ConfirmationModal from "../../components/ConfirmationModal";
 import { useToast } from "../../hooks/useToast";
 import { useNotes } from "../../hooks/useNotes";
 
+/**
+ * Renders the note detail page with viewing, editing, and management controls.
+ *
+ * Provides an editable draft buffer with autosave, manual save/cancel, tag and color management,
+ * basic markdown formatting and preview, attachment display, pin/favorite toggles, a share/actions menu,
+ * and a delete confirmation modal.
+ *
+ * @returns The rendered JSX element for the note detail page
+ */
 export default function NoteDetail() {
   const { id } = useParams();
   const navigate = useNavigate();

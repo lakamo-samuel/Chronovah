@@ -24,6 +24,13 @@ import { useNotes } from "../../hooks/useNotes";
 type SortOption = "updated" | "created" | "title" | "wordCount";
 type FilterOption = "all" | "pinned" | "favorites" | "recent";
 
+/**
+ * Render the Notes page UI with search, filtering (tags, pinned/favorites/recent, color), sorting, stats, and note creation flows.
+ *
+ * Renders controls for searching, tag and color filtering, view mode and sort selection, statistics, a quick-create modal, and the note grid/list. Integrates with the notes hook to load, create, and update notes and with the toast system for feedback.
+ *
+ * @returns The React element for the Notes page, including the search/filter/sort UI, stats, note creation buttons and modal, and the filtered & sorted list of notes.
+ */
 export default function Notes() {
   const navigate = useNavigate();
   const { toasts, removeToast, success, error } = useToast();

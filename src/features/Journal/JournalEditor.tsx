@@ -35,6 +35,16 @@ const weatherOptions: WeatherType[] = [
   "Windy",
 ];
 
+/**
+ * Render a modal for creating or editing a journal entry.
+ *
+ * Renders a full-featured editor that collects mood, note (with optional Markdown preview), tags, and optional advanced details (weather, location, photos). Validates that a mood is selected and the note is non-empty before enabling Save; when saved, invokes `onSave` with a partial entry payload built from the current form state. `onClose` dismisses the modal without saving.
+ *
+ * @param entry - Optional existing entry used to prefill the form fields.
+ * @param onSave - Callback invoked with the composed partial `JournalEntry` when the user saves.
+ * @param onClose - Callback invoked to close the editor without saving.
+ * @returns The editor modal UI as a JSX element.
+ */
 export default function JournalEditor({
   entry,
   onSave,

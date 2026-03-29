@@ -17,6 +17,13 @@ import { GoogleAuthButton } from "../features/Authentication/Oauth";
 import Spinner from "../ui/Spinner";
 import { authService, type SignInCredentials } from "../services/auth.service";
 
+/**
+ * Render the sign-in page UI with email/password and Google authentication, client-side validation, animated background, loading/error states, and a success overlay that redirects to the dashboard.
+ *
+ * The component validates fields only after they are blurred, disables inputs while a sign-in is in progress, and on successful authentication stores an `accessToken` (if returned) in localStorage, calls `refresh()` from auth context, and navigates to `/dashboard` after a short delay.
+ *
+ * @returns The SignIn page React element.
+ */
 export default function SignIn() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");

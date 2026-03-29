@@ -19,6 +19,16 @@ interface AdvancedMarkdownEditorProps {
   className?: string;
 }
 
+/**
+ * Renders a controlled Markdown editor with a formatting toolbar and keyboard handling for lists and indentation.
+ *
+ * @param value - Current editor text content.
+ * @param onChange - Callback invoked with updated text when the content changes.
+ * @param placeholder - Placeholder text shown when the editor is empty.
+ * @param rows - Number of visible textarea rows.
+ * @param className - Additional CSS classes applied to the textarea container.
+ * @returns The Markdown editor React element.
+ */
 export default function AdvancedMarkdownEditor({
   value,
   onChange,

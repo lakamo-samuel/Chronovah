@@ -22,6 +22,15 @@ const DB_MAP = {
   journals: db.journal,
 };
 
+/**
+ * Render a details view that loads and displays a single record determined by the current route.
+ *
+ * Reads `type` and `id` from the URL, fetches the matching record from the mapped database collection,
+ * and renders a type-specific details card. Handles loading, error, and "not found" states and provides
+ * navigation back controls.
+ *
+ * @returns The component's JSX element showing either a loading indicator, an error message, an item-not-found message, or the record details card.
+ */
 function ItemDetails() {
   const { type, id } = useParams();
   const navigate = useNavigate();

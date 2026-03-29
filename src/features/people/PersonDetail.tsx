@@ -33,6 +33,15 @@ import ConfirmationModal from "../../components/ConfirmationModal";
 import { useToast } from "../../hooks/useToast";
 
 
+/**
+ * Renders the person detail page for the current route `id`.
+ *
+ * Displays profile, quick info, contact/work/social sections, tags, notes, photos,
+ * and UI for editing, favoriting, sharing, and deleting the person. When no
+ * matching person is found, renders a "Person not found" fallback with navigation.
+ *
+ * @returns The React element for the person detail view, or a "Person not found" fallback when no record matches the route `id`.
+ */
 export default function PersonDetail() {
   const { id } = useParams();
   const navigate = useNavigate();

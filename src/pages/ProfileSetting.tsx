@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PersonalInfo from '../features/profileSetting/PersonalInfo';
@@ -9,6 +8,13 @@ import settingApiCall from '../services/SettingApiCall';
 import { useToast } from '../hooks/useToast';
 import { ToastContainer } from '../components/Toast';
 
+/**
+ * Render the profile settings page including personal information, password settings, and a danger zone for account deletion.
+ *
+ * Displays a toast container for feedback, renders an inline error banner when account deletion fails, and provides a delete-account control that triggers deletion and redirects to the sign-in page on success.
+ *
+ * @returns The JSX element for the Profile Settings page
+ */
 function ProfileSetting() {
   const navigate = useNavigate();
   const { toasts, removeToast, success, error } = useToast();

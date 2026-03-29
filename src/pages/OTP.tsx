@@ -5,6 +5,13 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import Spinner from "../ui/Spinner";
 
+/**
+ * Renders a 6-digit OTP verification UI, manages input state and resend timer, verifies the code with the backend, refreshes authenticated user state, and navigates to the dashboard on success.
+ *
+ * The component maintains OTP input values, shows a countdown before allowing resend, displays errors, performs network requests to verify or resend the code (sending credentials), calls the authentication refresh function after successful verification, and redirects to "/dashboard".
+ *
+ * @returns The React element for the OTP verification screen.
+ */
 export default function OtpVerification() {
 
   const { refresh } = useAuth();

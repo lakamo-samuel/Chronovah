@@ -7,6 +7,13 @@ const proseSize = {
   base: "prose dark:prose-invert max-w-none font-content-base prose-headings:font-ui-bold prose-headings:font-ui prose-p:leading-relaxed [&_code]:font-mono [&_pre]:font-mono",
 } as const;
 
+/**
+ * Render a syntax-highlighted code block.
+ *
+ * @param language - The Prism language identifier used for syntax highlighting (e.g., "javascript", "python").
+ * @param value - The source code to render inside the highlighted block.
+ * @returns A JSX element containing the highlighted code block
+ */
 function CodeBlock({ language, value }: { language: string; value: string }) {
   return (
     <SyntaxHighlighter
@@ -34,6 +41,19 @@ export type MarkdownContentProps = {
   emptyFallback?: string;
 };
 
+/**
+ * Render Markdown source with selectable typography presets and syntax-highlighted fenced code blocks.
+ *
+ * Renders `children` (or `emptyFallback` when `children` is empty or whitespace) through ReactMarkdown,
+ * applying the `proseSize` typography preset specified by `size`. Fenced code blocks with a `language-...`
+ * class are rendered with syntax highlighting; other inline code is rendered with monospace styling.
+ *
+ * @param children - The Markdown source string to render. If empty or whitespace-only, `emptyFallback` is used.
+ * @param size - Typography preset key to apply to the container (`"sm"` or `"base"`).
+ * @param className - Additional CSS classes to append to the wrapper element.
+ * @param emptyFallback - Optional Markdown string to render when `children` is empty or whitespace-only.
+ * @returns A JSX element containing the rendered Markdown with highlighted code blocks and styled inline code.
+ */
 export default function MarkdownContent({
   children,
   size = "base",

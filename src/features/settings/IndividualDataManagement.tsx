@@ -10,6 +10,11 @@ const dbMap = {
   journals: db.journal,
 } as const;
 
+/**
+ * Loads per-user datasets from the local Dexie database and renders an IndividualData component for each dataset.
+ *
+ * @returns A React fragment containing IndividualData components for People, Places, Notes, and Journals filtered to the authenticated user.
+ */
 function IndividualDataManagement() {
   const { user } = useAuth();
 

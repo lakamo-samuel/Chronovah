@@ -14,6 +14,14 @@ import { useToast } from "../../hooks/useToast";
 import { ToastContainer } from "../../components/Toast";
 import { useJournal } from "../../hooks/useJournal";
 
+/**
+ * Display the Journal list page with search, mood/tag filters, stats, entry create/edit modal, and delete confirmation.
+ *
+ * Shows header controls (filter toggle, new entry), a stats strip, search and view-mode controls, a responsive grid/list of entries,
+ * an editor modal for creating or editing entries, and a confirmation modal for deleting an entry.
+ *
+ * @returns The JournalList page React element.
+ */
 export default function JournalList() {
   const navigate = useNavigate();
   const { toasts, removeToast, success, error } = useToast();

@@ -8,6 +8,15 @@ interface CTAButtonProps {
   align?: Align;
 }
 
+/**
+ * Renders a call-to-action button and a short descriptive paragraph with responsive alignment.
+ *
+ * The `align` prop controls layout: `"center"` (default) centers content on all breakpoints;
+ * `"hero"` centers on small screens and left-aligns on medium and larger screens with tighter spacing.
+ *
+ * @param align - Layout variant for the CTA wrapper (`"center"` or `"hero"`). Defaults to `"center"`.
+ * @returns A JSX element containing a primary "Get started" button (navigates to `/dashboard`) and a subtitle line.
+ */
 function CTAButton({ align = "center" }: CTAButtonProps) {
   const isHero = align === "hero";
   const wrap = isHero

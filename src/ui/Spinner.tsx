@@ -17,8 +17,13 @@ const sizeClasses: Record<NonNullable<SpinnerProps["size"]>, string> = {
 };
 
 /**
- * App loading indicator. Uses static classes so Tailwind always includes the styles.
- * Accent ring uses the primary palette to match the rest of the UI.
+ * Render a loading spinner with optional full-viewport overlay and accessible label.
+ *
+ * @param size - Spinner size; one of `"xs" | "sm" | "md" | "lg" | "xl"`.
+ * @param overlay - If `true`, the spinner is centered in a fixed full-viewport overlay; otherwise it is rendered inline.
+ * @param className - Additional CSS classes appended to the spinner element.
+ * @param label - Accessible label or visible text shown next to or below the spinner. If `label` is a string it is used as the element's `aria-label`.
+ * @returns A React element representing the spinner, with optional surrounding layout and label.
  */
 function Spinner({
   size = "md",

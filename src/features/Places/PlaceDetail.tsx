@@ -31,6 +31,13 @@ import ConfirmationModal from "../../components/ConfirmationModal";
 import { useToast } from "../../hooks/useToast";
 import type { Place } from "../../type/PlaceType";
 
+/**
+ * Renders the place detail page for the current route `id`, showing images, metadata, contact/location info, tags, and controls for editing, sharing, favoriting, and deleting.
+ *
+ * The component reads the place record from IndexedDB, provides gallery and fullscreen image views, an editor modal, a share menu (copy link / open in maps / delete), and a delete confirmation flow.
+ *
+ * @returns A JSX element displaying the place detail UI or a "Place not found" fallback when the place cannot be loaded.
+ */
 export default function PlaceDetail() {
   const { id } = useParams();
   const navigate = useNavigate();

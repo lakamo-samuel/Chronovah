@@ -23,6 +23,16 @@ interface PersonCardProps {
   onUpdate: (id: string, updates: Partial<Person>) => Promise<void>;
 }
 
+/**
+ * Render a person's card showing their image/initials, contact info, tags, and action controls.
+ *
+ * @param person - The Person to display in the card.
+ * @param onClick - Invoked when the card body is clicked.
+ * @param onUpdate - Called with the person's `id` and partial updates; used (for example) to toggle `isFavorite`.
+ * @param onEdit - Invoked when the Edit action is triggered.
+ * @param onDelete - Invoked when the Delete action is triggered.
+ * @returns The React element representing the person's card.
+ */
 export default function PersonCard({
   person,
   onEdit,

@@ -25,6 +25,16 @@ interface PlaceCardProps {
   onUpdate: (id: string, updates: Partial<Place>) => Promise<void>;
 }
 
+/**
+ * Render an interactive card for a Place showing image(s), metadata, quick-info chips, tags, notes, and action controls.
+ *
+ * @param place - The Place to display (name, images, location, metadata, tags, etc.).
+ * @param onEdit - Called when the Edit action is triggered.
+ * @param onDelete - Called when the Delete action is triggered.
+ * @param onClick - Called when the card body is clicked.
+ * @param onUpdate - Async updater invoked to apply partial updates to the place (used to toggle favorite state).
+ * @returns A JSX element representing the place card.
+ */
 export default function PlaceCard({ place, onEdit, onDelete, onClick, onUpdate }: PlaceCardProps) {
   const toggleFavorite = async (e: React.MouseEvent) => {
     e.stopPropagation();

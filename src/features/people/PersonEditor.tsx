@@ -41,6 +41,18 @@ const relations = [
   "Other",
 ];
 
+/**
+ * Renders a modal form for creating or editing a person and returns the modal element.
+ *
+ * Initializes form fields from the optional `person` prop, allows editing of basic info,
+ * photos, tags, contact and social details, toggling favorite status, and saving via `onSave`.
+ * The Full Name input is focused on mount.
+ *
+ * @param person - Optional partial person object used to populate initial form values.
+ * @param onSave - Callback invoked with the composed `Partial<Person>` payload when the user saves.
+ * @param onClose - Callback invoked to close the modal without saving.
+ * @returns The JSX element for the Person editor modal.
+ */
 export default function PersonEditor({
   person,
   onSave,

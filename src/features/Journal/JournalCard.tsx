@@ -32,6 +32,16 @@ interface JournalCardProps {
   onUpdate: (id: string, updates: Partial<JournalEntry>) => Promise<void>;
 }
 
+/**
+ * Render an animated journal entry card with mood, date, markdown-stripped preview, optional metadata (weather/location/images), tag chips, and action controls.
+ *
+ * @param entry - The journal entry data used to display mood, content preview, metadata, tags, favorite state, and id.
+ * @param onEdit - Callback invoked when the Edit action is triggered.
+ * @param onDelete - Callback invoked when the Delete action is triggered.
+ * @param onClick - Callback invoked when the card surface is clicked.
+ * @param onUpdate - Async callback to persist partial updates to the entry; used by the favorite toggle.
+ * @returns A JSX element representing the interactive journal entry card.
+ */
 export default function JournalCard({
   entry,
   onEdit,

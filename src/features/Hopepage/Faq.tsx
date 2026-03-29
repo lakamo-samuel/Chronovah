@@ -67,6 +67,11 @@ const categories = [
   { id: "pricing", label: "Pricing", icon: HelpCircle },
 ];
 
+/**
+ * Renders the Frequently Asked Questions section with a search input, category filters, and expandable FAQ items.
+ *
+ * @returns The FAQ section as a React element.
+ */
 export default function Faq() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
