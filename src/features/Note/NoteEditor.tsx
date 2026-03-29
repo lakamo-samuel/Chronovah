@@ -5,16 +5,13 @@ import {
   X,
   Save,
   Hash,
-  Bold,
-  Italic,
-  List,
-  ListOrdered,
-  Heading1,
-  Heading2,
   Palette,
   Check,
+  Eye,
 } from "lucide-react";
 import type { Note } from "../../type/NoteType";
+import MarkdownContent from "../../components/MarkdownContent";
+import AdvancedMarkdownEditor from "../../components/AdvancedMarkdownEditor";
 
 interface NoteEditorProps {
   note: Partial<Note> | null;
@@ -42,9 +39,9 @@ export default function NoteEditor({ note, onSave, onClose }: NoteEditorProps) {
     (note?.color as ColorOption) || "default",
   );
   const [showColorPicker, setShowColorPicker] = useState(false);
+  const [isPreview, setIsPreview] = useState(false);
 
   const titleRef = useRef<HTMLInputElement>(null);
-  const contentRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     titleRef.current?.focus();
@@ -59,49 +56,6 @@ export default function NoteEditor({ note, onSave, onClose }: NoteEditorProps) {
 
   const removeTag = (tagToRemove: string) => {
     setTags(tags.filter((tag) => tag !== tagToRemove));
-  };
-
-  const insertFormatting = (format: string) => {
-    if (!contentRef.current) return;
-
-    const start = contentRef.current.selectionStart;
-    const end = contentRef.current.selectionEnd;
-    const selectedText = content.substring(start, end);
-
-    let formattedText = "";
-    switch (format) {
-      case "bold":
-        formattedText = `**${selectedText}**`;
-        break;
-      case "italic":
-        formattedText = `*${selectedText}*`;
-        break;
-      case "h1":
-        formattedText = `# ${selectedText}`;
-        break;
-      case "h2":
-        formattedText = `## ${selectedText}`;
-        break;
-      case "ul":
-        formattedText = `- ${selectedText}`;
-        break;
-      case "ol":
-        formattedText = `1. ${selectedText}`;
-        break;
-      default:
-        return;
-    }
-
-    const newContent =
-      content.substring(0, start) + formattedText + content.substring(end);
-    setContent(newContent);
-
-    setTimeout(() => {
-      contentRef.current?.setSelectionRange(
-        start + formattedText.length,
-        start + formattedText.length,
-      );
-    }, 0);
   };
 
   const colors: Array<{ name: ColorOption; class: string }> = [
@@ -129,17 +83,17 @@ export default function NoteEditor({ note, onSave, onClose }: NoteEditorProps) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4"
     >
       <motion.div
         initial={{ scale: 0.9, y: 20 }}
         animate={{ scale: 1, y: 0 }}
         exit={{ scale: 0.9, y: 20 }}
-        className="bg-card rounded-xl border border-default w-full max-w-2xl max-h-[80vh] overflow-hidden"
+        className="bg-card rounded-xl border border-default w-full max-w-2xl max-h-[95vh] sm:max-h-[90vh] overflow-hidden"
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-default">
-          <h3 className="text-lg font-semibold text-primary">
+        <div className="flex items-center justify-between p-3 sm:p-4 border-b border-default">
+          <h3 className="text-base sm:text-lg font-semibold text-primary">
             {note?.id ? "Edit Note" : "Quick Note"}
           </h3>
           <button
@@ -151,55 +105,25 @@ export default function NoteEditor({ note, onSave, onClose }: NoteEditorProps) {
         </div>
 
         {/* Formatting toolbar */}
-        <div className="flex items-center gap-1 p-2 border-b border-default bg-default/50">
+        <div className="flex items-center gap-1 p-2 sm:px-4 border-b border-default bg-default/50 overflow-x-auto">
+          <div className="text-xs font-ui-xs text-muted uppercase">Formatting:</div>
+          <div className="flex-1 min-w-2" />
           <button
-            onClick={() => insertFormatting("bold")}
-            className="p-1.5 rounded hover:bg-card text-muted hover:text-primary transition-colors"
-            title="Bold"
+            type="button"
+            onClick={() => setIsPreview(!isPreview)}
+            className={`p-1.5 rounded transition-colors flex-shrink-0 ${
+              isPreview
+                ? "bg-primary-500 text-white"
+                : "text-muted hover:text-primary"
+            }`}
+            title="Toggle preview"
           >
-            <Bold size={16} />
+            <Eye size={16} />
           </button>
-          <button
-            onClick={() => insertFormatting("italic")}
-            className="p-1.5 rounded hover:bg-card text-muted hover:text-primary transition-colors"
-            title="Italic"
-          >
-            <Italic size={16} />
-          </button>
-          <div className="w-px h-4 bg-default mx-1" />
-          <button
-            onClick={() => insertFormatting("h1")}
-            className="p-1.5 rounded hover:bg-card text-muted hover:text-primary transition-colors"
-            title="Heading 1"
-          >
-            <Heading1 size={16} />
-          </button>
-          <button
-            onClick={() => insertFormatting("h2")}
-            className="p-1.5 rounded hover:bg-card text-muted hover:text-primary transition-colors"
-            title="Heading 2"
-          >
-            <Heading2 size={16} />
-          </button>
-          <div className="w-px h-4 bg-default mx-1" />
-          <button
-            onClick={() => insertFormatting("ul")}
-            className="p-1.5 rounded hover:bg-card text-muted hover:text-primary transition-colors"
-            title="Bullet list"
-          >
-            <List size={16} />
-          </button>
-          <button
-            onClick={() => insertFormatting("ol")}
-            className="p-1.5 rounded hover:bg-card text-muted hover:text-primary transition-colors"
-            title="Numbered list"
-          >
-            <ListOrdered size={16} />
-          </button>
-          <div className="flex-1" />
+          <div className="w-px h-4 bg-default mx-1 flex-shrink-0" />
 
           {/* Color picker */}
-          <div className="relative">
+          <div className="relative flex-shrink-0">
             <button
               onClick={() => setShowColorPicker(!showColorPicker)}
               className="p-1.5 rounded hover:bg-card text-muted hover:text-primary transition-colors"
@@ -232,24 +156,36 @@ export default function NoteEditor({ note, onSave, onClose }: NoteEditorProps) {
         </div>
 
         {/* Content */}
-        <div className="p-4 overflow-y-auto max-h-[calc(80vh-180px)]">
+        <div className="p-3 sm:p-4 overflow-y-auto max-h-[calc(95vh-200px)] sm:max-h-[calc(90vh-200px)]">
           <input
             ref={titleRef}
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Note title (optional)"
-            className="w-full text-xl font-semibold bg-transparent border-b border-default pb-2 mb-4 focus:outline-none focus:border-primary-500 text-primary"
+            className="w-full text-lg sm:text-xl font-semibold bg-transparent border-b border-default pb-2 mb-4 focus:outline-none focus:border-primary-500 text-primary"
           />
 
-          <textarea
-            ref={contentRef}
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            placeholder="Write your note here... (Markdown supported)"
-            rows={8}
-            className="w-full bg-transparent focus:outline-none text-primary resize-none leading-relaxed"
-          />
+          <label className="text-xs sm:text-sm font-medium text-muted mb-2 block">
+            Content (Markdown)
+          </label>
+          {isPreview ? (
+            <div className="min-h-[180px] sm:min-h-[220px] max-h-[min(50vh,360px)] p-3 bg-default border border-default rounded-lg overflow-y-auto">
+              <MarkdownContent
+                size="sm"
+                emptyFallback="*Nothing written yet…*"
+              >
+                {content}
+              </MarkdownContent>
+            </div>
+          ) : (
+            <AdvancedMarkdownEditor
+              value={content}
+              onChange={setContent}
+              placeholder="Write your note here… (Markdown supported)"
+              rows={10}
+            />
+          )}
 
           {/* Tags */}
           <div className="mt-4">
@@ -295,16 +231,16 @@ export default function NoteEditor({ note, onSave, onClose }: NoteEditorProps) {
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-2 p-4 border-t border-default">
+        <div className="flex items-center justify-end gap-2 p-3 sm:p-4 border-t border-default">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-muted hover:text-primary transition-colors"
+            className="px-4 py-2 text-muted hover:text-primary transition-colors text-sm"
           >
             Cancel
           </button>
           <button
             onClick={handleSubmit}
-            className="flex items-center gap-2 px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg transition-colors text-sm"
           >
             <Save size={16} />
             <span>Save Note</span>

@@ -10,41 +10,36 @@ import {
   List,
   X,
 } from "lucide-react";
-import { useLiveQuery } from "dexie-react-hooks";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import type { Note, NoteColor } from "../../type/NoteType";
-import { db } from "../../Database/db";
 import NoteCard from "./NoteCard";
 import NoteEditor from "./NoteEditor";
 import CommonPageHeader from "../../components/CommonPageHeader";
 import NoteStats from "./NoteStats";
+import { useToast } from "../../hooks/useToast";
+import { ToastContainer } from "../../components/Toast";
+import { useNotes } from "../../hooks/useNotes";
 
 type SortOption = "updated" | "created" | "title" | "wordCount";
 type FilterOption = "all" | "pinned" | "favorites" | "recent";
 
 export default function Notes() {
   const navigate = useNavigate();
+  const { toasts, removeToast, success, error } = useToast();
+  const { notes, createNote, updateNote } = useNotes();
+
+  // State for UI
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [sortBy, setSortBy] = useState<SortOption>("updated");
-  const [filterBy, setFilterBy] = useState<FilterOption>("all");
-  const [selectedColor, setSelectedColor] = useState<NoteColor | "all">("all");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [availableTags, setAvailableTags] = useState<string[]>([]);
+  const [sortBy, setSortBy] = useState<SortOption>("updated");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [filterBy, setFilterBy] = useState<FilterOption>("all");
+  const [selectedColor, setSelectedColor] = useState<NoteColor | "all">("all");
   const [showQuickCreate, setShowQuickCreate] = useState(false);
   const [editingNote, setEditingNote] = useState<Partial<Note> | null>(null);
-
-  const notes = useLiveQuery(async () => {
-    const allNotes = await db.notes.orderBy("isPinned").reverse().toArray();
-    // Sort by isPinned first, then by updatedAt
-    return allNotes.sort((a, b) => {
-      if (a.isPinned && !b.isPinned) return -1;
-      if (!a.isPinned && b.isPinned) return 1;
-      return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
-    });
-  }, []);
 
   // Extract all unique tags from notes
   useEffect(() => {
@@ -154,21 +149,21 @@ export default function Notes() {
   }, [notes, debouncedSearch, filterBy, sortBy, selectedColor, selectedTags]);
 
   const handleCreateNote = async () => {
-    const now = new Date().toISOString();
-    const newNote: Omit<Note, "id"> = {
-      title: "",
-      content: "",
-      createdAt: now,
-      updatedAt: now,
-      isPinned: false,
-      isFavorite: false,
-      tags: [],
-      wordCount: 0,
-      readTime: 0,
-    };
-
-    const id = await db.notes.add(newNote as Note);
-    navigate(`/notes/${id}`);
+    try {
+      const newNote = await createNote({
+        title: "",
+        content: "",
+        isPinned: false,
+        isFavorite: false,
+        tags: [],
+        wordCount: 0,
+        readTime: 0,
+      });
+      navigate(`/notes/${newNote.id}`);
+    } catch (err) {
+      console.log(err);
+      error("Failed to create note. Please try again.");
+    }
   };
 
   const handleQuickCreate = () => {
@@ -181,28 +176,28 @@ export default function Notes() {
   };
 
   const handleQuickSave = async (note: Partial<Note>) => {
-    const now = new Date().toISOString();
-    const newNote: Omit<Note, "id"> = {
-      title: note.title || "",
-      content: note.content || "",
-      createdAt: now,
-      updatedAt: now,
-      isPinned: false,
-      isFavorite: false,
-      tags: note.tags || [],
-      wordCount: note.content?.split(/\s+/).filter(Boolean).length || 0,
-      readTime: Math.max(
-        1,
-        Math.ceil(
-          (note.content?.split(/\s+/).filter(Boolean).length || 0) / 200,
+    try {
+      await createNote({
+        title: note.title || "",
+        content: note.content || "",
+        isPinned: false,
+        isFavorite: false,
+        tags: note.tags || [],
+        wordCount: note.content?.split(/\s+/).filter(Boolean).length || 0,
+        readTime: Math.max(
+          1,
+          Math.ceil(
+            (note.content?.split(/\s+/).filter(Boolean).length || 0) / 200,
+          ),
         ),
-      ),
-      color: note.color,
-    };
-
-    await db.notes.add(newNote as Note);
-    setShowQuickCreate(false);
-    setEditingNote(null);
+        color: note.color,
+      });
+      success("Note created successfully");
+      setShowQuickCreate(false);
+      setEditingNote(null);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const clearFilters = () => {
@@ -221,6 +216,7 @@ export default function Notes() {
 
   return (
     <div className=" bg-defaul  pt-20 pb-24 px-4 sm:px-6">
+      <ToastContainer toasts={toasts} onClose={removeToast} />
       <div className="min-w-full">
         {/* Header with stats */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
@@ -455,6 +451,7 @@ export default function Notes() {
                   note={note}
                   viewMode={viewMode}
                   onClick={() => navigate(`/notes/${note.id}`)}
+                  onUpdate={updateNote}
                 />
               ))}
             </AnimatePresence>

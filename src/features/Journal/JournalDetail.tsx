@@ -18,9 +18,12 @@ import {
   BookOpen,
 } from "lucide-react";
 import { useLiveQuery } from "dexie-react-hooks";
-import { db } from "../../Database/journalDB";
+import { db } from "../../database/db";
 import type { JournalEntry } from "../../type/JournalType";
 import JournalEditor from "./JournalEditor";
+import MarkdownContent from "../../components/MarkdownContent";
+import ConfirmationModal from "../../components/ConfirmationModal";
+import { useToast } from "../../hooks/useToast";
 
 const moods: Record<string, { emoji: string; color: string; bgColor: string }> =
   {
@@ -38,13 +41,15 @@ const moods: Record<string, { emoji: string; color: string; bgColor: string }> =
 export default function JournalDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const entryId = Number(id);
+  const { success } = useToast();
+  const entryId = id;
 
   const [showEditor, setShowEditor] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  const entry = useLiveQuery(() => db.journal.get(entryId), [entryId]);
+  const entry = useLiveQuery(() => (entryId ? db.journal.get(entryId) : undefined), [entryId]);
 
   const toggleFavorite = async () => {
     if (entry?.id) {
@@ -56,9 +61,17 @@ export default function JournalDetail() {
   };
 
   const handleDelete = async () => {
-    if (entry?.id) {
+    if (!entry?.id) return;
+    setIsDeleting(true);
+    try {
       await db.journal.delete(entry.id);
+      success("Journal entry deleted successfully");
       navigate("/journal");
+    } catch (error) {
+      console.error("Failed to delete journal entry:", error);
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteConfirm(false);
     }
   };
 
@@ -183,9 +196,12 @@ export default function JournalDetail() {
           <div className="md:col-span-2 space-y-6">
             <div className="bg-card border border-default rounded-xl p-6">
               <h2 className="text-lg font-semibold text-primary mb-4">Entry</h2>
-              <p className="text-muted leading-relaxed whitespace-pre-wrap">
+              <MarkdownContent
+                emptyFallback="*No entry text yet.*"
+                className="text-primary leading-relaxed"
+              >
                 {entry.note}
-              </p>
+              </MarkdownContent>
             </div>
 
             {/* Images */}
@@ -292,45 +308,17 @@ export default function JournalDetail() {
       </AnimatePresence>
 
       {/* Delete Confirmation */}
-      <AnimatePresence>
-        {showDeleteConfirm && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-card rounded-xl border border-default p-6 max-w-md w-full"
-            >
-              <h3 className="text-lg font-semibold text-primary mb-2">
-                Delete Entry
-              </h3>
-              <p className="text-muted mb-6">
-                Are you sure you want to delete this journal entry? This action
-                cannot be undone.
-              </p>
-              <div className="flex justify-end gap-3">
-                <button
-                  onClick={() => setShowDeleteConfirm(false)}
-                  className="px-4 py-2 text-muted hover:text-primary transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleDelete}
-                  className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors"
-                >
-                  Delete
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <ConfirmationModal
+        isOpen={showDeleteConfirm}
+        title="Delete Journal Entry"
+        message="Are you sure you want to delete this journal entry? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        isDangerous={true}
+        onConfirm={handleDelete}
+        onCancel={() => setShowDeleteConfirm(false)}
+        isLoading={isDeleting}
+      />
     </div>
   );
 }

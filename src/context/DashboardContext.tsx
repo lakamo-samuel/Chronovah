@@ -1,15 +1,14 @@
 import { DashboardContext } from "../hooks/useDashBoard";
 import type { DarkModeProviderProps } from "../type/DarkModeContextType";
 import { Activity, Book, MapPin, NotebookPen } from "lucide-react";
-import { db as peopleDB, type Person } from "../Database/peopleDB";
-import { db as placeDB, type Place } from "../Database/placesDB";
-import { db as noteDB } from "../Database/db";
-import { db as journalDB } from "../Database/journalDB";
+import { db } from "../database/db";
 import { useEffect, useState } from "react";
 import type { ActivityItem } from "../type/DashboardType";
 import { liveQuery } from "dexie";
 import type { Note } from "../type/NoteType";
 import type { JournalEntry } from "../type/JournalType";
+import type { Place } from "../type/PlaceType";
+import type { Person } from "../type/PeopleType";
 
 interface ActivityCardItem {
   id: number | string;
@@ -52,31 +51,32 @@ export function DashboardProvider({ children }: DarkModeProviderProps) {
     // Define the observable using Dexie liveQuery
     const observable = liveQuery<DashboardSnapshot>(() => {
       // Counts
-      const peopleCount = peopleDB.people.count();
-      const placesCount = placeDB.places.count();
-      const notesCount = noteDB.notes.count();
-      const journalsCount = journalDB.journal.count();
+      const peopleCount = db.people.count();
+      const placesCount = db.places.count();
+      const notesCount = db.notes.count();
+      const journalsCount = db.journal.count();
 
       // Recent items
-      const recentPeopleP = peopleDB.people
+      const recentPeopleP = db.people
+
         .orderBy("createdAt")
         .reverse()
         .limit(3)
         .toArray();
 
-      const recentPlacesP = placeDB.places
+      const recentPlacesP = db.places
         .orderBy("createdAt")
         .reverse()
         .limit(3)
         .toArray();
 
-      const recentNotesP = noteDB.notes
+      const recentNotesP = db.notes
         .orderBy("createdAt")
         .reverse()
         .limit(3)
         .toArray();
 
-      const recentJournalsP = journalDB.journal
+      const recentJournalsP = db.journal
         .orderBy("createdAt")
         .reverse()
         .limit(3)

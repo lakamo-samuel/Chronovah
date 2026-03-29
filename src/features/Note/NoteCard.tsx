@@ -10,28 +10,27 @@ import {
 } from "lucide-react";
 
 import type { Note } from "../../type/NoteType";
-import { db } from "../../Database/db";
+import { stripMarkdownForPreview } from "../../utils/textPreview";
 
 interface NoteCardProps {
   note: Note;
   viewMode: "grid" | "list";
   onClick: () => void;
+  onUpdate: (id: string, updates: Partial<Note>) => Promise<void>;
 }
 
-export default function NoteCard({ note, viewMode, onClick }: NoteCardProps) {
+export default function NoteCard({ note, viewMode, onClick, onUpdate }: NoteCardProps) {
   const togglePinned = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    await db.notes.update(note.id!, {
+    await onUpdate(note.id!, {
       isPinned: !note.isPinned,
-      updatedAt: new Date().toISOString(),
     });
   };
 
   const toggleFavorite = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    await db.notes.update(note.id!, {
+    await onUpdate(note.id!, {
       isFavorite: !note.isFavorite,
-      updatedAt: new Date().toISOString(),
     });
   };
 
@@ -55,21 +54,7 @@ export default function NoteCard({ note, viewMode, onClick }: NoteCardProps) {
     });
   };
 
-  // Strip HTML/markdown for preview
-  const getPlainTextPreview = (content: string, maxLength: number = 120) => {
-    // Simple markdown/HTML stripping
-    const plainText = content
-      .replace(/[#*`_~[\]()]/g, "") // Remove markdown symbols
-      .replace(/\n/g, " ") // Replace newlines with spaces
-      .replace(/\s+/g, " ") // Collapse multiple spaces
-      .trim();
-
-    return plainText.length > maxLength
-      ? plainText.substring(0, maxLength) + "..."
-      : plainText;
-  };
-
-  const preview = getPlainTextPreview(note.content);
+  const preview = stripMarkdownForPreview(note.content, 120);
   const hasAttachments = note.attachments && note.attachments.length > 0;
   const readTime =
     note.readTime || Math.max(1, Math.ceil((note.wordCount || 0) / 200));
@@ -247,10 +232,11 @@ export default function NoteCard({ note, viewMode, onClick }: NoteCardProps) {
         </div>
       </div>
 
-      {/* Rich text preview */}
-      <div className="text-sm text-muted mb-4 line-clamp-4 prose prose-sm dark:prose-invert max-w-none">
-        {preview || <span className="italic opacity-50">No content...</span>}
-      </div>
+      <p className="text-sm text-muted mb-4 line-clamp-4">
+        {preview || (
+          <span className="italic opacity-50">No content...</span>
+        )}
+      </p>
 
       {/* Metadata */}
       <div className="flex items-center justify-between text-xs text-muted mt-auto">

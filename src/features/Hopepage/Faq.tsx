@@ -87,12 +87,7 @@ export default function Faq() {
   });
 
   return (
-    <section className="relative py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-50 to-white dark:from-gray-950 dark:to-gray-900 overflow-hidden">
-      {/* Background decoration */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-20 right-20 w-72 h-72 bg-blue-200/20 dark:bg-blue-500/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 left-20 w-72 h-72 bg-purple-200/20 dark:bg-purple-500/5 rounded-full blur-3xl" />
-      </div>
+    <section className="relative py-20 px-4 sm:px-6 lg:px-8 bg-default overflow-hidden border-b border-default">
 
       <div className="relative max-w-4xl mx-auto">
         {/* Header */}
@@ -102,27 +97,16 @@ export default function Faq() {
           viewport={{ once: true }}
           className="text-center mb-12"
         >
-          {/* Eyebrow */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-sm font-medium mb-4 border border-blue-200 dark:border-blue-800">
-            <HelpCircle size={16} />
-            <span>Got questions?</span>
-          </div>
-
-          {/* Title */}
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">
-            <span className="bg-gradient-to-r from-gray-900 to-gray-600 dark:from-gray-100 dark:to-gray-400 bg-clip-text text-transparent">
-              Frequently Asked
-            </span>
-            <br />
-            <span className="bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
-              Questions
+          <h2 className="font-serif text-3xl md:text-4xl font-semibold tracking-tight text-primary mb-4">
+            Frequently asked{" "}
+            <span className="text-primary-600 dark:text-primary-400">
+              questions
             </span>
           </h2>
 
-          {/* Description */}
-          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            Everything you need to know about Chronovah. Can't find what you're
-            looking for? Feel free to reach out to our support team.
+          <p className="text-muted max-w-2xl mx-auto leading-relaxed">
+            Straight answers about Chronovah. If something is not covered, use
+            the contact option below.
           </p>
         </motion.div>
 
@@ -286,7 +270,7 @@ export default function Faq() {
           transition={{ delay: 0.4 }}
           className="mt-12 text-center p-8 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/30 dark:to-purple-950/30 rounded-2xl border border-gray-200 dark:border-gray-800"
         >
-          <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">
+          <h3 className="font-serif text-xl font-bold mb-2 text-gray-900 dark:text-white">
             Still have questions?
           </h3>
           <p className="text-gray-600 dark:text-gray-300 mb-4">
@@ -295,7 +279,7 @@ export default function Faq() {
           </p>
           <a
             href="#contact"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium rounded-xl transition-all duration-300 shadow-md hover:shadow-lg"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600  hover:bg-blue-700 text-white font-medium rounded-xl transition-all duration-300 shadow-md hover:shadow-lg"
           >
             <MessageCircle size={18} />
             <span>Contact Support</span>

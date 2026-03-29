@@ -1,20 +1,37 @@
 import { useLiveQuery } from "dexie-react-hooks";
-import { db as peopleDB } from "../../Database/peopleDB";
-import { db as placeDB } from "../../Database/placesDB";
-import { db as journalDB } from "../../Database/journalDB";
-import { db as noteDB } from "../../Database/db";
+import { db } from "../../database/db";
+import { useAuth } from "../../hooks/useAuth";
 import IndividualData from "./IndividualData";
+
 const dbMap = {
-  people: peopleDB.people,
-  places: placeDB.places,
-  notes: noteDB.notes,
-  journals: journalDB.journal,
+  people: db.people,
+  places: db.places,
+  notes: db.notes,
+  journals: db.journal,
 } as const;
+
 function IndividualDataManagement() {
-  const people = useLiveQuery(() => peopleDB.people.toArray(), []) || [];
-  const places = useLiveQuery(() => placeDB.places?.toArray(), []) || [];
-  const notes = useLiveQuery(() => noteDB.notes?.toArray(), []) || [];
-  const journals = useLiveQuery(() => journalDB.journal?.toArray(), []) || [];
+  const { user } = useAuth();
+
+  const people = useLiveQuery(() => {
+    if (!user?.id) return [];
+    return db.people.where("userId").equals(user.id).toArray();
+  }, [user?.id]) || [];
+
+  const places = useLiveQuery(() => {
+    if (!user?.id) return [];
+    return db.places.where("userId").equals(user.id).toArray();
+  }, [user?.id]) || [];
+
+  const notes = useLiveQuery(() => {
+    if (!user?.id) return [];
+    return db.notes.where("userId").equals(user.id).toArray();
+  }, [user?.id]) || [];
+
+  const journals = useLiveQuery(() => {
+    if (!user?.id) return [];
+    return db.journal.where("userId").equals(user.id).toArray();
+  }, [user?.id]) || [];
  
   return (
     <>

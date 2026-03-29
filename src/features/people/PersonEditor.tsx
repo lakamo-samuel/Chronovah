@@ -49,7 +49,7 @@ export default function PersonEditor({
   const [name, setName] = useState(person?.name || "");
   const [nickname, setNickname] = useState(person?.nickname || "");
   const [description, setDescription] = useState(person?.description || "");
-  const [image, setImage] = useState(person?.image || "");
+  const [image] = useState(person?.image || "");
   const [images, setImages] = useState<string[]>(person?.images || []);
   const [relation, setRelation] = useState(person?.relation || "Friend");
   const [birthday, setBirthday] = useState(person?.birthday || "");

@@ -1,12 +1,6 @@
 import { motion, useAnimationControls, useInView } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-import {
-  Star,
-  Quote,
-  ChevronLeft,
-  ChevronRight,
-  UserCircle,
-} from "lucide-react";
+import { Star, Quote, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface Feedback {
   id: number;
@@ -117,24 +111,9 @@ export default function UserFeedback() {
   return (
     <section
       ref={sectionRef}
-      className="relative py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-gray-50 dark:from-gray-950 dark:to-gray-900 overflow-hidden"
+      className="relative py-20 px-4 sm:px-6 lg:px-8 bg-default overflow-hidden border-b border-default"
       aria-labelledby="feedback-title"
     >
-      {/* Background decoration */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-0 left-0 w-64 h-64 bg-blue-200/20 dark:bg-blue-500/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-0 w-64 h-64 bg-purple-200/20 dark:bg-purple-500/5 rounded-full blur-3xl" />
-
-        {/* Quote marks pattern */}
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute top-20 left-20 text-9xl font-serif text-gray-900 dark:text-white">
-            "
-          </div>
-          <div className="absolute bottom-20 right-20 text-9xl font-serif text-gray-900 dark:text-white rotate-180">
-            "
-          </div>
-        </div>
-      </div>
 
       <div className="relative max-w-7xl mx-auto">
         {/* Header */}
@@ -144,46 +123,24 @@ export default function UserFeedback() {
           transition={{ duration: 0.6 }}
           className="text-center mb-12"
         >
-          {/* Eyebrow */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 text-sm font-medium mb-4 border border-purple-200 dark:border-purple-800">
-            <Star size={16} className="fill-purple-500" />
-            <span>Loved by users worldwide</span>
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-card border border-default text-muted text-xs font-medium mb-5">
+            <span className="text-primary-600">Feedback</span>
           </div>
 
-          {/* Title */}
           <h2
             id="feedback-title"
-            className="text-4xl md:text-5xl font-bold mb-4"
+            className="font-serif text-3xl md:text-4xl font-semibold tracking-tight text-primary mb-3"
           >
-            <span className="bg-gradient-to-r from-gray-900 to-gray-600 dark:from-gray-100 dark:to-gray-400 bg-clip-text text-transparent">
-              What Our
-            </span>
-            <br />
-            <span className="bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
-              Users Say
+            What people{" "}
+            <span className="text-primary-600 dark:text-primary-400">
+              say about using it
             </span>
           </h2>
 
-          {/* Rating summary */}
-          <div className="flex flex-col items-center gap-2 mt-4">
-            <div className="flex items-center gap-2">
-              <div className="flex">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <Star
-                    key={star}
-                    size={20}
-                    className="fill-yellow-500 text-yellow-500"
-                  />
-                ))}
-              </div>
-              <span className="text-lg font-semibold text-gray-900 dark:text-white">
-                4.9
-              </span>
-            </div>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Based on 2,000+ reviews
-            </p>
-          </div>
+          <p className="text-sm text-muted max-w-lg mx-auto">
+            Early users and testers—quoted as they wrote them, not marketing
+            scores.
+          </p>
         </motion.div>
 
         {/* Desktop carousel */}
@@ -227,14 +184,14 @@ export default function UserFeedback() {
               className="absolute left-0 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white dark:bg-gray-800 shadow-lg flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
               aria-label="Previous testimonial"
             >
-              <ChevronLeft size={20} />
+              <ChevronLeft size={20} className="text-gray-400" />
             </button>
             <button
               onClick={nextSlide}
               className="absolute right-0 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white dark:bg-gray-800 shadow-lg flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
               aria-label="Next testimonial"
             >
-              <ChevronRight size={20} />
+              <ChevronRight size={20} className="text-gray-400" />
             </button>
 
             {/* Dots indicator */}
@@ -245,7 +202,7 @@ export default function UserFeedback() {
                   onClick={() => setCurrentIndex(i)}
                   className={`w-2 h-2 rounded-full transition-all ${
                     i === currentIndex
-                      ? "w-6 bg-purple-500"
+                      ? "w-6 bg-blue-500"
                       : "bg-gray-300 dark:bg-gray-700"
                   }`}
                   aria-label={`Go to testimonial ${i + 1}`}
@@ -254,31 +211,6 @@ export default function UserFeedback() {
             </div>
           </div>
         )}
-
-        {/* Trust badges */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ delay: 0.6 }}
-          className="mt-12 flex flex-wrap items-center justify-center gap-8 pt-8 border-t border-gray-200 dark:border-gray-800"
-        >
-          {[
-            { label: "4.9/5 Rating", icon: Star },
-            { label: "10k+ Downloads", icon: UserCircle },
-            { label: "Privacy First", icon: Star },
-          ].map((badge, i) => {
-            const Icon = badge.icon;
-            return (
-              <div
-                key={i}
-                className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400"
-              >
-                <Icon size={16} className="text-purple-500" />
-                <span>{badge.label}</span>
-              </div>
-            );
-          })}
-        </motion.div>
       </div>
     </section>
   );
@@ -290,21 +222,22 @@ function FeedbackCard({ feedback }: { feedback: Feedback }) {
     <motion.div
       whileHover={{ y: -5, scale: 1.02 }}
       transition={{ type: "spring", damping: 20 }}
-      className="min-w-[320px] max-w-[320px] bg-white dark:bg-gray-900/50 backdrop-blur-sm rounded-2xl p-6 shadow-lg hover:shadow-2xl border border-gray-200 dark:border-gray-800 transition-all duration-300"
+      className="min-w-[320px] max-w-[320px] bg-card rounded-xl p-6 border border-default shadow-soft hover:shadow-medium transition-shadow duration-300"
     >
-      {/* Quote icon */}
-      <Quote size={24} className="text-purple-300 dark:text-purple-700 mb-4" />
+      <Quote size={20} className="text-primary-600/40 mb-4" strokeWidth={1.5} />
 
-      {/* Rating */}
-      <div className="flex gap-1 mb-4">
+      <div className="flex gap-0.5 mb-4" aria-hidden>
         {[...Array(feedback.rating)].map((_, i) => (
-          <Star key={i} size={16} className="fill-yellow-500 text-yellow-500" />
+          <Star
+            key={i}
+            size={14}
+            className="fill-amber-500/90 text-amber-600"
+          />
         ))}
       </div>
 
-      {/* Feedback text */}
-      <p className="text-gray-700 dark:text-gray-300 mb-6 text-sm leading-relaxed">
-        "{feedback.text}"
+      <p className="text-primary/90 mb-6 text-sm leading-relaxed">
+        &ldquo;{feedback.text}&rdquo;
       </p>
 
       {/* User info */}
@@ -313,30 +246,23 @@ function FeedbackCard({ feedback }: { feedback: Feedback }) {
           <img
             src={feedback.image}
             alt={feedback.name}
-            className="w-12 h-12 rounded-full object-cover border-2 border-purple-200 dark:border-purple-800"
+            className="w-12 h-12 rounded-full object-cover border-2 border-blue-200 dark:border-blue-800"
           />
         ) : (
-          <div className="w-12 h-12 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-lg">
+          <div className="w-12 h-12 rounded-full bg-primary-600 flex items-center justify-center text-white font-semibold text-sm">
             {feedback.name[0]}
           </div>
         )}
         <div>
-          <p className="font-semibold text-gray-900 dark:text-white">
-            {feedback.name}
-          </p>
+          <p className="font-medium text-primary">{feedback.name}</p>
           {feedback.role && (
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              {feedback.role}
-            </p>
+            <p className="text-xs text-muted">{feedback.role}</p>
           )}
         </div>
       </div>
 
-      {/* Date */}
       {feedback.date && (
-        <p className="mt-4 text-xs text-gray-400 dark:text-gray-500">
-          {feedback.date}
-        </p>
+        <p className="mt-4 text-xs text-muted">{feedback.date}</p>
       )}
     </motion.div>
   );

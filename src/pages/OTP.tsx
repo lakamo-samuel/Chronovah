@@ -141,7 +141,11 @@ export default function OtpVerification() {
         >
           {loading ? (
             <>
-              <Spinner size="sm" overlay={false} color="white" thickness={2} />
+              <Spinner
+                size="sm"
+                overlay={false}
+                className="border-white/30 border-t-white"
+              />
               <span>Verifying...</span>
             </>
           ) : (

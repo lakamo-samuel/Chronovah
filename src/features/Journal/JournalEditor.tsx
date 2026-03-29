@@ -1,5 +1,5 @@
 // pages/Journal/JournalEditor.tsx
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import {
   X,
@@ -8,22 +8,16 @@ import {
   Cloud,
   MapPin,
   Image as ImageIcon,
- 
   Heart,
   Check,
   Plus,
-  Bold,
-  Italic,
-  List,
-  ListOrdered,
-  Heading1,
-  Heading2,
   Eye,
 } from "lucide-react";
 
 import MoodPicker from "./MoodPicker";
 import ImageUpload from "../../components/ImageUpload";
-import ReactMarkdown from "react-markdown";
+import MarkdownContent from "../../components/MarkdownContent";
+import AdvancedMarkdownEditor from "../../components/AdvancedMarkdownEditor";
 import type { JournalEntry, MoodType, WeatherType } from "../../type/JournalType";
 
 interface JournalEditorProps {
@@ -59,12 +53,6 @@ export default function JournalEditor({
   const [isPreview, setIsPreview] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
 
-  const noteRef = useRef<HTMLTextAreaElement>(null);
-
-  useEffect(() => {
-    noteRef.current?.focus();
-  }, []);
-
   const addTag = () => {
     if (tagInput.trim() && !tags.includes(tagInput.trim())) {
       setTags([...tags, tagInput.trim()]);
@@ -74,49 +62,6 @@ export default function JournalEditor({
 
   const removeTag = (tagToRemove: string) => {
     setTags(tags.filter((tag) => tag !== tagToRemove));
-  };
-
-  const insertFormatting = (format: string) => {
-    if (!noteRef.current) return;
-
-    const start = noteRef.current.selectionStart;
-    const end = noteRef.current.selectionEnd;
-    const selectedText = note.substring(start, end);
-
-    let formattedText = "";
-    switch (format) {
-      case "bold":
-        formattedText = `**${selectedText}**`;
-        break;
-      case "italic":
-        formattedText = `*${selectedText}*`;
-        break;
-      case "h1":
-        formattedText = `# ${selectedText}`;
-        break;
-      case "h2":
-        formattedText = `## ${selectedText}`;
-        break;
-      case "ul":
-        formattedText = `- ${selectedText}`;
-        break;
-      case "ol":
-        formattedText = `1. ${selectedText}`;
-        break;
-      default:
-        return;
-    }
-
-    const newContent =
-      note.substring(0, start) + formattedText + note.substring(end);
-    setNote(newContent);
-
-    setTimeout(() => {
-      noteRef.current?.setSelectionRange(
-        start + formattedText.length,
-        start + formattedText.length,
-      );
-    }, 0);
   };
 
   const handleSubmit = () => {
@@ -174,56 +119,13 @@ export default function JournalEditor({
               </div>
             </div>
 
-            {/* Formatting Toolbar */}
-            <div className="flex items-center gap-1 p-2 border border-default rounded-lg bg-default/50 overflow-x-auto">
+            {/* Preview toggle */}
+            <div className="flex items-center justify-between p-2 border border-default rounded-lg bg-default/50">
+              <span className="text-xs font-ui-xs text-muted uppercase">Formatting:</span>
               <button
-                onClick={() => insertFormatting("bold")}
-                className="p-1.5 rounded hover:bg-card text-muted hover:text-primary transition-colors flex-shrink-0"
-                title="Bold"
-              >
-                <Bold size={16} />
-              </button>
-              <button
-                onClick={() => insertFormatting("italic")}
-                className="p-1.5 rounded hover:bg-card text-muted hover:text-primary transition-colors flex-shrink-0"
-                title="Italic"
-              >
-                <Italic size={16} />
-              </button>
-              <div className="w-px h-4 bg-default mx-1 flex-shrink-0" />
-              <button
-                onClick={() => insertFormatting("h1")}
-                className="p-1.5 rounded hover:bg-card text-muted hover:text-primary transition-colors flex-shrink-0"
-                title="Heading 1"
-              >
-                <Heading1 size={16} />
-              </button>
-              <button
-                onClick={() => insertFormatting("h2")}
-                className="p-1.5 rounded hover:bg-card text-muted hover:text-primary transition-colors flex-shrink-0"
-                title="Heading 2"
-              >
-                <Heading2 size={16} />
-              </button>
-              <div className="w-px h-4 bg-default mx-1 flex-shrink-0" />
-              <button
-                onClick={() => insertFormatting("ul")}
-                className="p-1.5 rounded hover:bg-card text-muted hover:text-primary transition-colors flex-shrink-0"
-                title="Bullet list"
-              >
-                <List size={16} />
-              </button>
-              <button
-                onClick={() => insertFormatting("ol")}
-                className="p-1.5 rounded hover:bg-card text-muted hover:text-primary transition-colors flex-shrink-0"
-                title="Numbered list"
-              >
-                <ListOrdered size={16} />
-              </button>
-              <div className="flex-1" />
-              <button
+                type="button"
                 onClick={() => setIsPreview(!isPreview)}
-                className={`p-1.5 rounded transition-colors flex-shrink-0 ${
+                className={`p-1.5 rounded transition-colors ${
                   isPreview
                     ? "bg-primary-500 text-white"
                     : "text-muted hover:text-primary"
@@ -240,19 +142,20 @@ export default function JournalEditor({
                 Your thoughts *
               </label>
               {isPreview ? (
-                <div className="min-h-[150px] sm:min-h-[200px] p-3 bg-default border border-default rounded-lg prose prose-sm dark:prose-invert max-w-none overflow-y-auto">
-                  <ReactMarkdown>
-                    {note || "*Nothing written yet...*"}
-                  </ReactMarkdown>
+                <div className="min-h-[150px] sm:min-h-[200px] max-h-[min(50vh,320px)] p-3 bg-default border border-default rounded-lg overflow-y-auto">
+                  <MarkdownContent
+                    size="sm"
+                    emptyFallback="*Nothing written yet…*"
+                  >
+                    {note}
+                  </MarkdownContent>
                 </div>
               ) : (
-                <textarea
-                  ref={noteRef}
+                <AdvancedMarkdownEditor
                   value={note}
-                  onChange={(e) => setNote(e.target.value)}
-                  placeholder="Write about your day, your thoughts, your feelings... (Markdown supported)"
+                  onChange={setNote}
+                  placeholder="Write about your day, your thoughts, your feelings..."
                   rows={6}
-                  className="w-full px-3 py-2 bg-default border border-default rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/50 text-primary resize-none text-sm sm:text-base"
                 />
               )}
             </div>

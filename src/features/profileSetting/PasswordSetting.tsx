@@ -1,9 +1,8 @@
 import { useState, useMemo } from "react";
-
 import Button from "../../ui/Button";
-
 import PasswordInput from "./PasswordSettingInput";
 import StrengthMeter from "./PasswordStrengthMeter";
+import settingApiCall from "../../services/SettingApiCall";
 
 type FormErrors = {
   oldPassword?: string;
@@ -12,62 +11,38 @@ type FormErrors = {
   form?: string;
 };
 
-export default function PasswordSetting() {
+ function PasswordSetting() {
   const [oldPassword, setOldPassword] = useState<string>("");
   const [newPassword, setNewPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
-
   const [errors, setErrors] = useState<FormErrors>({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
   // Real-time strength (0-100) for new password
   const strength = useMemo(() => {
     const pwd = newPassword || "";
     let score = 0;
 
-    if (pwd.length > 0) score += Math.min(30, pwd.length * 2); // length factor
+    if (pwd.length > 0) score += Math.min(30, pwd.length * 2);
     if (/[a-z]/.test(pwd)) score += 10;
     if (/[A-Z]/.test(pwd)) score += 10;
     if (/[0-9]/.test(pwd)) score += 10;
     if (/[^A-Za-z0-9]/.test(pwd)) score += 20;
-    // cap 100
+    
     return Math.min(100, score);
   }, [newPassword]);
 
-  // Simple inline validation as you type (excluding form submit checks)
   const inlineValidate = (val: string, label: string) => {
     if (label === "New Password" && val.length > 0 && val.length < 8) {
       return "Minimum length is 8 characters.";
     }
-    if (label === "New Password" && val && !/\d/.test(val)) {
-      // require a number as a light rule
-      // return "Include at least one number.";
-    }
     return "";
   };
 
-  // const isFormValid = useMemo(() => {
-  //   const errs: FormErrors = {};
-  //   if (!oldPassword) errs.oldPassword = "Please enter your old password.";
-  //   if (!newPassword) errs.newPassword = "Please enter a new password.";
-  //   if (!confirmPassword)
-  //     errs.confirmPassword = "Please confirm your new password.";
-  //   if (newPassword && confirmPassword && newPassword !== confirmPassword)
-  //     errs.form = "New password and confirmation do not match.";
-
-  //   // Inline example: add non-empty checks
-  //   if (oldPassword && newPassword && newPassword === oldPassword)
-  //     errs.form = "New password must be different from old password.";
-
-  //   // Example strength gating (optional)
-  //   if (newPassword && strength < 40)
-  //     errs.form = "Password is not strong enough.";
-
-  //   setErrors((prev) => ({ ...prev, ...errs }));
-  //   return Object.keys(errs).length === 0;
-  // }, [oldPassword, newPassword, confirmPassword, strength]);
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSuccessMessage("");
 
     // Run final validation
     const finalErrors: FormErrors = {};
@@ -80,72 +55,120 @@ export default function PasswordSetting() {
       finalErrors.form = "New password and confirmation do not match.";
     if (newPassword && oldPassword && newPassword === oldPassword)
       finalErrors.form = "New password must be different from old password.";
+    if (newPassword && strength < 40)
+      finalErrors.form = "Password is not strong enough.";
 
     setErrors(finalErrors);
 
     if (Object.keys(finalErrors).length > 0) return;
 
-    // TODO: integrate with your API / auth logic
-    console.log("Password change requested:", { oldPassword, newPassword });
+    // API call
+    setIsLoading(true);
+    const response = await settingApiCall.changePassword({
+      oldPassword,
+      newPassword,
+    });
+    setIsLoading(false);
+
+    if (response.success) {
+      setSuccessMessage("Password changed successfully!");
+      setOldPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+      setErrors({});
+
+      // Clear success message after 3 seconds
+      setTimeout(() => setSuccessMessage(""), 3000);
+    } else {
+      setErrors({ form: response.error || "Failed to change password" });
+    }
   };
 
   return (
     <form
-      className="space-y-6 bg-white dark:bg-[#0B1120] p-6 rounded-xl shadow-sm mt-8"
+      className="space-y-6 bg-card p-6 rounded-2xl border border-default shadow-soft mt-8"
       onSubmit={handleSubmit}
       noValidate
     >
-      <h2 className="font-semibold text-lg mb-4 dark:text-gray-100">
-        Change Password
-      </h2>
+      <h2 className="font-ui-lg-bold text-primary mb-6">Change Password</h2>
 
       <PasswordInput
-        label="Old Password"
+        label="Current Password"
         value={oldPassword}
-        onChange={(e) => setOldPassword(e.target.value)}
-        placeholder="Enter old password"
+        onChange={(e) => {
+          setOldPassword(e.target.value);
+          setSuccessMessage("");
+          if (errors.oldPassword) {
+            setErrors({ ...errors, oldPassword: undefined });
+          }
+        }}
+        placeholder="Enter your current password"
         error={errors.oldPassword}
       />
 
       <PasswordInput
         label="New Password"
         value={newPassword}
-        onChange={(e) => setNewPassword(e.target.value)}
-        placeholder="Enter new password"
+        onChange={(e) => {
+          setNewPassword(e.target.value);
+          setSuccessMessage("");
+          if (errors.newPassword) {
+            setErrors({ ...errors, newPassword: undefined });
+          }
+        }}
+        placeholder="Enter a new password"
         error={
           errors.newPassword || inlineValidate(newPassword, "New Password")
         }
-      >
-        {/* Show strength meter below the input when this component supports children; otherwise we render separately */}
-      </PasswordInput>
+      />
 
-      {/* Strength meter for New Password (rendered after the New Password input) */}
-      <div className="ml-1">
-        <StrengthMeter value={strength} />
-      </div>
+      {/* Strength meter for New Password */}
+      {newPassword && (
+        <div className="ml-1">
+          <StrengthMeter value={strength} />
+        </div>
+      )}
 
       <PasswordInput
         label="Confirm New Password"
         value={confirmPassword}
-        onChange={(e) => setConfirmPassword(e.target.value)}
-        placeholder="Confirm new password"
+        onChange={(e) => {
+          setConfirmPassword(e.target.value);
+          setSuccessMessage("");
+          if (errors.confirmPassword) {
+            setErrors({ ...errors, confirmPassword: undefined });
+          }
+        }}
+        placeholder="Confirm your new password"
         error={errors.confirmPassword}
       />
 
+      {/* Form-level errors */}
       {errors.form ? (
-        <p className="text-sm text-red-600 dark:text-red-400">{errors.form}</p>
+        <div className="p-3 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-lg text-red-800 dark:text-red-200 text-sm">
+          ✕ {errors.form}
+        </div>
       ) : null}
 
-      <div className="flex justify-end">
+      {/* Success message */}
+      {successMessage ? (
+        <div className="p-3 bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-lg text-green-800 dark:text-green-200 text-sm">
+          ✓ {successMessage}
+        </div>
+      ) : null}
+
+      <div className="flex justify-end pt-4">
         <Button
-          onClick={async () => {
-            console.log("click");
-          }}
-          loading={false}
+          type="submit"
+          loading={isLoading}
+          disabled={isLoading}
+          className="min-w-[150px]"
         >
-          Change password
+          Change Password
         </Button>
       </div>
     </form>
   );
 }
+
+export default PasswordSetting;

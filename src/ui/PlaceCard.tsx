@@ -1,5 +1,5 @@
 
-import type { Place } from "../Database/placesDB";
+import type { Place } from "../type/PlaceType";
 
 export function PlacesCard({ item }: { item: Place }) {
   return (

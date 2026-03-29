@@ -1,33 +1,36 @@
 // pages/People/index.tsx
 import { useState, useMemo, useEffect } from "react";
 import { Plus, Search, Grid3X3, List, X, Users, Filter } from "lucide-react";
-import { useLiveQuery } from "dexie-react-hooks";
 import { useNavigate } from "react-router-dom";
+import ConfirmationModal from "../../components/ConfirmationModal";
 import { AnimatePresence, motion } from "framer-motion";
-import { db } from "../../Database/peopleDB";
 import type { Person } from "../../type/PeopleType";
 import PersonEditor from "./PersonEditor";
 import PersonCard from "./PersonCard";
 import PeopleStats from "./PeopleStats";
+import Spinner from "../../ui/Spinner";
+import { useToast } from "../../hooks/useToast";
+import { ToastContainer } from "../../components/Toast";
+import { usePeople } from "../../hooks/usePeople";
 
 export default function PeopleList() {
   const navigate = useNavigate();
+  const { toasts, removeToast, success, error } = useToast();
+  const { people, createPerson, updatePerson, deletePerson } = usePeople();
+
+  // State for UI
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [selectedRelation, setSelectedRelation] = useState<string | "all">(
-    "all",
-  );
+  const [selectedRelation, setSelectedRelation] = useState("all");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [availableTags, setAvailableTags] = useState<string[]>([]);
   const [availableRelations, setAvailableRelations] = useState<string[]>([]);
-  const [showEditor, setShowEditor] = useState(false);
-  const [editingPerson, setEditingPerson] = useState<Partial<Person> | null>(
-    null,
-  );
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showFilters, setShowFilters] = useState(false);
-
-  const people = useLiveQuery(() => db.people.orderBy("name").toArray(), []);
+  const [editingPerson, setEditingPerson] = useState<Person | null>(null);
+  const [showEditor, setShowEditor] = useState(false);
+  const [pendingDeletePerson, setPendingDeletePerson] = useState<Person | null>(null);
+  const [isDeleteLoading, setIsDeleteLoading] = useState(false);
 
   // Extract unique tags and relations
   useEffect(() => {
@@ -130,47 +133,59 @@ export default function PeopleList() {
   };
 
   const handleSavePerson = async (personData: Partial<Person>) => {
-    const now = new Date().toISOString();
+    try {
+      if (editingPerson?.id) {
+        // Update existing
+        await updatePerson(editingPerson.id, personData);
+        success(`${personData.name} updated successfully`);
+      } else {
+        // Add new
+        await createPerson({
+          name: personData.name!,
+          nickname: personData.nickname,
+          description: personData.description || "",
+          image: personData.image,
+          images: personData.images,
+          relation: personData.relation || "Friend",
+          birthday: personData.birthday,
+          email: personData.email,
+          phone: personData.phone,
+          address: personData.address,
+          website: personData.website,
+          company: personData.company,
+          jobTitle: personData.jobTitle,
+          notes: personData.notes,
+          tags: personData.tags || [],
+          isFavorite: personData.isFavorite || false,
+          socialMedia: personData.socialMedia,
+        });
+        success(`${personData.name} added successfully`);
+      }
 
-    if (editingPerson?.id) {
-      // Update existing
-      await db.people.update(editingPerson.id, {
-        ...personData,
-        updatedAt: now,
-      });
-    } else {
-      // Add new
-      const newPerson: Omit<Person, "id"> = {
-        name: personData.name!,
-        nickname: personData.nickname,
-        description: personData.description || "",
-        image: personData.image,
-        images: personData.images,
-        relation: personData.relation || "Friend",
-        birthday: personData.birthday,
-        email: personData.email,
-        phone: personData.phone,
-        address: personData.address,
-        website: personData.website,
-        company: personData.company,
-        jobTitle: personData.jobTitle,
-        notes: personData.notes,
-        tags: personData.tags || [],
-        isFavorite: personData.isFavorite || false,
-        createdAt: now,
-        updatedAt: now,
-        socialMedia: personData.socialMedia,
-      };
-      await db.people.add(newPerson as Person);
+      setShowEditor(false);
+      setEditingPerson(null);
+    } catch (err) {
+      console.log(err);
+      error("Failed to save person. Please try again.");
     }
-
-    setShowEditor(false);
-    setEditingPerson(null);
   };
 
-  const handleDeletePerson = async (id: number) => {
-    if (window.confirm("Are you sure you want to delete this person?")) {
-      await db.people.delete(id);
+  const handleDeletePerson = (person: Person) => {
+    setPendingDeletePerson(person);
+  };
+
+  const confirmDeletePerson = async () => {
+    if (!pendingDeletePerson) return;
+    setIsDeleteLoading(true);
+    try {
+      await deletePerson(pendingDeletePerson.id!);
+      success("Person deleted successfully");
+    } catch (err) {
+      console.log(err);
+      error("Failed to delete person. Please try again.");
+    } finally {
+      setIsDeleteLoading(false);
+      setPendingDeletePerson(null);
     }
   };
 
@@ -185,8 +200,9 @@ export default function PeopleList() {
     searchTerm || selectedRelation !== "all" || selectedTags.length > 0;
 
   return (
-    <div className="min-h-screen bg-default px-3 pb-24 pt-16">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen px-3 pb-24 pt-16">
+      <ToastContainer toasts={toasts} onClose={removeToast} />
+      <div className="">
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-xl font-bold text-primary">People</h1>
@@ -380,7 +396,7 @@ export default function PeopleList() {
         {/* People grid/list */}
         {!people ? (
           <div className="flex justify-center items-center h-32">
-            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary-500" />
+            <Spinner overlay={false} size="sm" className="h-5 w-5" />
           </div>
         ) : filteredPeople.length === 0 ? (
           <motion.div
@@ -420,14 +436,27 @@ export default function PeopleList() {
                   key={person.id}
                   person={person}
                   onEdit={() => handleEditPerson(person)}
-                  onDelete={() => handleDeletePerson(person.id!)}
+                  onDelete={() => handleDeletePerson(person)}
                   onClick={() => navigate(`/people/${person.id}`)}
+                  onUpdate={updatePerson}
                 />
               ))}
             </AnimatePresence>
           </motion.div>
         )}
       </div>
+
+      <ConfirmationModal
+        isOpen={!!pendingDeletePerson}
+        title="Delete Person"
+        message={`Are you sure you want to delete "${pendingDeletePerson?.name ?? "this person"}"? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        isDangerous={true}
+        onConfirm={confirmDeletePerson}
+        onCancel={() => setPendingDeletePerson(null)}
+        isLoading={isDeleteLoading}
+      />
     </div>
   );
 }

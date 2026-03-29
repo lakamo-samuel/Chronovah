@@ -1,6 +1,7 @@
 // types/JournalType.ts
 export interface JournalEntry {
-  id?: number;
+  id: string;        // ← uuid string
+  userId: string;     // ← add this
   mood: MoodType;
   note: string;
   tags: string[];

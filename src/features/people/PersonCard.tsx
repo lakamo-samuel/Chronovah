@@ -13,7 +13,6 @@ import {
   Linkedin,
 } from "lucide-react";
 
-import { db } from "../../Database/peopleDB";
 import type { Person } from "../../type/PeopleType";
 
 interface PersonCardProps {
@@ -21,6 +20,7 @@ interface PersonCardProps {
   onEdit: () => void;
   onDelete: () => void;
   onClick: () => void;
+  onUpdate: (id: string, updates: Partial<Person>) => Promise<void>;
 }
 
 export default function PersonCard({
@@ -28,12 +28,12 @@ export default function PersonCard({
   onEdit,
   onDelete,
   onClick,
+  onUpdate,
 }: PersonCardProps) {
   const toggleFavorite = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    await db.people.update(person.id!, {
+    await onUpdate(person.id!, {
       isFavorite: !person.isFavorite,
-      updatedAt: new Date().toISOString(),
     });
   };
 

@@ -1,6 +1,6 @@
 import { createContext, useContext } from "react";
 
-type User = { id: string; name?: string; email: string,isVerifield: boolean, createdAt: string ,updatedAt: string } | null;
+type User = { id: string; name?: string; email: string, createdAt?: string | undefined,updatedAt?: string | undefined } | null;
 
 
 type AuthContextType = {

@@ -1,27 +1,25 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { db as noteDB } from "../Database/db";
-import { db as peopleDB, type Person } from "../Database/peopleDB";
-import { db as placeDB, type Place } from "../Database/placesDB";
-import { db as journalDB } from "../Database/journalDB";
+import { db } from "../database/db";
 
-import type Dexie from "dexie";
+import type { Person } from "../type/PeopleType";
+import type { Place } from "../type/PlaceType";
 import type { Note } from "../type/NoteType";
+import type { JournalEntry } from "../type/JournalType";
 import { JournalCard } from "./JournalCard";
 import { NotesCard } from "./NoteCard";
 import { PlacesCard } from "./PlaceCard";
 import { PeopleCard } from "./PeopleCard";
 import GoBackLink from "./GoBackLink";
-import type { JournalEntry } from "../type/JournalType";
 
 
 
 // DB_MAP maps type to the appropriate DB collection
 const DB_MAP = {
-  people: peopleDB.people,
-  places: placeDB.places,
-  notes: noteDB.notes,
-  journals: journalDB.journal,
+  people: db.people,
+  places: db.places,
+  notes: db.notes,
+  journals: db.journal,
 };
 
 function ItemDetails() {
@@ -51,8 +49,10 @@ function ItemDetails() {
 
     const parsedId = needsNumberId ? Number(id) : id;
 
+    // Get data from the table
+    const tableData = DB_MAP[type as keyof typeof DB_MAP];
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const data = await(table as Dexie.Table<any, any>).get(parsedId);
+    const data = await (tableData as any).get(parsedId);
 
         if (isMounted) {
           setItem(data ?? null);

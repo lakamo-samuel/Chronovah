@@ -8,8 +8,8 @@ import {
   MapPin,
   Image as ImageIcon,
 } from "lucide-react";
-import { db } from "../../Database/journalDB";
 import type { JournalEntry } from "../../type/JournalType";
+import { stripMarkdownForPreview } from "../../utils/textPreview";
 
 const moods: Record<string, { emoji: string; color: string; bgColor: string }> =
   {
@@ -29,6 +29,7 @@ interface JournalCardProps {
   onEdit: () => void;
   onDelete: () => void;
   onClick: () => void;
+  onUpdate: (id: string, updates: Partial<JournalEntry>) => Promise<void>;
 }
 
 export default function JournalCard({
@@ -36,12 +37,12 @@ export default function JournalCard({
   onEdit,
   onDelete,
   onClick,
+  onUpdate,
 }: JournalCardProps) {
   const toggleFavorite = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    await db.journal.update(entry.id!, {
+    await onUpdate(entry.id!, {
       isFavorite: !entry.isFavorite,
-      updatedAt: new Date().toISOString(),
     });
   };
 
@@ -62,19 +63,7 @@ export default function JournalCard({
 
   const mood = moods[entry.mood] || moods.Neutral;
 
-  const getPlainTextPreview = (content: string, maxLength: number = 100) => {
-    const plainText = content
-      .replace(/[#*`_~[\]()]/g, "")
-      .replace(/\n/g, " ")
-      .replace(/\s+/g, " ")
-      .trim();
-
-    return plainText.length > maxLength
-      ? plainText.substring(0, maxLength) + "..."
-      : plainText;
-  };
-
-  const preview = getPlainTextPreview(entry.note);
+  const preview = stripMarkdownForPreview(entry.note, 100);
 
   return (
     <motion.div

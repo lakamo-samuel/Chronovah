@@ -1,7 +1,7 @@
 // pages/People/PersonDetail.tsx
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
   Heart,
@@ -26,24 +26,28 @@ import {
   Tag,
 } from "lucide-react";
 import { useLiveQuery } from "dexie-react-hooks";
-import { db } from "../../Database/peopleDB";
+import { db } from "../../database/db";
 import type { Person } from "../../type/PeopleType";
 import PersonEditor from "./PersonEditor";
+import ConfirmationModal from "../../components/ConfirmationModal";
+import { useToast } from "../../hooks/useToast";
 
 
 export default function PersonDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const personId = Number(id);
+  const { success } = useToast();
+  const personId = id;
 
   const [showEditor, setShowEditor] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 //   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(
 //     null,
 //   );
 
-  const person = useLiveQuery(() => db.people.get(personId), [personId]);
+  const person = useLiveQuery(() => (personId ? db.people.get(personId) : undefined), [personId]);
 
   const toggleFavorite = async () => {
     if (person?.id) {
@@ -55,9 +59,17 @@ export default function PersonDetail() {
   };
 
   const handleDelete = async () => {
-    if (person?.id) {
+    if (!person?.id) return;
+    setIsDeleting(true);
+    try {
       await db.people.delete(person.id);
+      success("Person deleted successfully");
       navigate("/people");
+    } catch (error) {
+      console.error("Failed to delete person:", error);
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteConfirm(false);
     }
   };
 
@@ -91,8 +103,8 @@ export default function PersonDetail() {
 
   if (!person) {
     return (
-      <div className="min-h-screen bg-default pt-16 px-3">
-        <div className="max-w-4xl mx-auto text-center py-12">
+      <div className="min-h-screen  pt-16 px-3">
+        <div className=" text-center py-12">
           <User size={48} className="mx-auto text-muted mb-4" />
           <h2 className="text-lg font-semibold text-primary mb-2">
             Person not found
@@ -109,9 +121,9 @@ export default function PersonDetail() {
   }
 
   return (
-    <div className="min-h-screen bg-default pt-16 pb-20">
+    <div className="min-h-screen pt-16 pb-20">
       {/* Header */}
-      <div className="sticky top-16 bg-card/80 backdrop-blur-md border-b border-default z-30">
+      <div className="sticky top-16 backdrop-blur-md border-b border-default z-30">
         <div className="max-w-4xl mx-auto px-3 py-3">
           <div className="flex items-center justify-between">
             <button
@@ -425,45 +437,17 @@ export default function PersonDetail() {
       </AnimatePresence>
 
       {/* Delete Confirmation */}
-      <AnimatePresence>
-        {showDeleteConfirm && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-card rounded-xl border border-default p-5 max-w-md w-full"
-            >
-              <h3 className="text-base font-semibold text-primary mb-2">
-                Delete Person
-              </h3>
-              <p className="text-sm text-muted mb-5">
-                Are you sure you want to delete "{person.name}"? This action
-                cannot be undone.
-              </p>
-              <div className="flex justify-end gap-2">
-                <button
-                  onClick={() => setShowDeleteConfirm(false)}
-                  className="px-4 py-2 text-sm text-muted hover:text-primary transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleDelete}
-                  className="px-4 py-2 text-sm bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors"
-                >
-                  Delete
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <ConfirmationModal
+        isOpen={showDeleteConfirm}
+        title="Delete Person"
+        message={`Are you sure you want to delete "${person?.name}"? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        isDangerous={true}
+        onConfirm={handleDelete}
+        onCancel={() => setShowDeleteConfirm(false)}
+        isLoading={isDeleting}
+      />
     </div>
   );
 }
