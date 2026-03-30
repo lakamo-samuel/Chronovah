@@ -111,20 +111,28 @@ function PersonalInfo() {
       // Upload avatar using Cloudinary
       try {
         const cloudinaryUrl = await uploadImage(file);
-        success('Avatar uploaded successfully');
         
-        // Update profile with new image URL
-        await updateUser({ avatar: cloudinaryUrl });
+        // Update user with new image URL
+        const updateUserResult = await updateUser({ avatar: cloudinaryUrl });
+        if (!updateUserResult) {
+          showError('Failed to update profile with new avatar');
+          return;
+        }
         
         // Also update the backend profile with profileImageUrl
-        const response = await settingApiCall.updateProfile({
-          name: formData.name,
-          favoriteQuote: formData.favoriteQuote,
-        });
+        const payload: any = { name: formData.name };
+        if (formData.favoriteQuote.trim() !== '') {
+          payload.favoriteQuote = formData.favoriteQuote;
+        }
+        
+        const response = await settingApiCall.updateProfile(payload);
         
         if (!response.success) {
           showError(response.error || 'Failed to save profile');
+          return;
         }
+        
+        success('Avatar uploaded successfully');
       } catch (err) {
         showError(uploadError || 'Failed to upload avatar');
       }
@@ -140,12 +148,17 @@ function PersonalInfo() {
     setIsLoading(true);
     setSuccessMessage('');
 
-    const response = await settingApiCall.updateProfile({
+    const payload: any = {
       name: formData.name,
       username: formData.username,
       bio: formData.bio,
-      favoriteQuote: formData.favoriteQuote,
-    });
+    };
+    
+    if (formData.favoriteQuote.trim() !== '') {
+      payload.favoriteQuote = formData.favoriteQuote;
+    }
+
+    const response = await settingApiCall.updateProfile(payload);
 
     setIsLoading(false);
 

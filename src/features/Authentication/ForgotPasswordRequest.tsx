@@ -5,6 +5,7 @@ import Button from '../../ui/Button';
 
 function ForgotPasswordRequest() {
   const [email, setEmail] = useState('');
+  const [submittedEmail, setSubmittedEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -23,8 +24,9 @@ function ForgotPasswordRequest() {
     setIsLoading(false);
 
     if (response.success) {
-      setSubmitted(true);
+      setSubmittedEmail(email);
       setEmail('');
+      setSubmitted(true);
     } else {
       setError(response.error || 'Failed to request password reset');
     }
@@ -40,7 +42,7 @@ function ForgotPasswordRequest() {
           Check Your Email
         </h2>
         <p className="text-center text-muted mb-6">
-          We've sent a password reset link to <strong>{email}</strong>. It will expire in 1 hour.
+          We've sent a password reset link to <strong>{submittedEmail}</strong>. It will expire in 1 hour.
         </p>
         <p className="text-center text-sm text-muted mb-6">
           If you don't see the email, check your spam folder.

@@ -102,7 +102,7 @@ function ResetPasswordConfirm() {
           This password reset link is invalid or has expired.
         </p>
         <button
-          onClick={() => navigate('/forgot-password')}
+          onClick={() => navigate('/forgot')}
           className="w-full px-4 py-2 rounded-lg bg-primary text-white hover:bg-primary-600 transition-colors"
         >
           Request New Link
