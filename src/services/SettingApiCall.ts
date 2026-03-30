@@ -1,4 +1,4 @@
-import { protectedAxios } from '../../axios';
+import { protectedAxios, publicAxios } from '../../axios';
 
 export interface ProfileUpdateData {
   name?: string;
@@ -20,7 +20,14 @@ export interface ApiResponse<T = unknown> {
   error?: string;
 }
 
-const settingApiCall = {
+const settingApiCall: {
+  updateProfile: (data: ProfileUpdateData) => Promise<ApiResponse>;
+  changePassword: (data: PasswordChangeData) => Promise<ApiResponse>;
+  deleteAccount: () => Promise<ApiResponse>;
+  uploadAvatar: (file: File) => Promise<ApiResponse<{ avatarUrl: string }>>;
+  requestPasswordReset: (email: string) => Promise<ApiResponse>;
+  confirmPasswordReset: (token: string, newPassword: string, confirmNewPassword: string) => Promise<ApiResponse>;
+} = {
   // Update user profile information
   updateProfile: async (data: ProfileUpdateData): Promise<ApiResponse> => {
     try {
@@ -107,6 +114,50 @@ const settingApiCall = {
           error.response?.data?.message ||
           error.message ||
           'Failed to upload avatar',
+      };
+    }
+  },
+
+  // Request password reset
+  requestPasswordReset: async (email: string): Promise<ApiResponse> => {
+    try {
+      const response = await publicAxios.post('/user/reset-password/request', { email });
+      return {
+        success: true,
+        message: response.data?.message || 'Reset link sent to your email',
+      };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      return {
+        success: false,
+        error:
+          error.response?.data?.error ||
+          error.message ||
+          'Failed to request password reset',
+      };
+    }
+  },
+
+  // Confirm password reset
+  confirmPasswordReset: async (token: string, newPassword: string, confirmNewPassword: string): Promise<ApiResponse> => {
+    try {
+      const response = await publicAxios.post('/user/reset-password/confirm', {
+        token,
+        newPassword,
+        confirmNewPassword,
+      });
+      return {
+        success: true,
+        message: response.data?.message || 'Password reset successfully',
+      };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      return {
+        success: false,
+        error:
+          error.response?.data?.error ||
+          error.message ||
+          'Failed to reset password',
       };
     }
   },
