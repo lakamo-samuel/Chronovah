@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { User, Quote, Loader } from 'lucide-react';
 import { useUser } from '../../hooks/useUser';
+import { useImageUpload } from '../../hooks/useImageUpload';
 import settingApiCall from '../../services/SettingApiCall';
 import Button from '../../ui/Button';
 import { useToast } from '../../hooks/useToast';
@@ -15,6 +16,7 @@ interface FormErrors {
 function PersonalInfo() {
   const { user, updateUser } = useUser();
   const { success, error: showError } = useToast();
+  const { uploadImage, isUploading: isUploadingImage, error: uploadError } = useImageUpload();
   const [formData, setFormData] = useState({
     name: user?.name || '',
     username: user?.username || '',
@@ -106,19 +108,28 @@ function PersonalInfo() {
       };
       reader.readAsDataURL(file);
 
-      // Upload avatar
-      setIsLoading(true);
-      const response = await settingApiCall.uploadAvatar(file);
-
-      if (response.success) {
-        success('Avatar updated successfully');
-        await updateUser({ avatar: response.data?.avatarUrl });
-      } else {
-        showError(response.error || 'Failed to upload avatar');
+      // Upload avatar using Cloudinary
+      try {
+        const cloudinaryUrl = await uploadImage(file);
+        success('Avatar uploaded successfully');
+        
+        // Update profile with new image URL
+        await updateUser({ avatar: cloudinaryUrl });
+        
+        // Also update the backend profile with profileImageUrl
+        const response = await settingApiCall.updateProfile({
+          name: formData.name,
+          favoriteQuote: formData.favoriteQuote,
+        });
+        
+        if (!response.success) {
+          showError(response.error || 'Failed to save profile');
+        }
+      } catch (err) {
+        showError(uploadError || 'Failed to upload avatar');
       }
-      setIsLoading(false);
     },
-    [errors, updateUser]
+    [uploadImage, uploadError, updateUser, formData.name, formData.favoriteQuote, showError, success]
   );
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -170,7 +181,7 @@ function PersonalInfo() {
                   <User size={40} className="text-muted" />
                 )}
               </div>
-              {isLoading && (
+              {(isLoading || isUploadingImage) && (
                 <div className="absolute inset-0 rounded-full bg-black/20 flex items-center justify-center">
                   <Loader size={20} className="text-white animate-spin" />
                 </div>
@@ -184,7 +195,7 @@ function PersonalInfo() {
                 id="avatar"
                 accept="image/*"
                 onChange={handleAvatarChange}
-                disabled={isLoading}
+                disabled={isLoading || isUploadingImage}
                 className="hidden"
               />
               <label htmlFor="avatar" className="block">

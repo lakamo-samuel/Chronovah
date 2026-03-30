@@ -1,5 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { Suspense, lazy, useEffect } from "react";
+import { Suspense, lazy } from "react";
 import "./index.css";
 import AppLayout from "./ui/AppLayout";
 import ProtectedRoute from "./pages/ProtectedRoute";
@@ -7,10 +7,6 @@ import Spinner from "./ui/Spinner";
 import PlaceDetail from "./features/Places/PlaceDetail";
 import JournalDetail from "./features/Journal/JournalDetail";
 import PersonDetail from "./features/people/PersonDetail";
-import { useAuth } from "./hooks/useAuth";
-import { migrateLegacyDatabases } from "./database/migrate";
-
-// Lazy load pages
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Note = lazy(() => import("./pages/Note"));
 const NoteDetail = lazy(() => import("./features/Note/NoteDetail"));
@@ -29,13 +25,6 @@ const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const PageNotFound = lazy(() => import("./pages/PageNotFound"));
 
 function App() {
-  const { user } = useAuth();
-
-  useEffect(() => {
-    if (user?.id) {
-      migrateLegacyDatabases(user.id);
-    }
-  }, [user?.id]);
 
   return (
     <BrowserRouter>
