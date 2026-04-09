@@ -2,6 +2,7 @@ import { Outlet } from "react-router-dom";
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import BottomNav from "../components/BottomNav";
+import ThemeQuickSwitcher from "../components/ThemeQuickSwitcher";
 import { useSidebar } from "../hooks/useSidebar";
 
 function AppLayout() {
@@ -33,6 +34,9 @@ function AppLayout() {
       <div className="md:hidden fixed bottom-0 left-0 w-full">
         <BottomNav />
       </div>
+
+      {/* Theme Quick Switcher */}
+      <ThemeQuickSwitcher />
     </div>
   );
 }

@@ -70,16 +70,16 @@ function IndividualData({ name, data, dbMap }: Props) {
     }
   };
   return (
-    <div className="bg-default rounded-2xl p-5 shadow space-y-3">
-      <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
+    <div className="bg-default rounded-2xl p-4 sm:p-5 lg:p-6 shadow space-y-3">
+      <h2 className="text-base sm:text-lg font-semibold text-primary">
         {name}
       </h2>
-      <p className="text-sm text-gray-500 dark:text-gray-400">
+      <p className="text-xs sm:text-sm text-muted">
         Total: {data.length}
       </p>
 
       <select
-        className="w-full bg-card text-primary focus:ring-2 focus:ring-primary rounded-xl p-2 transition"
+        className="w-full bg-card text-primary focus:ring-2 focus:ring-primary rounded-xl p-2 text-sm transition"
         onChange={(e) =>
           setSelected((prev) => ({
             ...prev,
@@ -95,16 +95,16 @@ function IndividualData({ name, data, dbMap }: Props) {
         ))}
       </select>
 
-      <div className="flex gap-4 text-sm pt-2">
+      <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 text-xs sm:text-sm pt-2">
         <button
           onClick={() => handleDelete(selected[name.toLowerCase() as TableName])}
-          className="text-red-500 dark:text-red-600 hover:underline cursor-pointer"
+          className="px-3 py-1.5 text-red-500 dark:text-red-600 hover:underline cursor-pointer whitespace-nowrap"
         >
           Delete Selected
         </button>
         <button
           onClick={() => handleClearTable()}
-          className="text-red-500 dark:text-red-600 hover:underline cursor-pointer"
+          className="px-3 py-1.5 text-red-500 dark:text-red-600 hover:underline cursor-pointer whitespace-nowrap"
         >
           Clear All
         </button>
