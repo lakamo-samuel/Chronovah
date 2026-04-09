@@ -209,6 +209,46 @@
   --color-primary-950: #020617;
 }
 
+/* ===== DARK MODE TEMPERATURE ADJUSTMENTS ===== */
+/* Slightly brighten/soften theme colors in dark mode for natural feel */
+
+.dark.theme-midnight {
+  --color-primary-500: #818cf8;
+  --color-primary-600: #6366f1;
+  --color-primary-400: #a5b4fc;
+}
+
+.dark.theme-forest {
+  --color-primary-500: #4ade80;
+  --color-primary-600: #22c55e;
+  --color-primary-400: #86efac;
+}
+
+.dark.theme-sunset {
+  --color-primary-500: #f97316;
+  --color-primary-600: #ea580c;
+  --color-primary-400: #fb923c;
+}
+
+.dark.theme-rose {
+  --color-primary-500: #f06292;
+  --color-primary-600: #ec4899;
+  --color-primary-400: #f48fb1;
+}
+
+.dark.theme-slate {
+  --color-primary-500: #94a3b8;
+  --color-primary-600: #64748b;
+  --color-primary-400: #cbd5e1;
+}
+
+/* Ocean theme in dark mode (lighter blues) */
+.dark.theme-ocean {
+  --color-primary-500: #60a5fa;
+  --color-primary-600: #3b82f6;
+  --color-primary-400: #93c5fd;
+}
+
 /* ===== UTILITY LAYER ===== */
 @layer utilities {
   /* ===== TYPOGRAPHY UTILITIES ===== */
