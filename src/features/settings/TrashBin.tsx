@@ -124,26 +124,26 @@ export default function TrashBin() {
   const tabs: DataType[] = ['notes', 'journal', 'people', 'places'];
 
   return (
-    <div className="bg-white dark:bg-[#0B1120] mb-4 rounded-2xl p-5 shadow space-y-4">
+    <div className="bg-default mb-4 rounded-2xl p-5 shadow space-y-4">
       <div>
-        <h2 className="text-xl font-semibold mb-2 text-gray-700 dark:text-gray-100">
+        <h2 className="text-xl font-semibold mb-2 text-primary">
           Trash Bin
         </h2>
-        <p className="text-sm text-gray-500 dark:text-gray-400">
+        <p className="text-sm text-muted">
           Items in trash can be restored. Items are permanently deleted after 30 days.
         </p>
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-2 border-b border-gray-200 dark:border-gray-700">
+      <div className="flex gap-2 border-b border-default">
         {tabs.map(tab => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={`px-4 py-2 text-sm font-medium transition-colors ${
               activeTab === tab
-                ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400'
-                : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+                ? 'text-primary-600 border-b-2 border-primary'
+                : 'text-muted hover:text-primary'
             }`}
           >
             {getTabLabel(tab)}
@@ -155,24 +155,24 @@ export default function TrashBin() {
       <div className="space-y-3">
         {loading ? (
           <div className="flex items-center justify-center py-8">
-            <Loader className="animate-spin text-gray-400" size={24} />
+            <Loader className="animate-spin text-muted" size={24} />
           </div>
         ) : trashItems.length === 0 ? (
           <div className="text-center py-8">
-            <Trash2 size={32} className="mx-auto text-gray-300 dark:text-gray-600 mb-2" />
-            <p className="text-gray-500 dark:text-gray-400">No deleted items</p>
+            <Trash2 size={32} className="mx-auto text-muted mb-2" />
+            <p className="text-muted">No deleted items</p>
           </div>
         ) : (
           trashItems.map(item => (
             <div
               key={item.id}
-              className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700"
+              className="flex items-center justify-between p-3 bg-card rounded-lg border border-default"
             >
               <div className="flex-1 min-w-0">
-                <h3 className="font-medium text-gray-900 dark:text-gray-100 truncate">
+                <h3 className="font-medium text-primary truncate">
                   {getItemTitle(item)}
                 </h3>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                <p className="text-xs text-muted mt-1">
                   Deleted: {getDeletedDate(item.deletedAt)}
                 </p>
               </div>

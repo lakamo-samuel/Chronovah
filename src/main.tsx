@@ -4,13 +4,16 @@ import './index.css'
 import App from './App.tsx'
 import { DarkModeProvider } from './context/DarkModeContext.tsx'
 import { SidebarProvider } from './context/SidebarToggleContext.tsx'
-
+import { applyTheme, getStoredTheme } from './lib/theme.ts'
 import { registerSW } from "virtual:pwa-register";
 import { DashboardProvider } from './context/DashboardContext.tsx'
 
 import { SearchProvider } from './context/SearchContext.tsx'
 import { AuthProvider } from './context/AuthContext.tsx'
 import { SyncProvider } from './context/SyncContext.tsx'
+
+// Initialize theme as early as possible
+applyTheme(getStoredTheme());
 
 const updateSW = registerSW({
   onNeedRefresh() {
