@@ -15,10 +15,10 @@ function CommonPageHeader({ heading,isSetting = false, }: Heading) {
      });
   return (
     <div className="flex justify-between items-center mb-6">
-      <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
+      <h2 className="text-2xl font-bold text-primary">
         {heading}
       </h2>
-      {!isSetting ? <span className="text-sm text-gray-500 dark:text-gray-400">
+      {!isSetting ? <span className="text-sm text-muted">
         {todaysDate}
       </span> : <SettingLinkBtn to="profile" icon={<UserPen/>} >ProfileSetting</SettingLinkBtn>}
       
