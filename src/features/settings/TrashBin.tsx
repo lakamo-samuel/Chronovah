@@ -124,23 +124,23 @@ export default function TrashBin() {
   const tabs: DataType[] = ['notes', 'journal', 'people', 'places'];
 
   return (
-    <div className="bg-default mb-4 rounded-2xl p-5 shadow space-y-4">
+    <div className="bg-default mb-4 rounded-2xl p-4 sm:p-5 lg:p-6 shadow space-y-4">
       <div>
-        <h2 className="text-xl font-semibold mb-2 text-primary">
+        <h2 className="text-lg sm:text-xl font-semibold mb-2 text-primary">
           Trash Bin
         </h2>
-        <p className="text-sm text-muted">
+        <p className="text-xs sm:text-sm text-muted">
           Items in trash can be restored. Items are permanently deleted after 30 days.
         </p>
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-2 border-b border-default">
+      <div className="flex gap-1 sm:gap-2 border-b border-default overflow-x-auto">
         {tabs.map(tab => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`px-4 py-2 text-sm font-medium transition-colors ${
+            className={`whitespace-nowrap px-2 sm:px-4 py-2 text-xs sm:text-sm font-medium transition-colors ${
               activeTab === tab
                 ? 'text-primary-600 border-b-2 border-primary'
                 : 'text-muted hover:text-primary'
@@ -152,7 +152,7 @@ export default function TrashBin() {
       </div>
 
       {/* Content */}
-      <div className="space-y-3">
+      <div className="space-y-2 sm:space-y-3">
         {loading ? (
           <div className="flex items-center justify-center py-8">
             <Loader className="animate-spin text-muted" size={24} />
@@ -160,16 +160,16 @@ export default function TrashBin() {
         ) : trashItems.length === 0 ? (
           <div className="text-center py-8">
             <Trash2 size={32} className="mx-auto text-muted mb-2" />
-            <p className="text-muted">No deleted items</p>
+            <p className="text-sm text-muted">No deleted items</p>
           </div>
         ) : (
           trashItems.map(item => (
             <div
               key={item.id}
-              className="flex items-center justify-between p-3 bg-card rounded-lg border border-default"
+              className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 p-3 bg-card rounded-lg border border-default"
             >
               <div className="flex-1 min-w-0">
-                <h3 className="font-medium text-primary truncate">
+                <h3 className="font-medium text-primary truncate text-sm sm:text-base">
                   {getItemTitle(item)}
                 </h3>
                 <p className="text-xs text-muted mt-1">
@@ -180,7 +180,7 @@ export default function TrashBin() {
               <button
                 onClick={() => setConfirmRestore(item)}
                 disabled={restoring === item.id}
-                className="ml-2 flex items-center gap-2 px-3 py-1.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-lg hover:bg-green-200 dark:hover:bg-green-900/50 transition-colors disabled:opacity-50 text-sm font-medium"
+                className="w-full sm:w-auto flex items-center justify-center gap-2 px-3 py-1.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-lg hover:bg-green-200 dark:hover:bg-green-900/50 transition-colors disabled:opacity-50 text-xs sm:text-sm font-medium"
               >
                 {restoring === item.id ? (
                   <Loader size={14} className="animate-spin" />
