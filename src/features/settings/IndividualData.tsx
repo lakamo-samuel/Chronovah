@@ -70,7 +70,7 @@ function IndividualData({ name, data, dbMap }: Props) {
     }
   };
   return (
-    <div className="bg-white dark:bg-[#0B1120] rounded-2xl p-5 shadow space-y-3">
+    <div className="bg-default rounded-2xl p-5 shadow space-y-3">
       <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
         {name}
       </h2>
@@ -79,7 +79,7 @@ function IndividualData({ name, data, dbMap }: Props) {
       </p>
 
       <select
-        className="w-full bg-white dark:bg-[#1E293B] text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 rounded-xl p-2 transition"
+        className="w-full bg-card text-primary focus:ring-2 focus:ring-primary rounded-xl p-2 transition"
         onChange={(e) =>
           setSelected((prev) => ({
             ...prev,

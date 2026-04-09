@@ -13,10 +13,10 @@ function RecentActivities() {
       };
   return (
     <div>
-      <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
+      <h2 className="text-lg font-semibold text-primary mb-3">
         Recent Activity
       </h2>
-      <div className="bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl p-4 transition-colors">
+      <div className="bg-card border border-default rounded-xl p-4 transition-colors">
         {activities.length > 0 ? (
           <ul className="space-y-3 text-gray-700 dark:text-gray-300 text-sm">
             {activities.map((item) => (

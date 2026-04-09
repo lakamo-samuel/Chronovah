@@ -7,14 +7,14 @@ function DashStat() {
       {stats.map((stat, i) => (
         <div
           key={i}
-          className={`p-5 rounded-2xl ${stat.bg} border border-gray-200 dark:border-white/5 shadow-sm`}
+          className={`p-5 rounded-2xl ${stat.bg} border border-default shadow-sm`}
         >
           <div className="flex items-center justify-between">
             <div>
               <p className="text-gray-600 dark:text-gray-400 text-sm">
                 {stat.title}
               </p>
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
+              <h2 className="text-2xl font-bold text-primary mt-1">
                 {stat.value}
               </h2>
             </div>
