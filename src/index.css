@@ -374,6 +374,14 @@
     color: var(--color-text-muted);
   }
   
+  .text-primary-600 {
+    color: var(--color-primary-600);
+  }
+  
+  .hover\:text-primary:hover {
+    color: var(--color-primary-500);
+  }
+  
   /* ===== BORDER UTILITIES ===== */
   .border-default {
     border-color: var(--color-border);
