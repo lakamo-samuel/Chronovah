@@ -54,7 +54,7 @@ export default function ThemeQuickSwitcher() {
       <button
         ref={buttonRef}
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-20 md:bottom-8 right-5 z-40 w-12 h-12 rounded-full bg-primary text-white shadow-lg hover:shadow-xl transition-all active:scale-95 flex items-center justify-center"
+        className="fixed bottom-25 md:bottom-8 right-5 z-40 w-12 h-12 rounded-full bg-primary text-white shadow-lg hover:shadow-xl transition-all active:scale-95 flex items-center justify-center"
         aria-label="Open theme switcher"
       >
         <Palette size={22} />
