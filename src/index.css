@@ -368,6 +368,18 @@
   .bg-journal-soft {
     background-color: var(--color-journal-bg);
   }
+
+  .bg-primary-soft {
+    background-color: var(--color-primary-soft);
+  }
+
+  .bg-primary-900 {
+    background-color: var(--color-primary-900);
+  }
+
+  .hover\:bg-primary\/10:hover {
+    background-color: color-mix(in srgb, var(--color-primary) 10%, transparent);
+  }
   
   /* ===== TEXT UTILITIES ===== */
   .text-primary {
@@ -401,6 +413,14 @@
   /* ===== BORDER UTILITIES ===== */
   .border-default {
     border-color: var(--color-border);
+  }
+
+  .border-primary-200 {
+    border-color: var(--color-primary-200);
+  }
+
+  .border-primary-800 {
+    border-color: var(--color-primary-800);
   }
   
   /* ===== GRADIENT UTILITIES ===== */
