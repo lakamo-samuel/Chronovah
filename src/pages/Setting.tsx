@@ -3,6 +3,7 @@ import IndividualDataManagement from "../features/settings/IndividualDataManagem
 import CommonPageHeader from "../components/CommonPageHeader";
 import AppearanceStorage from "../features/settings/AppearanceStorage";
 import BackupRestore from "../features/settings/BackupRestore";
+import TrashBin from "../features/settings/TrashBin";
 import ConfirmationModal from "../components/ConfirmationModal";
 import { useToast } from "../hooks/useToast";
 import { useState } from "react";
@@ -46,6 +47,7 @@ export default function Settings() {
       <CommonPageHeader heading="Setting" isSetting={true} />
       <AppearanceStorage />
       <BackupRestore />
+      <TrashBin />
 
       <IndividualDataManagement />
       <DangerZone onClick={handleClearAll}>Clear all data</DangerZone>

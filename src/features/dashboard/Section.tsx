@@ -23,7 +23,7 @@ function Section({
       {items.length > 0 ? (
         <div className="flex flex-col sm:flex-row sm:justify-between sm:gap-4 gap-3">
           {items.map((item) => (
-            <ItemCard key={item.id} item={item.item} title={item.title} date={item.createdAt} id={item.id} />
+            <ItemCard key={item.id ?? crypto.randomUUID()} item={item.item} title={item.title} date={item.createdAt} id={item.id} />
           ))}
         </div>
       ) : (

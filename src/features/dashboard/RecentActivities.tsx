@@ -21,7 +21,7 @@ function RecentActivities() {
           <ul className="space-y-3 text-gray-700 dark:text-gray-300 text-sm">
             {activities.map((item) => (
               <li
-                key={`${item.type}-${item.id}`}
+                key={`${item.type}-${item.id ?? crypto.randomUUID()}`}
                 onClick={() => {
                   navigate(`/item/${item.type}/${item.id}`);
                 }}

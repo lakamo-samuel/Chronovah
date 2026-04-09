@@ -119,6 +119,96 @@
   --color-journal-bg: var(--color-journal-bg-dark);
 }
 
+/* ===== SEMANTIC COLOR TOKENS ===== */
+:root {
+  --color-primary: var(--color-primary-500);
+  --color-primary-hover: var(--color-primary-600);
+  --color-primary-soft: var(--color-primary-100);
+  --color-primary-border: var(--color-primary-200);
+}
+
+.dark {
+  --color-primary-soft: var(--color-primary-900);
+  --color-primary-border: var(--color-primary-800);
+}
+
+/* ===== THEME CLASSES (Ocean is default) ===== */
+
+/* MIDNIGHT THEME - Indigo */
+.theme-midnight {
+  --color-primary-50: #eef2ff;
+  --color-primary-100: #e0e7ff;
+  --color-primary-200: #c7d2fe;
+  --color-primary-300: #a5b4fc;
+  --color-primary-400: #818cf8;
+  --color-primary-500: #6366f1;
+  --color-primary-600: #4f46e5;
+  --color-primary-700: #4338ca;
+  --color-primary-800: #3730a3;
+  --color-primary-900: #312e81;
+  --color-primary-950: #1e1b4b;
+}
+
+/* FOREST THEME - Emerald */
+.theme-forest {
+  --color-primary-50: #f0fdf4;
+  --color-primary-100: #dcfce7;
+  --color-primary-200: #bbf7d0;
+  --color-primary-300: #86efac;
+  --color-primary-400: #4ade80;
+  --color-primary-500: #22c55e;
+  --color-primary-600: #16a34a;
+  --color-primary-700: #15803d;
+  --color-primary-800: #166534;
+  --color-primary-900: #145231;
+  --color-primary-950: #092e1b;
+}
+
+/* SUNSET THEME - Orange */
+.theme-sunset {
+  --color-primary-50: #fff7ed;
+  --color-primary-100: #fed7aa;
+  --color-primary-200: #fdba74;
+  --color-primary-300: #fb923c;
+  --color-primary-400: #f97316;
+  --color-primary-500: #ea580c;
+  --color-primary-600: #c2410c;
+  --color-primary-700: #9a3412;
+  --color-primary-800: #7c2d12;
+  --color-primary-900: #431407;
+  --color-primary-950: #2c0f04;
+}
+
+/* ROSE THEME - Rose */
+.theme-rose {
+  --color-primary-50: #ffe4e6;
+  --color-primary-100: #fccdd2;
+  --color-primary-200: #f8bac5;
+  --color-primary-300: #f48fb1;
+  --color-primary-400: #f06292;
+  --color-primary-500: #ec4899;
+  --color-primary-600: #db2777;
+  --color-primary-700: #be185d;
+  --color-primary-800: #9d174d;
+  --color-primary-900: #831843;
+  --color-primary-950: #500724;
+}
+
+/* SLATE THEME - Neutral/Slate */
+.theme-slate {
+  --color-primary-50: #f8fafc;
+  --color-primary-100: #f1f5f9;
+  --color-primary-200: #e2e8f0;
+  --color-primary-300: #cbd5e1;
+  --color-primary-400: #94a3b8;
+  --color-primary-500: #64748b;
+  --color-primary-600: #475569;
+  --color-primary-700: #334155;
+  --color-primary-800: #1e293b;
+  --color-primary-900: #0f172a;
+  --color-primary-950: #020617;
+}
+
 /* ===== UTILITY LAYER ===== */
 @layer utilities {
   /* ===== TYPOGRAPHY UTILITIES ===== */
