@@ -50,9 +50,11 @@ export default function AppearanceStorage() {
             <button
               key={theme.name}
               onClick={() => handleThemeChange(theme.name)}
-              className={`relative p-3 rounded-lg border-2 transition-all ${\n                currentTheme === theme.name
+              className={`relative p-3 rounded-lg border-2 transition-all ${
+                currentTheme === theme.name
                   ? 'border-primary bg-primary/5'
-                  : 'border-default hover:border-primary/50'\n              }`}
+                  : 'border-default hover:border-primary/50'
+              }`}
             >
               {/* Color swatch */}
               <div
