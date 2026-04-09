@@ -16,6 +16,15 @@
     <title>Chronovah</title>
   </head>
   <body>
+    <script>
+      // Apply saved theme immediately before React renders
+      (function () {
+        const theme = localStorage.getItem('chronovah-theme') || 'ocean';
+        if (theme !== 'ocean') {
+          document.documentElement.classList.add('theme-' + theme);
+        }
+      })();
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
