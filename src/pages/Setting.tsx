@@ -43,8 +43,8 @@ export default function Settings() {
     }
   };
   return (
-    <div className="p-6 space-y-8  my-20">
-      <CommonPageHeader heading="Setting" isSetting={true} />
+    <div className="p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6 md:space-y-8 my-16 sm:my-20">
+      <CommonPageHeader heading="Settings" isSetting={true} />
       <AppearanceStorage />
       <BackupRestore />
       <TrashBin />

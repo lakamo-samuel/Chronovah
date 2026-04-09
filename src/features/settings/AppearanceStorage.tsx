@@ -20,24 +20,24 @@ export default function AppearanceStorage() {
   };
 
   return (
-    <div className="bg-default mb-4 rounded-2xl p-5 shadow space-y-6">
+    <div className="bg-default mb-4 rounded-2xl p-4 sm:p-5 lg:p-6 shadow space-y-5 sm:space-y-6">
       {/* Header */}
-      <h2 className="text-xl font-semibold text-primary">
+      <h2 className="text-lg sm:text-xl font-semibold text-primary">
         Appearance & Storage
       </h2>
 
       {/* Dark/Light Mode Toggle */}
       <div className="space-y-3">
-        <div className="flex justify-between items-center">
-          <span className="text-muted">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+          <span className="text-sm sm:text-base text-muted">
             Mode: {isDarkMode ? "Dark" : "Light"}
           </span>
           <button
             onClick={toggleDarkMode}
-            className="flex items-center gap-2 px-4 py-2 bg-card text-primary border border-primary rounded-xl hover:bg-primary hover:text-white transition-colors"
+            className="flex items-center justify-center sm:justify-start gap-2 px-4 py-2 bg-card text-primary border border-primary rounded-xl hover:bg-primary hover:text-white transition-colors"
           >
             {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
-            Toggle
+            <span className="hidden sm:inline">Toggle</span>
           </button>
         </div>
       </div>
@@ -45,12 +45,12 @@ export default function AppearanceStorage() {
       {/* Theme Selection */}
       <div className="space-y-3">
         <h3 className="text-sm font-semibold text-primary">Theme</h3>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3">
           {THEMES.map((theme) => (
             <button
               key={theme.name}
               onClick={() => handleThemeChange(theme.name)}
-              className={`relative p-3 rounded-lg border-2 transition-all ${
+              className={`relative p-2 sm:p-3 rounded-lg border-2 transition-all ${
                 currentTheme === theme.name
                   ? 'border-primary bg-primary/5'
                   : 'border-default hover:border-primary/50'
@@ -58,18 +58,18 @@ export default function AppearanceStorage() {
             >
               {/* Color swatch */}
               <div
-                className="w-full h-10 rounded-md mb-2 shadow-sm"
+                className="w-full h-8 sm:h-10 rounded-md mb-1.5 sm:mb-2 shadow-sm"
                 style={{ backgroundColor: getThemeColor(theme.name) }}
               />
               
               {/* Theme name */}
               <p className="text-xs font-medium text-primary text-center">{theme.label}</p>
-              <p className="text-xs text-muted text-center">{theme.description}</p>
+              <p className="text-xs text-muted text-center hidden sm:block">{theme.description}</p>
 
               {/* Checkmark for active theme */}
               {currentTheme === theme.name && (
-                <div className="absolute top-2 right-2 bg-primary text-white rounded-full p-1">
-                  <Check size={14} />
+                <div className="absolute top-1 sm:top-2 right-1 sm:right-2 bg-primary text-white rounded-full p-0.5 sm:p-1">
+                  <Check size={12} className="sm:w-[14px] sm:h-[14px]" />
                 </div>
               )}
             </button>
@@ -80,7 +80,7 @@ export default function AppearanceStorage() {
       {/* Storage Section */}
       <div className="space-y-3">
         <div className="flex items-center gap-2 text-sm">
-          <Database size={16} className="text-muted" />
+          <Database size={16} className="text-muted flex-shrink-0" />
           <span className="text-muted">Storage Used</span>
           <span className="ml-auto font-medium text-primary">{storageUsed}</span>
         </div>
