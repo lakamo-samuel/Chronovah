@@ -75,11 +75,11 @@ function ProfileSetting() {
       </section>
 
       {/* Footer Info */}
-      <div className="p-4 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800/50 rounded-lg">
-        <h3 className="font-ui-sm-bold text-blue-900 dark:text-blue-300 mb-2">
+      <div className="p-4 bg-primary-soft dark:bg-primary-900/20 border border-primary-200 dark:border-primary-800/50 rounded-lg">
+        <h3 className="font-ui-sm-bold text-primary-900 dark:text-primary-300 mb-2">
           💡 Tips
         </h3>
-        <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1">
+        <ul className="text-sm text-primary-800 dark:text-primary-200 space-y-1">
           <li>• Keep your password strong and unique</li>
           <li>• Update your profile picture to help others recognize you</li>
           <li>• Your data is securely encrypted and stored</li>
