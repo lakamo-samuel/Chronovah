@@ -69,7 +69,7 @@ export default function AppearanceStorage() {
               {/* Checkmark for active theme */}
               {currentTheme === theme.name && (
                 <div className="absolute top-1 sm:top-2 right-1 sm:right-2 bg-primary text-white rounded-full p-0.5 sm:p-1">
-                  <Check size={12} className="sm:w-[14px] sm:h-[14px]" />
+                  <Check size={12} className="sm:w-3.5 sm:h-3.5" />
                 </div>
               )}
             </button>
@@ -80,7 +80,7 @@ export default function AppearanceStorage() {
       {/* Storage Section */}
       <div className="space-y-3">
         <div className="flex items-center gap-2 text-sm">
-          <Database size={16} className="text-muted flex-shrink-0" />
+          <Database size={16} className="text-muted shrink-0" />
           <span className="text-muted">Storage Used</span>
           <span className="ml-auto font-medium text-primary">{storageUsed}</span>
         </div>
