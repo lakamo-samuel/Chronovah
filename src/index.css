@@ -382,6 +382,18 @@
     color: var(--color-primary-600);
   }
   
+  .text-primary-200 {
+    color: var(--color-primary-200);
+  }
+
+  .text-primary-400 {
+    color: var(--color-primary-400);
+  }
+
+  .text-primary-900 {
+    color: var(--color-primary-900);
+  }
+  
   .hover\:text-primary:hover {
     color: var(--color-primary-500);
   }
