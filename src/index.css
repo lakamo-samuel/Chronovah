@@ -324,6 +324,10 @@
   .bg-primary {
     background-color: var(--color-primary-500);
   }
+
+  .hover\:bg-primary-hover:hover {
+    background-color: var(--color-primary-hover);
+  }
   
   .bg-card {
     background-color: var(--color-card);
