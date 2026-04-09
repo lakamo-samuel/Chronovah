@@ -77,7 +77,7 @@ function ItemDetails() {
   if (loading) {
     return (
       <div className="p-6 text-center">
-        <p className="text-gray-400 dark:text-gray-500">Loading...</p>
+        <p className="text-muted">Loading...</p>
       </div>
     );
   }
@@ -98,7 +98,7 @@ console.log(item);
   if (!item) {
     return (
       <div className="p-6 mt-20 text-center">
-        <p className="text-gray-400 dark:text-gray-500">Item not found.</p>
+        <p className="text-muted">Item not found.</p>
         <button className="mt-3 btn btn-sm" onClick={() => navigate(-1)}>
           Back
         </button>
@@ -110,11 +110,11 @@ console.log(item);
     <div className="p-6 mt-15">
      <GoBackLink/>
 
-          <div className=" rounded-lg p-6 bg-white dark:bg-gray-900 shadow">
-             <h1 className="text-2xl font-semibold text-gray-900 dark:text-white capitalize">
+          <div className=" rounded-lg p-6 bg-default shadow">
+             <h1 className="text-2xl font-semibold text-primary capitalize">
           {type} Details
              </h1>
-        <p className="text-gray-500 dark:text-gray-400 text-sm mb-6">
+        <p className="text-muted text-sm mb-6">
           Created: {new Date(item.createdAt).toLocaleString()}
         </p>
 
