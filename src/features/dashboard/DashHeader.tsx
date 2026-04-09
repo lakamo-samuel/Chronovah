@@ -42,7 +42,7 @@ function DashHeader() {
           )} */}
 
           <div
-            className="w-16 h-16 rounded-full bg-linear-to-tr from-blue-600 to-blue-500 text-white 
+            className="w-16 h-16 rounded-full bg-primary text-white 
             flex items-center justify-center text-xl font-bold shadow-sm"
           >
             {initials}
