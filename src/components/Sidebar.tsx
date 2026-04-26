@@ -15,7 +15,7 @@ function Sidebar() {
   return (
     <aside
       className={`${
-        isOpen ? "w-[260px]" : "w-[80px]"
+        isOpen ? "w-[260px]" : "w-20"
       } bg-default border-r top-15 border-t-0 fixed left-0 bottom-0 border-default min-h-screen flex flex-col transition-all duration-300`}
     >
       {/* Navigation */}

@@ -1,26 +1,15 @@
 // types/JournalType.ts
-export interface JournalEntry {
-  id: string;        // ← uuid string
-  userId: string;     // ← add this
+import type { BaseRecord, BaseStats, SelectOption } from "./BaseType";
+
+export interface JournalEntry extends BaseRecord {
   mood: MoodType;
   note: string;
-  tags: string[];
-  createdAt: string;
-  updatedAt: string;
-  isFavorite: boolean;
   weather?: WeatherType;
   location?: string;
   images?: string[];
 }
 
 export type MoodType = "Happy" | "Good" | "Neutral" | "Sad" | "Terrible";
-
-export interface MoodOption {
-  emoji: string;
-  label: MoodType;
-  color: string;
-  bgColor: string;
-}
 
 export type WeatherType =
   | "Sunny"
@@ -30,9 +19,11 @@ export type WeatherType =
   | "Snowy"
   | "Windy";
 
-export interface JournalStats {
-  totalEntries: number;
-  favoriteEntries: number;
+export interface MoodOption extends SelectOption {
+  label: MoodType;
+}
+
+export interface JournalStats extends BaseStats {
   currentStreak: number;
   longestStreak: number;
   moodCounts: Record<MoodType, number>;

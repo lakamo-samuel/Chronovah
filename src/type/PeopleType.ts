@@ -1,6 +1,6 @@
-export interface Person {
-  id: string; // ← uuid string
-  userId: string; // ← add this
+import type { BaseRecord, BaseStats } from "./BaseType";
+
+export interface Person extends BaseRecord {
   name: string;
   nickname?: string;
   description: string;
@@ -15,10 +15,6 @@ export interface Person {
   company?: string;
   jobTitle?: string;
   notes?: string;
-  tags: string[];
-  isFavorite: boolean;
-  createdAt: string;
-  updatedAt: string;
   lastContacted?: string;
   socialMedia?: {
     twitter?: string;
@@ -28,9 +24,7 @@ export interface Person {
   };
 }
 
-export interface PeopleStats {
-  totalPeople: number;
-  favoritePeople: number;
+export interface PeopleStats extends BaseStats {
   uniqueRelations: number;
   recentAdded: number;
   contactMethods: {

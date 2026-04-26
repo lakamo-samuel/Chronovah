@@ -21,7 +21,7 @@ interface UseUserReturn {
   error: string | null;
   refresh: () => Promise<void>;
   logout: () => Promise<void>;
-  updateUser: (userData: Partial<User>) => Promise<void>;
+  updateUser: (userData: Partial<User>) => Promise<boolean>;
 }
 
 export const useUser = (): UseUserReturn => {
@@ -96,10 +96,12 @@ export const useUser = (): UseUserReturn => {
       // Extract user from nested data structure
       const updatedUser = response.data.data || response.data.user || response.data;
       setUser(updatedUser);
+      return true;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.error("Failed to update user:", err);
       setError(err.response?.data?.error || "Failed to update user");
+      return false;
     } finally {
       setLoading(false);
     }

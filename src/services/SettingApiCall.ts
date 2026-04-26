@@ -35,7 +35,7 @@ const settingApiCall: {
       return {
         success: true,
         message: response.data?.message || 'Profile updated successfully',
-        data: response.data?.user,
+        data: response.data?.data || response.data?.user,
       };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
