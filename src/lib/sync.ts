@@ -98,11 +98,34 @@ class SyncManager {
           await protectedAxios.delete(`${endpoint}/${op.recordId}`);
           break;
       }
-    } catch (error) {
-      // Backend not ready, silently fail
-      console.log(`Backend sync for ${op.table} ${op.operation} failed (expected if backend not ready):`, error);
-      throw error; // Re-throw to mark as failed
+    } catch (error: any) {
+      // Handle PRO_REQUIRED errors
+      if (error.response?.status === 403) {
+        try {
+          const data = await error.response.data;
+          if (data.code === 'PRO_REQUIRED') {
+            // Trigger upgrade flow
+            this.handleProRequired();
+            throw error; // Still fail the sync
+          }
+        } catch (e) {
+          // If we can't parse, just re-throw
+          throw error;
+        }
+      }
+      throw error;
     }
+  }
+
+  private handleProRequired(): void {
+    // Emit custom event that components can listen to
+    const event = new CustomEvent('pro-required', {
+      detail: { 
+        message: 'This feature requires a Pro subscription',
+        upgradeUrl: '/upgrade'
+      }
+    });
+    window.dispatchEvent(event);
   }
 
   // Pull all user data from server on login
