@@ -2,220 +2,203 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Check, Lock } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
+import { useSubscriptionStore } from '../store/subscriptionStore';
+import { useLiveQuery } from 'dexie-react-hooks';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
+import db from '../database/db';
 
 const PricingPage: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>(
-    'monthly'
-  );
+  const { isProActive } = useSubscriptionStore();
+  const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
+
+  // Real counts from Dexie
+  const journalCount = useLiveQuery(
+    async () => user ? (await db.journal.where('userId').equals(user.id).count()) : 0,
+    [user?.id]
+  ) ?? 0;
+  const peopleCount = useLiveQuery(
+    async () => user ? (await db.people.where('userId').equals(user.id).count()) : 0,
+    [user?.id]
+  ) ?? 0;
+  const placesCount = useLiveQuery(
+    async () => user ? (await db.places.where('userId').equals(user.id).count()) : 0,
+    [user?.id]
+  ) ?? 0;
 
   const handleUpgrade = () => {
     if (!user) {
       navigate('/signin', { state: { from: '/pricing' } });
-      return;
+    } else {
+      navigate('/upgrade');
     }
-    navigate('/upgrade');
   };
 
-  const features = [
-    { name: 'Unlimited notes', free: true, pro: true },
-    { name: 'Basic sync', free: true, pro: true },
-    { name: 'Offline access', free: true, pro: true },
-    { name: 'Journal', free: false, pro: true },
-    { name: 'People', free: false, pro: true },
-    { name: 'Places', free: false, pro: true },
-    { name: 'Image uploads', free: false, pro: true },
-    { name: 'End-to-end encryption', free: false, pro: true },
-  ];
+  // Pro users see success message instead
+  if (isProActive) {
+    return (
+      <>
+        <Header />
+        <div className="min-h-screen flex items-center justify-center p-6" style={{ backgroundColor: 'var(--color-bg)' }}>
+          <div className="text-center max-w-2xl">
+            <h1 className="text-4xl font-black mb-4" style={{ color: 'var(--color-text)' }}>
+              You're on Chronovah Pro!
+            </h1>
+            <p className="text-lg mb-8" style={{ color: 'var(--color-text-muted)' }}>
+              All features unlocked. Enjoy your full digital vault experience.
+            </p>
+            <button
+              onClick={() => navigate('/dashboard')}
+              className="px-8 py-4 font-bold rounded-lg shadow-lg hover:shadow-xl transition-shadow text-white"
+              style={{ background: 'var(--gradient-primary)' }}
+            >
+              Go to Dashboard
+            </button>
+          </div>
+        </div>
+        <Footer />
+      </>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-12 px-4">
-      <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <div className="inline-block bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 py-1 rounded-full text-sm font-semibold mb-4">
-            Pricing
+    <>
+      <Header />
+      <main className="w-full min-h-screen py-12 md:py-20 px-6" style={{ backgroundColor: 'var(--color-bg)', color: 'var(--color-text)' }}>
+        <div className="max-w-6xl mx-auto">
+          {/* Hero */}
+          <div className="text-center mb-16 max-w-2xl mx-auto">
+            <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-6 leading-tight">
+              Start free. Unlock everything when you're ready.
+            </h1>
+            <p className="text-lg leading-[1.6]" style={{ color: 'var(--color-text-muted)' }}>
+              Your notes are free forever. Upgrade to Pro for Journal, People, and Places.
+            </p>
           </div>
 
-          <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">
-            Simple, Honest Pricing
-          </h1>
-
-          <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            Notes are free forever. Upgrade for the full personal operating system.
-          </p>
-        </div>
-
-        {/* Billing Toggle */}
-        <div className="flex justify-center mb-12">
-          <div className="bg-white dark:bg-slate-900 rounded-lg p-1 border border-slate-200 dark:border-slate-800 flex items-center gap-2">
+          {/* Billing Toggle */}
+          <div className="flex items-center justify-center space-x-4 mb-16 p-1 rounded-full shadow-md" style={{ backgroundColor: 'var(--color-card)' }}>
             <button
               onClick={() => setBillingPeriod('monthly')}
-              className={`px-6 py-2 rounded-md font-semibold transition-all ${
-                billingPeriod === 'monthly'
-                  ? 'bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-300'
+              className={`px-6 py-2 text-sm font-semibold rounded-full transition-all ${
+                billingPeriod === 'monthly' ? 'shadow-sm' : ''
               }`}
+              style={{
+                backgroundColor: billingPeriod === 'monthly' ? 'var(--color-bg)' : 'transparent',
+                color: 'var(--color-text)',
+              }}
             >
               Monthly
             </button>
-
             <button
               onClick={() => setBillingPeriod('yearly')}
-              className={`px-6 py-2 rounded-md font-semibold transition-all relative ${
-                billingPeriod === 'yearly'
-                  ? 'bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-300'
-              }`}
+              className="px-6 py-2 text-sm font-medium rounded-full transition-all flex items-center space-x-2"
+              style={{
+                backgroundColor: billingPeriod === 'yearly' ? 'var(--color-bg)' : 'transparent',
+                color: 'var(--color-text)',
+              }}
             >
-              Yearly
+              <span>Yearly</span>
               {billingPeriod === 'yearly' && (
-                <span className="absolute -top-3.5 -right-2 bg-green-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: 'var(--color-primary-soft)', color: 'var(--color-primary)' }}>
                   Save 17%
                 </span>
               )}
             </button>
           </div>
-        </div>
 
-        {/* Pricing Cards */}
-        <div className="grid md:grid-cols-2 gap-8 lg:max-w-4xl mx-auto mb-16">
-          {/* Free Card */}
-          <div className="bg-white dark:bg-slate-900 rounded-2xl p-8 border border-slate-200 dark:border-slate-800">
-            <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
-              Starter
-            </h3>
-
-            <div className="mb-6">
-              <span className="text-5xl font-bold text-slate-900 dark:text-white">
-                ₦0
-              </span>
-              <span className="text-slate-600 dark:text-slate-400 ml-2">
-                forever
-              </span>
-            </div>
-
-            <button
-              onClick={() => navigate('/notes')}
-              className="w-full py-3 px-4 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 font-semibold rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors mb-8"
-            >
-              Get Started Free
-            </button>
-
-            {/* Features */}
-            <div className="space-y-4">
-              {features.map((feature) => (
-                <div key={feature.name} className="flex items-center gap-3">
-                  {feature.free ? (
-                    <>
-                      <div className="w-5 h-5 rounded-full bg-emerald-100 dark:bg-emerald-900 flex items-center justify-center flex-shrink-0">
-                        <Check className="w-3 h-3 text-emerald-600" />
-                      </div>
-                      <span className="text-slate-700 dark:text-slate-300">
-                        {feature.name}
-                      </span>
-                    </>
-                  ) : (
-                    <>
-                      <div className="w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center flex-shrink-0">
-                        <Lock className="w-3 h-3 text-slate-400" />
-                      </div>
-                      <span className="text-slate-400 dark:text-slate-500">
-                        {feature.name}
-                      </span>
-                    </>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Pro Card */}
-          <div className="bg-white dark:bg-slate-900 rounded-2xl p-8 border-2 border-purple-600 relative overflow-hidden">
-            {/* Most Popular Badge */}
-            <div className="absolute top-0 right-0 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 py-1 text-xs font-bold">
-              Most Popular
-            </div>
-
-            <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
-              Chronovah Pro
-            </h3>
-
-            <div className="mb-6">
-              <span className="text-5xl font-bold text-slate-900 dark:text-white">
-                ₦{billingPeriod === 'yearly' ? '25,000' : '2,500'}
-              </span>
-              <span className="text-slate-600 dark:text-slate-400 ml-2">
-                per {billingPeriod === 'yearly' ? 'year' : 'month'}
-              </span>
-            </div>
-
-            <button
-              onClick={handleUpgrade}
-              className="w-full py-3 px-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-lg hover:shadow-lg transition-shadow mb-8"
-            >
-              Upgrade to Pro →
-            </button>
-
-            {/* Features */}
-            <div className="space-y-4">
-              {features.map((feature) => (
-                <div key={feature.name} className="flex items-center gap-3">
-                  <div className="w-5 h-5 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 flex items-center justify-center flex-shrink-0">
-                    <Check className="w-3 h-3 text-white" />
+          {/* Cards */}
+          <div className="grid md:grid-cols-2 gap-8 w-full max-w-4xl mx-auto">
+            {/* Free */}
+            <div className="rounded-xl p-8 flex flex-col border" style={{ backgroundColor: 'var(--color-card)', borderColor: 'var(--color-border)' }}>
+              <div className="mb-8">
+                <h3 className="text-2xl font-bold mb-2">Starter</h3>
+                <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>Essential tools to capture your thoughts.</p>
+              </div>
+              <div className="flex items-baseline space-x-1 mb-8">
+                <span className="text-4xl font-extrabold">₦0</span>
+                <span className="text-sm" style={{ color: 'var(--color-text-muted)' }}>forever</span>
+              </div>
+              <div className="flex-grow space-y-4 mb-8">
+                {[
+                  'Unlimited Notes',
+                  'Basic Sync',
+                  'Offline Access',
+                ].map((feature) => (
+                  <div key={feature} className="flex items-start space-x-3">
+                    <Check className="w-5 h-5 mt-0.5" style={{ color: 'var(--color-primary)' }} />
+                    <span>{feature}</span>
                   </div>
-                  <span className="text-slate-700 dark:text-slate-300">
-                    {feature.name}
+                ))}
+                <div className="h-6" />
+                {[
+                  { name: 'Journal', count: journalCount },
+                  { name: 'People', count: peopleCount },
+                  { name: 'Places', count: placesCount },
+                ].map(({ name, count }) => (
+                  <div key={name} className="flex items-start space-x-3 opacity-50">
+                    <Lock className="w-5 h-5 mt-0.5" style={{ color: 'var(--color-text-muted)' }} />
+                    <span style={{ color: 'var(--color-text-muted)' }} className="line-through">
+                      {name} ({count})
+                    </span>
+                  </div>
+                ))}
+              </div>
+              <button className="w-full py-4 px-6 rounded-lg font-bold border" style={{ borderColor: 'var(--color-border)', color: 'var(--color-primary)' }}>
+                Current Plan
+              </button>
+            </div>
+
+            {/* Pro */}
+            <div className="rounded-xl p-8 flex flex-col border-2 relative md:-translate-y-4" style={{ backgroundColor: 'var(--color-card)', borderColor: 'var(--color-primary)' }}>
+              <div className="absolute top-0 left-0 right-0 h-1 rounded-t-xl" style={{ background: 'var(--gradient-primary)' }} />
+              <div className="mb-8">
+                <div className="flex justify-between items-start">
+                  <h3 className="text-2xl font-bold mb-2">Chronovah Pro</h3>
+                  <span className="text-xs uppercase font-bold px-2 py-1 rounded" style={{ backgroundColor: 'var(--color-primary-soft)', color: 'var(--color-primary)' }}>
+                    Popular
                   </span>
                 </div>
-              ))}
+                <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>The complete digital vault experience.</p>
+              </div>
+              <div className="flex items-baseline space-x-1 mb-8">
+                <span className="text-4xl font-extrabold">₦{billingPeriod === 'yearly' ? '25,000' : '2,500'}</span>
+                <span className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
+                  {billingPeriod === 'yearly' ? '/yr' : '/mo'}
+                </span>
+              </div>
+              <div className="flex-grow space-y-4 mb-8">
+                {[
+                  'Everything in Starter',
+                  'Full Journal Features',
+                  'People Network Mapping',
+                  'Places Timeline',
+                  'Priority Support',
+                ].map((feature) => (
+                  <div key={feature} className="flex items-start space-x-3">
+                    <Check className="w-5 h-5 mt-0.5" style={{ color: 'var(--color-primary)' }} />
+                    <span>{feature}</span>
+                  </div>
+                ))}
+              </div>
+              <button
+                onClick={handleUpgrade}
+                className="w-full py-4 px-6 rounded-lg font-bold text-white hover:shadow-lg transition-shadow flex justify-center items-center gap-2"
+                style={{ background: 'var(--gradient-primary)' }}
+              >
+                Upgrade to Pro
+                <span>→</span>
+              </button>
             </div>
           </div>
         </div>
-
-        {/* Trust Footer */}
-        <div className="text-center text-sm text-slate-600 dark:text-slate-400 mb-16">
-          Payments processed securely by Paystack · Cancel anytime · Notes stay
-          free forever
-        </div>
-
-        {/* FAQ */}
-        <div className="max-w-3xl mx-auto">
-          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-12 text-center">
-            Frequently Asked Questions
-          </h2>
-
-          <div className="space-y-6">
-            {[
-              {
-                q: 'Can I use Chronovah for free forever?',
-                a: 'Yes. Notes are completely free with no limits and no expiry. Ever.',
-              },
-              {
-                q: 'What happens if I cancel Pro?',
-                a: 'You keep your notes forever. Your journal, people and places data is safely stored and accessible again when you resubscribe.',
-              },
-              {
-                q: 'Is my data safe?',
-                a: 'All Pro data is end-to-end encrypted. Even we cannot read your journal entries.',
-              },
-            ].map((faq, index) => (
-              <div
-                key={index}
-                className="bg-white dark:bg-slate-900 rounded-lg p-6 border border-slate-200 dark:border-slate-800"
-              >
-                <h3 className="font-semibold text-slate-900 dark:text-white mb-2">
-                  {faq.q}
-                </h3>
-                <p className="text-slate-600 dark:text-slate-400">{faq.a}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
+      </main>
+      <Footer />
+    </>
   );
 };
 
 export default PricingPage;
+       

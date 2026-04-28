@@ -7,6 +7,7 @@ import UserFeedback from "../features/Hopepage/UserFeedback";
 import HowItWorks from "../features/Hopepage/HowItWork";
 import Faq from "../features/Hopepage/Faq";
 import FaqButton from "../ui/FaqButton";
+import PricingSection from "../features/Hopepage/PricingSection";
 
 function Homepage() {
   return (
@@ -14,6 +15,7 @@ function Homepage() {
       <Header />
       <Hero />
       <Features />
+      <PricingSection />
       <HowItWorks />
 
       <UserFeedback />

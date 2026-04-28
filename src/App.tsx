@@ -7,6 +7,7 @@ import Spinner from "./ui/Spinner";
 import PlaceDetail from "./features/Places/PlaceDetail";
 import JournalDetail from "./features/Journal/JournalDetail";
 import PersonDetail from "./features/people/PersonDetail";
+import PlanGuard from "./components/subscription/PlanGuard";
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Note = lazy(() => import("./pages/Note"));
 const NoteDetail = lazy(() => import("./features/Note/NoteDetail"));
@@ -23,6 +24,10 @@ const ForgotPassword = lazy(() => import("./pages/ForgetPassword"));
 const OtpVerification = lazy(() => import("./pages/OTP"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const PageNotFound = lazy(() => import("./pages/PageNotFound"));
+const PricingPage = lazy(() => import("./pages/PricingPage"));
+const UpgradePage = lazy(() => import("./pages/UpgradePage"));
+const PaymentSuccessPage = lazy(() => import("./pages/PaymentSuccessPage"));
+const BillingPage = lazy(() => import("./pages/BillingPage"));
 
 function App() {
 
@@ -33,6 +38,7 @@ function App() {
       >
         <Routes>
           <Route index path="/" element={<Homepage />} />
+          <Route path="pricing" element={<PricingPage />} />
 
           <Route
             element={
@@ -43,18 +49,63 @@ function App() {
           >
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="notes" element={<Note />} />
-            <Route path="notes/:id" element={<NoteDetail />} /> {/* Add this */}
-            <Route path="journal" element={<Journal />} />
-            <Route path="journal/:id" element={<JournalDetail />} />
-            <Route path="places" element={<Places />} />
-            // In your routes, add:
-            <Route path="places/:id" element={<PlaceDetail />} />
-            <Route path="people" element={<People />} />
-            <Route path="people/:id" element={<PersonDetail />} />
+            <Route path="notes/:id" element={<NoteDetail />} />
+            <Route
+              path="journal"
+              element={
+                <PlanGuard section="journal">
+                  <Journal />
+                </PlanGuard>
+              }
+            />
+            <Route
+              path="journal/:id"
+              element={
+                <PlanGuard section="journal">
+                  <JournalDetail />
+                </PlanGuard>
+              }
+            />
+            <Route
+              path="places"
+              element={
+                <PlanGuard section="places">
+                  <Places />
+                </PlanGuard>
+              }
+            />
+            <Route
+              path="places/:id"
+              element={
+                <PlanGuard section="places">
+                  <PlaceDetail />
+                </PlanGuard>
+              }
+            />
+            <Route
+              path="people"
+              element={
+                <PlanGuard section="people">
+                  <People />
+                </PlanGuard>
+              }
+            />
+            <Route
+              path="people/:id"
+              element={
+                <PlanGuard section="people">
+                  <PersonDetail />
+                </PlanGuard>
+              }
+            />
             <Route path="settings" element={<Setting />} />
             <Route path="settings/profile" element={<ProfileSetting />} />
+            <Route path="billing" element={<BillingPage />} />
             <Route path="item/:type/:id" element={<ItemDetails />} />
           </Route>
+
+          <Route path="upgrade" element={<UpgradePage />} />
+          <Route path="payment/success" element={<PaymentSuccessPage />} />
 
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
