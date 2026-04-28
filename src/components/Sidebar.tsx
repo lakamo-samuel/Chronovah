@@ -44,7 +44,11 @@ function Sidebar() {
       {/* Navigation */}
       <nav className="flex-1 flex flex-col mt-6">
         {navItems.map((item) => {
-          const isLocked = (item.name === 'Journal' || item.name === 'People' || item.name === 'Places') && !isProActive;
+          // Lock if free user AND over limit for that section
+          const isLocked = 
+            (item.name === 'Journal' && !isProActive && journalCount > 20) ||
+            (item.name === 'People' && !isProActive && peopleCount > 12) ||
+            (item.name === 'Places' && !isProActive && placesCount > 15);
           
           return (
             <NavLink
@@ -73,25 +77,43 @@ function Sidebar() {
               <div style={{ position: 'relative' }}>
                 <item.icon size={20} />
                 {isLocked && (
-                  <Lock size={12} style={{ position: 'absolute', bottom: -2, right: -2, color: 'var(--color-primary)' }} />
+                  <Lock size={12} style={{ position: 'absolute', bottom: -2, right: -2, color: '#ef4444' }} />
                 )}
               </div>
               {isOpen && (
                 <div className="flex-1 flex items-center justify-between">
                   <span className="text-sm font-medium">{item.name}</span>
                   {item.name === 'Journal' && journalCount > 0 && (
-                    <span className="text-xs px-2 py-0.5 rounded" style={{ backgroundColor: 'var(--color-bg)', color: 'var(--color-text-muted)' }}>
-                      {journalCount}
+                    <span 
+                      className="text-xs px-2 py-0.5 rounded font-medium"
+                      style={{ 
+                        backgroundColor: journalCount > 20 ? '#fee2e2' : 'var(--color-bg)',
+                        color: journalCount > 20 ? '#dc2626' : 'var(--color-text-muted)'
+                      }}
+                    >
+                      {journalCount > 20 ? `${journalCount}/20` : journalCount}
                     </span>
                   )}
                   {item.name === 'People' && peopleCount > 0 && (
-                    <span className="text-xs px-2 py-0.5 rounded" style={{ backgroundColor: 'var(--color-bg)', color: 'var(--color-text-muted)' }}>
-                      {peopleCount}
+                    <span 
+                      className="text-xs px-2 py-0.5 rounded font-medium"
+                      style={{ 
+                        backgroundColor: peopleCount > 12 ? '#fee2e2' : 'var(--color-bg)',
+                        color: peopleCount > 12 ? '#dc2626' : 'var(--color-text-muted)'
+                      }}
+                    >
+                      {peopleCount > 12 ? `${peopleCount}/12` : peopleCount}
                     </span>
                   )}
                   {item.name === 'Places' && placesCount > 0 && (
-                    <span className="text-xs px-2 py-0.5 rounded" style={{ backgroundColor: 'var(--color-bg)', color: 'var(--color-text-muted)' }}>
-                      {placesCount}
+                    <span 
+                      className="text-xs px-2 py-0.5 rounded font-medium"
+                      style={{ 
+                        backgroundColor: placesCount > 15 ? '#fee2e2' : 'var(--color-bg)',
+                        color: placesCount > 15 ? '#dc2626' : 'var(--color-text-muted)'
+                      }}
+                    >
+                      {placesCount > 15 ? `${placesCount}/15` : placesCount}
                     </span>
                   )}
                 </div>
