@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Check, Lock } from 'lucide-react';
+import { Check, Lock, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useSubscriptionStore } from '../store/subscriptionStore';
 import { useLiveQuery } from 'dexie-react-hooks';
@@ -68,6 +68,16 @@ const PricingPage: React.FC = () => {
       <Header />
       <main className="w-full min-h-screen py-12 md:py-20 px-6" style={{ backgroundColor: 'var(--color-bg)', color: 'var(--color-text)' }}>
         <div className="max-w-6xl mx-auto">
+          {/* Back Button */}
+          <button
+            onClick={() => navigate(-1)}
+            className="mb-8 flex items-center gap-2 px-4 py-2 rounded-lg hover:opacity-80 transition-opacity\n"
+            style={{ color: 'var(--color-text-muted)' }}
+          >
+            <ArrowLeft size={16} />
+            <span className="text-sm font-medium">Back</span>
+          </button>
+
           {/* Hero */}
           <div className="text-center mb-16 max-w-2xl mx-auto">
             <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-6 leading-tight">

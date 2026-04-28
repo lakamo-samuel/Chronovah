@@ -46,17 +46,11 @@ export default function CTAComponent() {
   return (
     <section
       ref={sectionRef}
-      className="relative py-12 sm:py-16 md:py-24 px-4 sm:px-6 lg:px-8 overflow-hidden bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-950"
+      className="relative py-12 sm:py-16 md:py-24 px-4 sm:px-6 lg:px-8 overflow-hidden"
+      style={{ backgroundColor: 'var(--color-bg)' }}
       aria-label="Call to action"
     >
-      {/* Simplified background for mobile */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-400/20 dark:bg-blue-500/10 rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-400/20 dark:bg-purple-500/10 rounded-full blur-3xl" />
 
-        {/* Lighter grid pattern for mobile */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:20px_20px] sm:bg-[size:24px_24px]" />
-      </div>
 
       <div className="relative max-w-6xl mx-auto">
         {/* Main CTA Card */}
@@ -64,7 +58,11 @@ export default function CTAComponent() {
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.5 }}
-          className="bg-white dark:bg-gray-900/90 backdrop-blur-xl rounded-2xl sm:rounded-3xl shadow-xl border border-gray-200 dark:border-gray-800 overflow-hidden"
+          className="rounded-2xl sm:rounded-3xl shadow-medium border overflow-hidden"
+          style={{
+            backgroundColor: 'var(--color-card)',
+            borderColor: 'var(--color-border)',
+          }}
         >
           {/* Stack on mobile, grid on desktop */}
           <div className="flex flex-col md:grid md:grid-cols-2">
@@ -75,9 +73,14 @@ export default function CTAComponent() {
                 initial={{ opacity: 0, x: -20 }}
                 animate={isInView ? { opacity: 1, x: 0 } : {}}
                 transition={{ delay: 0.2 }}
-                className="hidden xs:inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 text-blue-700 dark:text-blue-300 text-xs sm:text-sm font-medium mb-4 sm:mb-6 border border-blue-200 dark:border-blue-800"
+                className="hidden xs:inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium mb-4 sm:mb-6 border"
+                style={{
+                  backgroundColor: 'var(--color-primary-light)',
+                  borderColor: 'var(--color-border)',
+                  color: 'var(--color-text)',
+                }}
               >
-                <Sparkles size={14} className="text-blue-500" />
+                <Sparkles size={14} style={{ color: 'var(--color-primary)' }} />
                 <span>Ready to get organized?</span>
               </motion.div>
 
@@ -87,12 +90,12 @@ export default function CTAComponent() {
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ delay: 0.3 }}
                 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6"
+                style={{ color: 'var(--color-text)' }}
               >
-                <span className="bg-gradient-to-r from-gray-900 to-gray-600 dark:from-gray-100 dark:to-gray-400 bg-clip-text text-transparent">
+                <span>
                   Start your organized life
                 </span>
                 <br className="hidden xs:block" />
-                <span className="bg-blue-600 dark:bg-blue-400  bg-clip-text text-transparent"></span>
               </motion.h2>
 
               {/* Shorter description for mobile */}

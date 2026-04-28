@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BookOpen, Users, MapPin, X } from 'lucide-react';
+import { BookOpen, Users, MapPin, ArrowLeft } from 'lucide-react';
 
 interface LockedSectionProps {
   section: 'journal' | 'people' | 'places';
@@ -141,26 +141,24 @@ const LockedSection: React.FC<LockedSectionProps> = ({ section }) => {
           <div className="space-y-3 pt-4">
             <button
               onClick={() => navigate('/upgrade')}
-              className="w-full py-3 px-4 bg-gradient-primary text-white font-semibold rounded-lg hover:shadow-lg transition-shadow"
+              className="w-full py-3 px-4 text-white font-semibold rounded-lg hover:shadow-lg transition-shadow"
+              style={{ background: 'var(--gradient-primary)' }}
             >
               Unlock {section.charAt(0).toUpperCase() + section.slice(1)} with Pro →
             </button>
 
             <button
-              onClick={() => navigate('/notes')}
-              className="w-full py-3 px-4 text-primary dark:text-primary-200 font-semibold rounded-lg border border-primary-200 dark:border-primary-800 hover:bg-primary-50 dark:hover:bg-primary-900/30 transition-colors"
+              onClick={() => navigate(-1)}
+              className="w-full py-3 px-4 font-semibold rounded-lg hover:opacity-80 transition-opacity flex items-center justify-center gap-2"
+              style={{
+                border: '1px solid var(--color-border)',
+                color: 'var(--color-text)',
+              }}
             >
-              Go back to Notes
+              <ArrowLeft size={16} />
+              Go Back
             </button>
           </div>
-
-          {/* Close button */}
-          <button
-            onClick={() => window.history.back()}
-            className="absolute top-4 right-4 p-1 hover:bg-primary/10 dark:hover:bg-primary/10 rounded-lg transition-colors"
-          >
-            <X className="w-5 h-5 text-muted" />
-          </button>
         </div>
       </div>
     </div>

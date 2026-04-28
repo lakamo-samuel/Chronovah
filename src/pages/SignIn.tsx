@@ -91,45 +91,8 @@ export default function SignIn() {
   //   }, 100);
   // };
 
-  // Floating shapes animation
-  const floatingShapes = Array.from({ length: 6 }).map((_, i) => ({
-    id: i,
-    x: Math.random() * 100,
-    y: Math.random() * 100,
-    size: Math.random() * 40 + 20,
-    duration: Math.random() * 20 + 20,
-    delay: Math.random() * 5,
-  }));
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 p-4 relative overflow-hidden">
-      {/* Animated background shapes */}
-      {floatingShapes.map((shape) => (
-        <motion.div
-          key={shape.id}
-          className="absolute rounded-full bg-primary-500/5 dark:bg-primary-400/5 blur-xl"
-          style={{
-            left: `${shape.x}%`,
-            top: `${shape.y}%`,
-            width: shape.size,
-            height: shape.size,
-          }}
-          animate={{
-            x: [0, 30, -30, 0],
-            y: [0, -30, 30, 0],
-          }}
-          transition={{
-            duration: shape.duration,
-            delay: shape.delay,
-            repeat: Infinity,
-            ease: "linear",
-          }}
-        />
-      ))}
-
-      {/* Gradient orbs */}
-      <div className="absolute top-20 -left-20 w-72 h-72 bg-primary-500/10 rounded-full blur-3xl" />
-      <div className="absolute bottom-20 -right-20 w-72 h-72 bg-secondary-500/10 rounded-full blur-3xl" />
+    <div className="min-h-screen flex items-center justify-center p-4" style={{ backgroundColor: 'var(--color-bg)' }}>
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -137,30 +100,24 @@ export default function SignIn() {
         transition={{ duration: 0.5 }}
         className="w-full max-w-md relative z-10"
       >
-        {/* Logo and Brand */}
-        <motion.div
-          initial={{ scale: 0.95 }}
-          animate={{ scale: 1 }}
-          transition={{ delay: 0.2 }}
-          className="text-center mb-8"
-        >
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-primary-500 to-secondary-500 text-white shadow-lg mb-4">
-            <Sparkles size={32} />
-          </div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-gray-100 dark:to-gray-400 bg-clip-text text-transparent">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold" style={{ color: 'var(--color-text)' }}>
             Welcome Back
           </h1>
-          <p className="text-sm text-muted mt-2">
+          <p className="text-sm mt-2" style={{ color: 'var(--color-text-muted)' }}>
             Sign in to continue your journey
           </p>
-        </motion.div>
+        </div>
 
         {/* Main Card */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-200/50 dark:border-gray-800/50 p-6 sm:p-8"
+        <div
+          className="rounded-2xl p-6 sm:p-8 shadow-medium"
+          style={{
+            backgroundColor: 'var(--color-card)',
+            borderColor: 'var(--color-border)',
+            borderWidth: '1px',
+          }}
         >
           {/* Demo Credentials Banner */}
           {/* <motion.div
@@ -220,8 +177,9 @@ export default function SignIn() {
               </label>
               <div className="relative">
                 <Mail
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-muted"
+                  className="absolute left-3 top-1/2 -translate-y-1/2"
                   size={18}
+                  style={{ color: 'var(--color-text-muted)' }}
                 />
                 <input
                   type="email"
@@ -229,11 +187,13 @@ export default function SignIn() {
                   onBlur={() => setTouched((t) => ({ ...t, email: true }))}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
-                  className={`w-full pl-10 pr-4 py-3 bg-default border rounded-xl focus:outline-none focus:ring-2 transition-all text-primary ${
-                    emailError && touched.email
-                      ? "border-red-500 focus:ring-red-500/20"
-                      : "border-default focus:border-primary-500 focus:ring-primary-500/20"
-                  }`}
+                  className="w-full pl-10 pr-4 py-3 rounded-lg focus:outline-none focus:ring-2 transition-all"
+                  style={{
+                    backgroundColor: 'var(--color-default)',
+                    borderColor: emailError && touched.email ? '#ef4444' : 'var(--color-border)',
+                    borderWidth: '1px',
+                    color: 'var(--color-text)',
+                  }}
                   aria-invalid={!!emailError}
                   aria-describedby="email-error"
                   disabled={isLoading}
@@ -255,13 +215,14 @@ export default function SignIn() {
 
             {/* Password Field */}
             <div>
-              <label className="block text-sm font-medium text-primary mb-2">
+              <label className="block text-sm font-medium mb-2" style={{ color: 'var(--color-text)' }}>
                 Password
               </label>
               <div className="relative">
                 <Lock
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-muted"
+                  className="absolute left-3 top-1/2 -translate-y-1/2"
                   size={18}
+                  style={{ color: 'var(--color-text-muted)' }}
                 />
                 <input
                   type={showPassword ? "text" : "password"}
@@ -269,11 +230,13 @@ export default function SignIn() {
                   onBlur={() => setTouched((t) => ({ ...t, password: true }))}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
-                  className={`w-full pl-10 pr-12 py-3 bg-default border rounded-xl focus:outline-none focus:ring-2 transition-all text-primary ${
-                    passwordError && touched.password
-                      ? "border-red-500 focus:ring-red-500/20"
-                      : "border-default focus:border-primary-500 focus:ring-primary-500/20"
-                  }`}
+                  className="w-full pl-10 pr-12 py-3 rounded-lg focus:outline-none focus:ring-2 transition-all"
+                  style={{
+                    backgroundColor: 'var(--color-default)',
+                    borderColor: passwordError && touched.password ? '#ef4444' : 'var(--color-border)',
+                    borderWidth: '1px',
+                    color: 'var(--color-text)',
+                  }}
                   aria-invalid={!!passwordError}
                   aria-describedby="password-error"
                   disabled={isLoading}
@@ -282,13 +245,14 @@ export default function SignIn() {
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-md hover:bg-default transition-colors"
+                  style={{ color: 'var(--color-text-muted)' }}
                   aria-label={showPassword ? "Hide password" : "Show password"}
                   disabled={isLoading}
                 >
                   {showPassword ? (
-                    <EyeOff size={16} className="text-muted" />
+                    <EyeOff size={16} />
                   ) : (
-                    <Eye size={16} className="text-muted" />
+                    <Eye size={16} />
                   )}
                 </button>
               </div>
@@ -313,14 +277,19 @@ export default function SignIn() {
                   type="checkbox"
                   checked={remember}
                   onChange={(e) => setRemember(e.target.checked)}
-                  className="w-4 h-4 rounded border-default text-primary-500 focus:ring-primary-500/20 focus:ring-2"
+                  className="w-4 h-4 rounded focus:ring-2"
+                  style={{
+                    borderColor: 'var(--color-border)',
+                    accentColor: 'var(--color-primary)',
+                  }}
                   disabled={isLoading}
                 />
-                <span className="text-sm text-muted">Remember me</span>
+                <span className="text-sm" style={{ color: 'var(--color-text-muted)' }}>Remember me</span>
               </label>
               <Link
                 to="/forgot"
-                className="text-sm text-primary-500 hover:text-primary-600 transition-colors"
+                className="text-sm transition-opacity hover:opacity-80"
+                style={{ color: 'var(--color-primary)' }}
               >
                 Forgot password?
               </Link>
@@ -346,11 +315,12 @@ export default function SignIn() {
             <button
               type="submit"
               disabled={isLoading || !isFormValid}
-              className={`w-full py-3 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 ${
-                isLoading || !isFormValid
-                  ? "bg-primary-400 cursor-not-allowed"
-                  : "bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600"
-              } text-white shadow-lg hover:shadow-xl`}
+              className="w-full py-3 rounded-lg font-semibold transition-all flex items-center justify-center gap-2 text-white shadow-medium hover:shadow-hard"
+              style={{
+                backgroundColor: isLoading || !isFormValid ? 'var(--color-primary-muted)' : 'var(--color-primary)',
+                opacity: isLoading || !isFormValid ? 0.6 : 1,
+                cursor: isLoading || !isFormValid ? 'not-allowed' : 'pointer',
+              }}
             >
               {isLoading ? (
                 <>
@@ -371,22 +341,17 @@ export default function SignIn() {
           </form>
 
           {/* Sign Up Link */}
-          <div className="text-center text-sm text-muted mt-6">
+          <div className="text-center text-sm mt-6" style={{ color: 'var(--color-text-muted)' }}>
             Don't have an account?{" "}
             <Link
               to="/signup"
-              className="text-primary-500 hover:text-primary-600 font-semibold"
+              className="font-semibold hover:opacity-80"
+              style={{ color: 'var(--color-primary)' }}
             >
               Create one
             </Link>
           </div>
-
-          {/* Security Badge */}
-          <div className="flex items-center justify-center gap-2 mt-4 text-xs text-muted">
-            <Shield size={12} />
-            <span>Your data is encrypted and secure</span>
-          </div>
-        </motion.div>
+        </div>
 
         {/* Success Overlay */}
         <AnimatePresence>
@@ -395,13 +360,19 @@ export default function SignIn() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-primary-500/10 backdrop-blur-sm flex items-center justify-center z-50"
+              className="fixed inset-0 flex items-center justify-center z-50"
+              style={{ background: 'rgba(0, 0, 0, 0.5)' }}
             >
               <motion.div
                 initial={{ scale: 0.5, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.5, opacity: 0 }}
-                className="bg-white dark:bg-gray-900 rounded-2xl p-8 shadow-2xl text-center"
+                className="rounded-2xl p-8 shadow-hard text-center"
+                style={{
+                  backgroundColor: 'var(--color-card)',
+                  borderColor: 'var(--color-border)',
+                  borderWidth: '1px',
+                }}
               >
                 <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
                   <motion.svg
