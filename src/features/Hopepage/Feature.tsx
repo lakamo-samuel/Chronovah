@@ -125,7 +125,7 @@ export default function Features() {
     <section
       id="features"
       ref={sectionRef}
-      className="relative px-4 sm:px-6 lg:px-8 py-24 md:py-32 overflow-hidden border-b border-default bg-gradient-to-b from-primary-500/[0.08] via-default to-default dark:from-primary-400/[0.14] dark:via-[color-mix(in_oklab,var(--color-card)_65%,var(--color-bg))] dark:to-default"
+      className="relative px-4 sm:px-6 lg:px-8 py-24 md:py-32 overflow-hidden border-b border-default  dark:bg-bg-dark"
       aria-labelledby="features-title"
     >
       <div className="absolute inset-0 pointer-events-none">
@@ -145,7 +145,7 @@ export default function Features() {
             className="font-serif text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-primary mb-5 md:max-w-4xl"
           >
             One workspace for{" "}
-            <span className="bg-gradient-to-r from-primary-600 to-secondary-500 bg-clip-text text-transparent dark:from-primary-400 dark:to-secondary-400">
+            <span className="text-primary-600 dark:text-primary-400">
               places, notes, people, and journal
             </span>
           </h2>

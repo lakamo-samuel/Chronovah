@@ -1,6 +1,6 @@
-export interface Place {
-  id: string; // ← uuid string
-  userId: string; // ← add this
+import type { BaseRecord, BaseStats } from "./BaseType";
+
+export interface Place extends BaseRecord {
   name: string;
   country: string;
   location?: string;
@@ -8,14 +8,10 @@ export interface Place {
   notes?: string;
   images: string[];
   visitedDate?: string;
-  createdAt: string;
-  updatedAt: string;
-  isFavorite: boolean;
   coordinates?: {
     lat: number;
     lng: number;
   };
-  tags: string[];
   rating?: number;
   cost?: number;
   currency?: string;
@@ -38,10 +34,8 @@ export type PlaceType =
   | "Hotel"
   | "Other";
 
-export interface PlaceStats {
-  totalPlaces: number;
+export interface PlaceStats extends BaseStats {
   visitedCountries: number;
-  favoritePlaces: number;
   typesCount: Record<string, number>;
 }
 

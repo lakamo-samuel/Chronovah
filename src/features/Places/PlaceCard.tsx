@@ -13,8 +13,9 @@ import {
 
   DollarSign,
   Heart,
+  AlertCircle,
 } from "lucide-react";
-
+import { useState } from "react";
 import type { Place } from "../../type/PlaceType";
 
 interface PlaceCardProps {
@@ -26,6 +27,8 @@ interface PlaceCardProps {
 }
 
 export default function PlaceCard({ place, onEdit, onDelete, onClick, onUpdate }: PlaceCardProps) {
+  const [imgError, setImgError] = useState(false);
+
   const toggleFavorite = async (e: React.MouseEvent) => {
     e.stopPropagation();
     await onUpdate(place.id!, {
@@ -54,14 +57,23 @@ export default function PlaceCard({ place, onEdit, onDelete, onClick, onUpdate }
     >
       {/* Image section */}
       <div className="relative h-48 bg-default">
-        {place.images && place.images.length > 0 ? (
+        {place.images && place.images.length > 0 && !imgError ? (
           <img
             src={place.images[0]}
             alt={place.name}
             className="w-full h-full object-cover"
+            onError={() => {
+              setImgError(true);
+              console.error(`Failed to load image for place: ${place.name}`, place.images[0]);
+            }}
           />
+        ) : place.images && place.images.length > 0 && imgError ? (
+          <div className="image-error-state" style={{ borderRadius: 0 }}>
+            <AlertCircle size={20} />
+            <p>Image failed to load</p>
+          </div>
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary-500/10 to-secondary-500/10">
+          <div className="w-full h-full flex items-center justify-center bg-primary-500/10">
             <MapPin size={48} className="text-muted opacity-50" />
           </div>
         )}

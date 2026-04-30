@@ -1,14 +1,10 @@
 // types/NoteType.ts
-export interface Note {
-  id: string;        // ← uuid string
-  userId: string;     // ← add this
+import type { BaseRecord, BaseStats } from "./BaseType";
+
+export interface Note extends BaseRecord {
   title: string;
   content: string;
-  createdAt: string;
-  updatedAt: string;
-  isPinned: boolean;
-  isFavorite: boolean;
-  tags: string[];
+  isPinned?: boolean;
   color?: NoteColor;
   attachments?: Attachment[];
   wordCount?: number;
@@ -33,9 +29,7 @@ export interface Attachment {
   size?: number;
 }
 
-export interface NoteStats {
-  totalNotes: number;
+export interface NoteStats extends BaseStats {
   pinnedNotes: number;
-  favoriteNotes: number;
   totalWords: number;
 }

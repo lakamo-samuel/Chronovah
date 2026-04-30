@@ -73,6 +73,15 @@ const responseInterceptor = async (error: AxiosError<any>) => {
       });
 
     case 403:
+      // Handle PRO_REQUIRED specifically
+      if (errorData?.code === 'PRO_REQUIRED') {
+        return Promise.reject({
+          message: errorData?.error || "Pro subscription required",
+          code: 'PRO_REQUIRED',
+          upgradeUrl: errorData?.upgradeUrl || '/upgrade',
+          status,
+        });
+      }
       return Promise.reject({
         message: "Permission denied.",
         status,

@@ -9,10 +9,10 @@ import CommonPageHeader from "../../components/CommonPageHeader";
 import type { JournalEntry, MoodType } from "../../type/JournalType";
 import JournalEditor from "./JournalEditor";
 import JournalCard from "./JournalCard";
-import Spinner from "../../ui/Spinner";
 import { useToast } from "../../hooks/useToast";
 import { ToastContainer } from "../../components/Toast";
 import { useJournal } from "../../hooks/useJournal";
+import JournalSkeleton from "../../components/skeletons/JournalSkeleton";
 
 export default function JournalList() {
   const navigate = useNavigate();
@@ -408,14 +408,8 @@ export default function JournalList() {
         </div>
 
         {/* Entries grid/list */}
-        {!entries ? (
-          <div className="flex justify-center items-center h-48 sm:h-64">
-            <Spinner
-              overlay={false}
-              size="md"
-              className="sm:h-8 sm:w-8"
-            />
-          </div>
+        {entries === undefined ? (
+          <JournalSkeleton viewMode={viewMode} />
         ) : filteredEntries.length === 0 ? (
           <motion.div
             initial={{ opacity: 0, y: 20 }}

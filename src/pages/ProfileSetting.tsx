@@ -47,8 +47,8 @@ function ProfileSetting() {
 
       {/* Error Message */}
       {errorMessage && (
-        <div className="p-4 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-lg text-red-800 dark:text-red-200 text-sm">
-          ✕ {errorMessage}
+        <div className="p-4 bg-red-500/10 border border-accent-red/30 rounded-xl text-accent-red text-sm">
+          {errorMessage}
         </div>
       )}
 
@@ -75,11 +75,9 @@ function ProfileSetting() {
       </section>
 
       {/* Footer Info */}
-      <div className="p-4 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800/50 rounded-lg">
-        <h3 className="font-ui-sm-bold text-blue-900 dark:text-blue-300 mb-2">
-          💡 Tips
-        </h3>
-        <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1">
+      <div className="p-4 bg-primary-500/5 border border-default rounded-xl">
+        <h3 className="text-sm font-semibold text-primary mb-2">Tips</h3>
+        <ul className="text-sm text-muted space-y-1">
           <li>• Keep your password strong and unique</li>
           <li>• Update your profile picture to help others recognize you</li>
           <li>• Your data is securely encrypted and stored</li>

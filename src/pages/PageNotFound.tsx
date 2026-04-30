@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 
 export default function PageNotFound() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center text-center px-6 bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950">
+    <div className="min-h-screen flex flex-col items-center justify-center text-center px-6 bg-linear-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950">
 
       <motion.img
         // src={NotFoundIllustration}
@@ -32,7 +32,7 @@ export default function PageNotFound() {
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="px-6 py-3 rounded-xl bg-blue-600 text-white font-semibold shadow-md hover:bg-blue-700"
+          className="px-6 py-3 rounded-xl bg-primary text-white font-semibold shadow-md hover:bg-primary-hover"
         >
           Go Home
         </motion.button>

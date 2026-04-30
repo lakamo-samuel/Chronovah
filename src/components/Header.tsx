@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Moon,
@@ -18,6 +18,9 @@ import {
   ChevronDown,
   LogIn,
   UserPlus,
+  Sidebar,
+  Zap,
+  Crown,
 } from "lucide-react";
 import { useDarkMode } from "../hooks/useDarkMode";
 import { useSidebar } from "../hooks/useSidebar";
@@ -26,6 +29,9 @@ import { useSearch } from "../hooks/useSearch";
 import DesktopSearchInput from "../ui/DesktopSearchInput";
 import { useAuth } from "../hooks/useAuth";
 import { NavLink, useNavigate } from "react-router-dom";
+import { useSubscriptionStore } from "../store/subscriptionStore";
+import SyncIndicator from "./SyncIndicator";
+import UserAvatar from "./UserAvatar";
 
 function Header() {
   const { openSearch, setOpenSearch } = useSearch();
@@ -39,6 +45,23 @@ function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const { isOpen } = useSidebar();
+  const { isProActive } = useSubscriptionStore();
+
+  // Ref for the profile dropdown container — used to detect outside clicks
+  const profileMenuRef = useRef<HTMLDivElement>(null);
+
+  // Close profile dropdown when clicking outside of it
+  useEffect(() => {
+    if (!isProfileMenuOpen) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(e.target as Node)) {
+        setIsProfileMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isProfileMenuOpen]);
 
   const isAuthenticated = !!user;
   const { name = "User", email } = user || {};
@@ -50,7 +73,6 @@ function Header() {
     .join("")
     .toUpperCase();
 
-  // Handle scroll effects
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
@@ -73,32 +95,26 @@ function Header() {
 
     window.addEventListener("scroll", handleScroll);
     window.addEventListener("resize", handleScroll);
-
     return () => {
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("resize", handleScroll);
     };
   }, [lastScrollY]);
 
-  // Close mobile menu on resize to desktop
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth >= 768) {
-        setIsMobileMenuOpen(false);
-      }
+      if (window.innerWidth >= 768) setIsMobileMenuOpen(false);
     };
-
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Close mobile menu when route changes
   useEffect(() => {
     setIsMobileMenuOpen(false);
   }, [location.pathname]);
 
-  const handleLogout = async () => {
-    await logout();
+  const handleLogout = () => {
+    logout();
     navigate("/");
     setIsProfileMenuOpen(false);
   };
@@ -106,10 +122,10 @@ function Header() {
   const navItems = isAuthenticated
     ? [
         { path: "/dashboard", label: "Dashboard", icon: Home },
-        { path: "/places", label: "Places", icon: MapPin },
-        { path: "/people", label: "People", icon: Users },
-        { path: "/notes", label: "Notes", icon: BookOpen },
-        { path: "/journeys", label: "Journeys", icon: Compass },
+        { path: "/notes",     label: "Notes",     icon: BookOpen },
+        { path: "/journeys",  label: "Journeys",  icon: Compass },
+        { path: "/places",    label: "Places",    icon: MapPin },
+        { path: "/people",    label: "People",    icon: Users },
       ]
     : [];
 
@@ -121,8 +137,7 @@ function Header() {
         transition={{ duration: 0.3 }}
         className={`
           flex items-center justify-between px-4 sm:px-6 py-2 sm:py-3
-          fixed top-0 left-0 right-0 z-50
-          transition-all duration-300
+          fixed top-0 left-0 right-0 z-50 transition-all duration-300
           ${
             isScrolled
               ? "bg-default/95 backdrop-blur-md shadow-medium border-b border-default/50"
@@ -130,36 +145,21 @@ function Header() {
           }
         `}
       >
-        {/* Left section - Logo & Menu */}
+        {/* Left — Logo & toggles */}
         <div className="flex items-center gap-2 sm:gap-4">
-          {/* Mobile menu button - Only show for authenticated users */}
           {isAuthenticated && (
             <motion.button
               whileTap={{ scale: 0.95 }}
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-card transition-colors md:hidden"
+              className="p-2 rounded-lg hover:bg-default transition-colors md:hidden"
               aria-label="Toggle menu"
             >
-              {isMobileMenuOpen ? (
-                <X size={20} className="text-muted" />
-              ) : (
-                <Menu size={20} className="text-muted" />
-              )}
+              {isMobileMenuOpen
+                ? <X size={20} className="text-muted" />
+                : <Menu size={20} className="text-muted" />}
             </motion.button>
           )}
 
-          {/* Desktop sidebar toggle - Only for authenticated */}
-          {isAuthenticated && (
-            <button
-              onClick={toggleSidebar}
-              className="hidden md:block p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-card transition-colors"
-              aria-label="Toggle sidebar"
-            >
-              <Menu size={20} className="text-muted" />
-            </button>
-          )}
-
-          {/* Logo - Always visible */}
           <NavLink
             to={isAuthenticated ? "/dashboard" : "/"}
             className="flex items-center gap-2 group"
@@ -168,61 +168,67 @@ function Header() {
               <div className="absolute inset-0 bg-primary-500 rounded-xl blur-md opacity-60 group-hover:opacity-100 transition-opacity" />
               <Box className="relative w-7 h-7 sm:w-8 sm:h-8 rounded-xl text-white bg-primary-500 p-1.5" />
             </div>
-            <span className="font-bold text-base sm:text-lg text-primary">
-              Chronovah
-            </span>
+            <span className="font-bold text-base sm:text-lg text-primary">Chronovah</span>
           </NavLink>
+
+          {isAuthenticated && (
+            <button
+              onClick={toggleSidebar}
+              className="hidden md:block p-2 rounded-lg hover:bg-default transition-colors"
+              aria-label="Toggle sidebar"
+            >
+              <Sidebar size={20} className="text-muted" />
+            </button>
+          )}
         </div>
 
-        {/* Center - Desktop Search (only for authenticated) */}
+        {/* Center — Desktop search */}
         {isAuthenticated && (
           <div className="hidden md:block flex-1 max-w-md mx-4">
             <DesktopSearchInput />
           </div>
         )}
 
-        {/* Right section - Actions */}
+        {/* Right — Actions */}
         <div className="flex items-center gap-1 sm:gap-2">
-          {/* Dark mode toggle - Always visible */}
+          {isAuthenticated && <SyncIndicator />}
+
           <motion.button
             whileTap={{ scale: 0.95 }}
             onClick={toggleDarkMode}
-            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-card transition-colors"
-            aria-label={
-              isDarkMode ? "Switch to light mode" : "Switch to dark mode"
-            }
+            className="p-2 rounded-lg hover:bg-default transition-colors"
+            aria-label={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
           >
-            {isDarkMode ? (
-              <Sun size={18} className="text-accent-yellow" />
-            ) : (
-              <Moon size={18} className="text-muted" />
-            )}
+            {isDarkMode
+              ? <Sun size={18} className="text-accent-yellow" />
+              : <Moon size={18} className="text-muted" />}
           </motion.button>
 
           {isAuthenticated ? (
-            /* Authenticated user UI */
             <>
-              {/* Mobile search button */}
               <motion.button
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setOpenSearch(true)}
-                className="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-card transition-colors"
+                className="md:hidden p-2 rounded-lg hover:bg-default transition-colors"
                 aria-label="Search"
               >
                 <Search size={18} className="text-muted" />
               </motion.button>
 
               {/* Profile dropdown */}
-              <div className="relative">
+              <div className="relative" ref={profileMenuRef}>
                 <motion.button
                   whileTap={{ scale: 0.95 }}
                   onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
-                  className="flex items-center gap-2 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-card transition-colors"
+                  className="flex items-center gap-2 p-1 rounded-full hover:bg-default transition-colors"
                   aria-label="Profile menu"
                 >
-                  <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-primary-500 text-white flex items-center justify-center font-semibold text-sm shadow-md">
-                    {initials || "U"}
-                  </div>
+                  <UserAvatar
+                    name={name}
+                    avatar={user?.avatar}
+                    size="w-8 h-8 sm:w-9 sm:h-9"
+                    textSize="text-sm"
+                  />
                   <ChevronDown
                     size={16}
                     className={`text-muted transition-transform duration-200 hidden sm:block ${
@@ -231,30 +237,24 @@ function Header() {
                   />
                 </motion.button>
 
-                {/* Profile dropdown menu */}
                 <AnimatePresence>
                   {isProfileMenuOpen && (
                     <motion.div
-                      initial={{ opacity: 0, y: -10 }}
+                      initial={{ opacity: 0, y: -8 }}
                       animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      transition={{ duration: 0.2 }}
+                      exit={{ opacity: 0, y: -8 }}
+                      transition={{ duration: 0.15 }}
                       className="absolute right-0 mt-2 w-48 bg-card rounded-xl shadow-hard border border-default overflow-hidden z-50"
                     >
-                      {/* User info */}
                       <div className="px-4 py-3 border-b border-default">
-                        <p className="text-sm font-semibold text-primary truncate">
-                          {name}
-                        </p>
+                        <p className="text-sm font-semibold text-primary truncate">{name}</p>
                         <p className="text-xs text-muted truncate">{email}</p>
                       </div>
-
-                      {/* Menu items */}
                       <div className="p-1">
                         <NavLink
-                          to="/profile"
+                          to="/settings/profile"
                           onClick={() => setIsProfileMenuOpen(false)}
-                          className="flex items-center gap-2 px-3 py-2 text-sm text-primary hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                          className="flex items-center gap-2 px-3 py-2 text-sm text-primary hover:bg-default rounded-lg transition-colors"
                         >
                           <User size={16} />
                           <span>Profile</span>
@@ -262,14 +262,14 @@ function Header() {
                         <NavLink
                           to="/settings"
                           onClick={() => setIsProfileMenuOpen(false)}
-                          className="flex items-center gap-2 px-3 py-2 text-sm text-primary hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                          className="flex items-center gap-2 px-3 py-2 text-sm text-primary hover:bg-default rounded-lg transition-colors"
                         >
                           <Settings size={16} />
                           <span>Settings</span>
                         </NavLink>
                         <button
                           onClick={handleLogout}
-                          className="w-full flex items-center gap-2 px-3 py-2 text-sm text-accent-red hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors"
+                          className="w-full flex items-center gap-2 px-3 py-2 text-sm text-accent-red hover:bg-default rounded-lg transition-colors"
                         >
                           <LogOut size={16} />
                           <span>Logout</span>
@@ -281,29 +281,23 @@ function Header() {
               </div>
             </>
           ) : (
-            /* Unauthenticated user UI */
             <div className="flex items-center gap-2 sm:gap-3">
-              {/* Sign Up button - Primary CTA (now just blue) */}
               <NavLink
                 to="/signup"
-                className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white text-sm font-medium rounded-lg transition-all duration-300 shadow-md hover:shadow-glow"
+                className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white text-sm font-medium rounded-lg transition-colors shadow-soft hover:shadow-glow"
               >
                 <UserPlus size={16} />
-                <span className="hidden xs:inline">Sign Up</span>
-                <span className="xs:hidden">Sign Up</span>
+                <span>Sign Up</span>
               </NavLink>
-
-              {/* Mobile Sign In icon */}
               <NavLink
-                to="/login"
-                className="sm:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-card transition-colors"
+                to="/signin"
+                className="sm:hidden p-2 rounded-lg hover:bg-default transition-colors"
                 aria-label="Sign In"
               >
                 <LogIn size={18} className="text-muted" />
               </NavLink>
-
               <NavLink
-                to="/login"
+                to="/signin"
                 className="hidden sm:flex items-center gap-2 px-3 py-2 text-sm font-medium text-muted hover:text-primary transition-colors"
               >
                 <LogIn size={16} />
@@ -314,11 +308,10 @@ function Header() {
         </div>
       </motion.header>
 
-      {/* Mobile Menu Overlay - Only for authenticated users */}
+      {/* Mobile menu overlay */}
       <AnimatePresence>
         {isAuthenticated && isMobileMenuOpen && (
           <>
-            {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -326,27 +319,21 @@ function Header() {
               onClick={() => setIsMobileMenuOpen(false)}
               className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 md:hidden"
             />
-
-            {/* Mobile menu panel */}
             <motion.div
               initial={{ x: -300 }}
               animate={{ x: 0 }}
               exit={{ x: -300 }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed top-0 left-0 bottom-0 w-64 bg-card shadow-2xl z-50 md:hidden"
+              className="fixed top-0 left-0 bottom-0 w-64 bg-card shadow-hard z-50 md:hidden"
             >
               <div className="flex flex-col h-full">
-                {/* Mobile menu header */}
                 <div className="p-4 border-b border-default">
                   <div className="flex items-center gap-2">
                     <Box className="w-8 h-8 rounded-xl text-white bg-primary-500 p-1.5" />
-                    <span className="font-bold text-lg text-primary">
-                      Chronovah
-                    </span>
+                    <span className="font-bold text-lg text-primary">Chronovah</span>
                   </div>
                 </div>
 
-                {/* Mobile navigation */}
                 <nav className="flex-1 p-4 space-y-1">
                   {navItems.map((item) => {
                     const Icon = item.icon;
@@ -355,15 +342,13 @@ function Header() {
                         key={item.path}
                         to={item.path}
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className={({ isActive }) => `
-                          flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm
-                          transition-colors duration-200
-                          ${
+                        className={({ isActive }) =>
+                          `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors duration-200 ${
                             isActive
-                              ? "bg-primary-50 dark:bg-primary-950/30 text-primary-600 dark:text-primary-400"
-                              : "text-muted hover:bg-gray-100 dark:hover:bg-gray-800"
-                          }
-                        `}
+                              ? "bg-primary-500/10 text-primary-500"
+                              : "text-muted hover:bg-default hover:text-primary"
+                          }`
+                        }
                       >
                         <Icon size={18} />
                         <span>{item.label}</span>
@@ -372,16 +357,56 @@ function Header() {
                   })}
                 </nav>
 
-                {/* Mobile user info */}
+                {isOpen && (
+                  <div
+                    className="mx-3 mb-4 p-4 rounded-xl border-2"
+                    style={{
+                      backgroundColor: "var(--color-card)",
+                      borderColor: isProActive ? "var(--color-primary-500)" : "var(--color-border)",
+                    }}
+                  >
+                    <div className="flex items-center gap-2 mb-3">
+                      {isProActive ? (
+                        <>
+                          <Crown size={16} style={{ color: "var(--color-primary-500)" }} />
+                          <span className="text-xs font-bold text-primary">Pro Active</span>
+                        </>
+                      ) : (
+                        <>
+                          <Zap size={16} className="text-muted" />
+                          <span className="text-xs font-bold text-primary">Free Plan</span>
+                        </>
+                      )}
+                    </div>
+                    {!isProActive && (
+                      <button
+                        onClick={() => navigate("/upgrade")}
+                        className="w-full py-2 px-3 text-white text-xs font-bold rounded-lg bg-primary-500 hover:bg-primary-600 transition-colors"
+                      >
+                        Upgrade Now
+                      </button>
+                    )}
+                    {isProActive && (
+                      <button
+                        onClick={() => navigate("/billing")}
+                        className="w-full py-2 px-3 text-xs font-bold rounded-lg border border-default text-primary hover:bg-default transition-colors"
+                      >
+                        Manage Plan
+                      </button>
+                    )}
+                  </div>
+                )}
+
                 <div className="p-4 border-t border-default">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-primary-500 text-white flex items-center justify-center font-semibold">
-                      {initials || "U"}
-                    </div>
+                    <UserAvatar
+                      name={name}
+                      avatar={user?.avatar}
+                      size="w-10 h-10"
+                      textSize="text-sm"
+                    />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-primary truncate">
-                        {name}
-                      </p>
+                      <p className="text-sm font-semibold text-primary truncate">{name}</p>
                       <p className="text-xs text-muted truncate">{email}</p>
                     </div>
                   </div>
@@ -392,7 +417,6 @@ function Header() {
         )}
       </AnimatePresence>
 
-      {/* Global Search Modal - Only for authenticated */}
       {isAuthenticated && openSearch && (
         <GlobalSearch onClose={() => setOpenSearch(false)} />
       )}

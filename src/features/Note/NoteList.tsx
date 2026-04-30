@@ -20,6 +20,7 @@ import NoteStats from "./NoteStats";
 import { useToast } from "../../hooks/useToast";
 import { ToastContainer } from "../../components/Toast";
 import { useNotes } from "../../hooks/useNotes";
+import NotesSkeleton from "../../components/skeletons/NotesSkeleton";
 
 type SortOption = "updated" | "created" | "title" | "wordCount";
 type FilterOption = "all" | "pinned" | "favorites" | "recent";
@@ -247,6 +248,11 @@ export default function Notes() {
           </div>
         </div>
 
+        {/* Show skeleton only when notes haven't loaded from local DB yet */}
+        {notes === undefined ? (
+          <NotesSkeleton viewMode={viewMode} />
+        ) : (
+          <>
         {/* Stats Cards */}
         {stats && <NoteStats stats={stats} />}
 
@@ -456,6 +462,8 @@ export default function Notes() {
               ))}
             </AnimatePresence>
           </motion.div>
+        )}
+          </>
         )}
       </div>
     </div>

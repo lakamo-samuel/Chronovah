@@ -1,4 +1,3 @@
-// pages/Places/PlaceStats.tsx
 import { motion } from "framer-motion";
 import { MapPin, Globe, Heart, Tag } from "lucide-react";
 import type { PlaceStats } from "../../type/PlaceType";
@@ -13,25 +12,29 @@ export default function PlaceStats({ stats }: PlaceStatsProps) {
       label: "Total Places",
       value: stats.totalPlaces,
       icon: MapPin,
-      color: "primary",
+      iconClass: "text-primary-500",
+      bgClass: "bg-primary-500/10",
     },
     {
-      label: "Countries Visited",
+      label: "Countries",
       value: stats.visitedCountries,
       icon: Globe,
-      color: "accent-blue",
+      iconClass: "text-accent-blue",
+      bgClass: "bg-accent-blue/10",
     },
     {
       label: "Favorites",
       value: stats.favoritePlaces,
       icon: Heart,
-      color: "accent-red",
+      iconClass: "text-accent-red",
+      bgClass: "bg-accent-red/10",
     },
     {
       label: "Place Types",
       value: Object.keys(stats.typesCount).length,
       icon: Tag,
-      color: "accent-green",
+      iconClass: "text-accent-green",
+      bgClass: "bg-accent-green/10",
     },
   ];
 
@@ -48,14 +51,12 @@ export default function PlaceStats({ stats }: PlaceStatsProps) {
             className="bg-card border border-default rounded-xl p-4 hover:shadow-medium transition-all"
           >
             <div className="flex items-center gap-3">
-              <div className={`p-2 bg-${stat.color}/10 rounded-lg`}>
-                <Icon size={18} className={`text-${stat.color}`} />
+              <div className={`p-2 rounded-lg flex-shrink-0 ${stat.bgClass}`}>
+                <Icon size={18} className={stat.iconClass} />
               </div>
               <div>
                 <p className="text-xs text-muted">{stat.label}</p>
-                <p className="text-xl font-semibold text-primary">
-                  {stat.value}
-                </p>
+                <p className="text-xl font-semibold text-primary tabular-nums">{stat.value}</p>
               </div>
             </div>
           </motion.div>

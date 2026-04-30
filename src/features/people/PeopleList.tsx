@@ -8,10 +8,11 @@ import type { Person } from "../../type/PeopleType";
 import PersonEditor from "./PersonEditor";
 import PersonCard from "./PersonCard";
 import PeopleStats from "./PeopleStats";
-import Spinner from "../../ui/Spinner";
 import { useToast } from "../../hooks/useToast";
 import { ToastContainer } from "../../components/Toast";
 import { usePeople } from "../../hooks/usePeople";
+import PeopleSkeleton from "../../components/skeletons/PeopleSkeleton";
+import CommonPageHeader from "../../components/CommonPageHeader";
 
 export default function PeopleList() {
   const navigate = useNavigate();
@@ -200,14 +201,14 @@ export default function PeopleList() {
     searchTerm || selectedRelation !== "all" || selectedTags.length > 0;
 
   return (
-    <div className="min-h-screen px-3 pb-24 pt-16">
+    <div className="min-h-screen pt-20 pb-24 px-4 sm:px-6">
       <ToastContainer toasts={toasts} onClose={removeToast} />
       <div className="">
         {/* Header */}
-        <div className="flex items-center justify-between mb-4">
-          <h1 className="text-xl font-bold text-primary">People</h1>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+          <CommonPageHeader isSetting={false} heading="People" />
 
-          <div className="flex items-center gap-2">
+          <div className="flex gap-2">
             <button
               onClick={() => setShowFilters(!showFilters)}
               className={`p-2 rounded-lg border transition-colors ${
@@ -223,10 +224,10 @@ export default function PeopleList() {
             <motion.button
               whileTap={{ scale: 0.95 }}
               onClick={handleAddPerson}
-              className="flex items-center gap-1 px-3 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg transition-colors text-sm"
+              className="flex items-center gap-2 px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-xl transition-colors"
             >
-              <Plus size={16} />
-              <span>Add</span>
+              <Plus size={18} />
+              <span>Add Person</span>
             </motion.button>
           </div>
         </div>
@@ -336,68 +337,65 @@ export default function PeopleList() {
         </AnimatePresence>
 
         {/* Search and view controls */}
-        <div className="flex flex-col gap-2 mb-4">
+        <div className="mt-6 flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
             <Search
               className="absolute left-3 top-1/2 -translate-y-1/2 text-muted"
-              size={16}
+              size={18}
             />
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search people..."
-              className="w-full pl-9 pr-8 py-2.5 bg-card border border-default rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/50 text-primary text-sm"
+              placeholder="Search people by name, relation, or tags..."
+              className="w-full pl-10 pr-4 py-3 bg-card border border-default rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500/50 text-primary"
             />
             {searchTerm && (
               <button
                 onClick={() => setSearchTerm("")}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-muted hover:text-primary"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-primary"
                 aria-label="Clear search"
               >
-                <X size={14} />
+                <X size={16} />
               </button>
             )}
           </div>
 
-          <div className="flex items-center justify-between">
-            <div className="text-xs text-muted">
-              {filteredPeople.length}{" "}
-              {filteredPeople.length === 1 ? "person" : "people"}
-            </div>
-
-            <div className="flex items-center gap-1 bg-card rounded-lg p-1 border border-default">
-              <button
-                onClick={() => setViewMode("grid")}
-                className={`p-1.5 rounded-md transition-colors ${
-                  viewMode === "grid"
-                    ? "bg-primary-500 text-white"
-                    : "text-muted hover:text-primary"
-                }`}
-                aria-label="Grid view"
-              >
-                <Grid3X3 size={16} />
-              </button>
-              <button
-                onClick={() => setViewMode("list")}
-                className={`p-1.5 rounded-md transition-colors ${
-                  viewMode === "list"
-                    ? "bg-primary-500 text-white"
-                    : "text-muted hover:text-primary"
-                }`}
-                aria-label="List view"
-              >
-                <List size={16} />
-              </button>
-            </div>
+          <div className="flex items-center gap-1 bg-card rounded-lg p-1 border border-default self-start">
+            <button
+              onClick={() => setViewMode("grid")}
+              className={`p-2 rounded-md transition-colors ${
+                viewMode === "grid"
+                  ? "bg-primary-500 text-white"
+                  : "text-muted hover:text-primary"
+              }`}
+              aria-label="Grid view"
+            >
+              <Grid3X3 size={18} />
+            </button>
+            <button
+              onClick={() => setViewMode("list")}
+              className={`p-2 rounded-md transition-colors ${
+                viewMode === "list"
+                  ? "bg-primary-500 text-white"
+                  : "text-muted hover:text-primary"
+              }`}
+              aria-label="List view"
+            >
+              <List size={18} />
+            </button>
           </div>
         </div>
 
+        {/* Results count */}
+        <div className="mt-4 text-sm text-muted">
+          {filteredPeople.length}{" "}
+          {filteredPeople.length === 1 ? "person" : "people"} found
+        </div>
+
         {/* People grid/list */}
-        {!people ? (
-          <div className="flex justify-center items-center h-32">
-            <Spinner overlay={false} size="sm" className="h-5 w-5" />
-          </div>
+        {people === undefined ? (
+          <PeopleSkeleton viewMode={viewMode} />
         ) : filteredPeople.length === 0 ? (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -427,7 +425,9 @@ export default function PeopleList() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className={
-              viewMode === "grid" ? "grid grid-cols-1 gap-3" : "space-y-2"
+              viewMode === "grid" 
+                ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" 
+                : "space-y-2"
             }
           >
             <AnimatePresence>

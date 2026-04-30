@@ -24,6 +24,7 @@ import {
   FileText,
   Image as ImageIcon,
   Tag,
+  AlertCircle,
 } from "lucide-react";
 import { useLiveQuery } from "dexie-react-hooks";
 import { db } from "../../database/db";
@@ -31,6 +32,30 @@ import type { Person } from "../../type/PeopleType";
 import PersonEditor from "./PersonEditor";
 import ConfirmationModal from "../../components/ConfirmationModal";
 import { useToast } from "../../hooks/useToast";
+
+// Small helper so each gallery thumbnail has its own error state
+function GalleryImage({ src, alt, className }: { src: string; alt: string; className?: string }) {
+  const [err, setErr] = useState(false);
+  if (err) {
+    return (
+      <div className={`image-error-state ${className ?? ""}`}>
+        <AlertCircle size={14} />
+        <p>Failed</p>
+      </div>
+    );
+  }
+  return (
+    <img
+      src={src}
+      alt={alt}
+      className={className}
+      onError={() => {
+        setErr(true);
+        console.error(`Failed to load gallery image`, src);
+      }}
+    />
+  );
+}
 
 
 export default function PersonDetail() {
@@ -43,6 +68,7 @@ export default function PersonDetail() {
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [avatarImgError, setAvatarImgError] = useState(false);
 //   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(
 //     null,
 //   );
@@ -175,23 +201,40 @@ export default function PersonDetail() {
         <div className="flex flex-col items-center mb-6">
           {/* Avatar/Image */}
           <div className="relative mb-4">
-            {person.images && person.images.length > 0 ? (
-              <img
-                src={person.images[0]}
-                alt={person.name}
-                className="w-24 h-24 rounded-full object-cover border-4 border-card shadow-lg"
-              />
-            ) : person.image ? (
-              <img
-                src={person.image}
-                alt={person.name}
-                className="w-24 h-24 rounded-full object-cover border-4 border-card shadow-lg"
-              />
-            ) : (
-              <div className="w-24 h-24 rounded-full bg-primary-500 text-white flex items-center justify-center text-3xl font-bold border-4 border-card shadow-lg">
-                {getInitials(person.name)}
-              </div>
-            )}
+            {(() => {
+              // Prefer images[] array first, fall back to legacy image field
+              const primaryImage = person.images?.[0] ?? person.image;
+              console.log('Person image data:', person.image, person.images);
+              if (primaryImage && !avatarImgError) {
+                return (
+                  <img
+                    src={primaryImage}
+                    alt={person.name}
+                    className="w-24 h-24 rounded-full object-cover border-4 border-card shadow-lg"
+                    onError={() => {
+                      setAvatarImgError(true);
+                      console.error(`Failed to load image for person: ${person.name}`, primaryImage);
+                    }}
+                  />
+                );
+              }
+              if (primaryImage && avatarImgError) {
+                return (
+                  <div
+                    className="w-24 h-24 rounded-full border-4 border-card shadow-lg image-error-state"
+                    style={{ borderRadius: '9999px' }}
+                  >
+                    <AlertCircle size={20} />
+                    <p>Failed</p>
+                  </div>
+                );
+              }
+              return (
+                <div className="w-24 h-24 rounded-full bg-primary-500 text-white flex items-center justify-center text-3xl font-bold border-4 border-card shadow-lg">
+                  {getInitials(person.name)}
+                </div>
+              );
+            })()}
           </div>
 
           <h1 className="text-2xl font-bold text-primary text-center">
@@ -407,7 +450,7 @@ export default function PersonDetail() {
               </h2>
               <div className="grid grid-cols-4 gap-2">
                 {person.images.slice(1).map((img: string, index: number) => (
-                  <img
+                  <GalleryImage
                     key={index}
                     src={img}
                     alt={`${person.name} ${index + 2}`}

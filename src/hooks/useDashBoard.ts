@@ -19,6 +19,8 @@ interface DashboardContextType {
   recentPeople: ActivityCardItem[];
   recentPlaces: ActivityCardItem[];
   recentJournals: ActivityCardItem[];
+  /** True once the first liveQuery snapshot has arrived from IndexedDB */
+  isReady: boolean;
 }
 
 export const DashboardContext = createContext<DashboardContextType | undefined>(

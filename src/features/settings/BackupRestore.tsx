@@ -4,22 +4,22 @@ function BackupRestore() {
   const { exportBackup, importBackup, loading } = useDexieBackup();
 
   return (
-    <div className="bg-white dark:bg-[#0B1120] rounded-2xl p-5 shadow space-y-6">
-      <h2 className="text-xl font-semibold mb-4 text-gray-700 dark:text-gray-100">
+    <div className="bg-default rounded-2xl p-4 sm:p-5 lg:p-6 shadow space-y-4 sm:space-y-6">
+      <h2 className="text-lg sm:text-xl font-semibold text-primary">
         Backup & Restore
       </h2>
 
-      <div className="flex gap-3">
+      <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
         <button
           onClick={exportBackup}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl transition"
+          className="flex-1 bg-primary hover:bg-primary-hover text-white px-3 sm:px-4 py-2.5 rounded-xl transition disabled:opacity-50"
           disabled={loading}
         >
-          Export Backup
+          Export
         </button>
 
-        <label className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl cursor-pointer transition">
-          Import Backup
+        <label className="flex-1 bg-primary hover:bg-primary-hover text-white px-3 sm:px-4 py-2.5 rounded-xl cursor-pointer transition text-center">
+          Import
           <input
             type="file"
             accept=".json"
@@ -30,9 +30,8 @@ function BackupRestore() {
         </label>
       </div>
 
-      <p className="text-sm text-gray-500 dark:text-gray-400">
-        Export creates a file backup of your People, Notes, Places, and
-        Journals.
+      <p className="text-xs sm:text-sm text-muted">
+        Export creates a file backup of your People, Notes, Places, and Journals.
       </p>
     </div>
   );

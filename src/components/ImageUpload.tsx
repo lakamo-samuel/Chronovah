@@ -1,7 +1,8 @@
 // components/ImageUpload.tsx
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {  X, Upload, Camera, Maximize2 } from "lucide-react";
+import { X, Upload, Camera, Maximize2, Loader, AlertCircle } from "lucide-react";
+import { useImageUpload } from "../hooks/useImageUpload";
 
 interface ImageUploadProps {
   images: string[];
@@ -16,7 +17,9 @@ export default function ImageUpload({
 }: ImageUploadProps) {
   const [dragActive, setDragActive] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { uploadImage, isUploading } = useImageUpload();
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
@@ -41,20 +44,27 @@ export default function ImageUpload({
     if (e.target.files) {
       handleFiles(Array.from(e.target.files));
     }
+    // Reset input so the same file can be re-selected after removal
+    e.target.value = "";
   };
 
-  const handleFiles = (files: File[]) => {
+  const handleFiles = async (files: File[]) => {
     const imageFiles = files.filter((file) => file.type.startsWith("image/"));
+    setUploadError(null);
 
-    imageFiles.forEach((file) => {
-      if (images.length >= maxImages) return;
+    for (const file of imageFiles) {
+      if (images.length >= maxImages) break;
 
-      const reader = new FileReader();
-      reader.onload = () => {
-        onImagesChange([...images, reader.result as string]);
-      };
-      reader.readAsDataURL(file);
-    });
+      try {
+        const cloudinaryUrl = await uploadImage(file);
+        // Use functional update to avoid stale closure over `images`
+        onImagesChange([...images, cloudinaryUrl]);
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : "Failed to upload image";
+        setUploadError(msg);
+        console.error("ImageUpload: failed to upload to Cloudinary", err);
+      }
+    }
   };
 
   const removeImage = (index: number) => {
@@ -64,6 +74,14 @@ export default function ImageUpload({
   return (
     <>
       <div className="space-y-3">
+        {/* Upload error */}
+        {uploadError && (
+          <div className="flex items-center gap-2 px-3 py-2 bg-red-500/10 border border-red-500/30 rounded-lg text-red-500 text-xs">
+            <AlertCircle size={14} className="flex-shrink-0" />
+            <span>{uploadError}</span>
+          </div>
+        )}
+
         {/* Image grid */}
         {images.length > 0 && (
           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 mb-4">
@@ -111,18 +129,19 @@ export default function ImageUpload({
             animate={{ opacity: 1, y: 0 }}
             className={`
               relative border-2 border-dashed rounded-xl p-6
-              transition-colors cursor-pointer
+              transition-colors
+              ${isUploading ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}
               ${
                 dragActive
                   ? "border-primary-500 bg-primary-500/5"
                   : "border-default hover:border-primary-500 hover:bg-card/50"
               }
             `}
-            onDragEnter={handleDrag}
-            onDragLeave={handleDrag}
-            onDragOver={handleDrag}
-            onDrop={handleDrop}
-            onClick={() => fileInputRef.current?.click()}
+            onDragEnter={!isUploading ? handleDrag : undefined}
+            onDragLeave={!isUploading ? handleDrag : undefined}
+            onDragOver={!isUploading ? handleDrag : undefined}
+            onDrop={!isUploading ? handleDrop : undefined}
+            onClick={!isUploading ? () => fileInputRef.current?.click() : undefined}
           >
             <input
               ref={fileInputRef}
@@ -130,24 +149,33 @@ export default function ImageUpload({
               accept="image/*"
               multiple
               onChange={handleFileInput}
+              disabled={isUploading}
               className="hidden"
             />
 
             <div className="text-center">
               <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-card mb-3">
-                {dragActive ? (
+                {isUploading ? (
+                  <Loader size={24} className="text-primary-500 animate-spin" />
+                ) : dragActive ? (
                   <Camera size={24} className="text-primary-500" />
                 ) : (
                   <Upload size={24} className="text-muted" />
                 )}
               </div>
-              <p className="text-sm text-primary mb-1">
-                <span className="font-semibold">Click to upload</span> or drag
-                and drop
-              </p>
-              <p className="text-xs text-muted">
-                PNG, JPG, GIF up to 10MB ({images.length}/{maxImages})
-              </p>
+              {isUploading ? (
+                <p className="text-sm text-muted">Uploading to Cloudinary…</p>
+              ) : (
+                <>
+                  <p className="text-sm text-primary mb-1">
+                    <span className="font-semibold">Click to upload</span> or drag
+                    and drop
+                  </p>
+                  <p className="text-xs text-muted">
+                    PNG, JPG, GIF up to 10MB ({images.length}/{maxImages})
+                  </p>
+                </>
+              )}
             </div>
           </motion.div>
         )}

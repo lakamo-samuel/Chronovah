@@ -1,7 +1,16 @@
 import { createContext, useContext } from "react";
 
-type User = { id: string; name?: string; email: string, createdAt?: string | undefined,updatedAt?: string | undefined } | null;
-
+type User = {
+  id: string;
+  name?: string;
+  email: string;
+  avatar?: string;
+  username?: string;
+  bio?: string;
+  favoriteQuote?: string;
+  createdAt?: string;
+  updatedAt?: string;
+} | null;
 
 type AuthContextType = {
   user: User;

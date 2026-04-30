@@ -57,7 +57,9 @@ export const useImageUpload = (): UseImageUploadReturn => {
         formData.append("api_key", signature.apiKey);
         formData.append("timestamp", signature.timestamp.toString());
         formData.append("signature", signature.signature);
-        formData.append("folder", signature.folder || "chronovah");
+        if (signature.folder) {
+          formData.append("folder", signature.folder);
+        }
 
         const cloudinaryResponse = await fetch(
           `https://api.cloudinary.com/v1_1/${signature.cloudName}/image/upload`,

@@ -1,6 +1,4 @@
-// components/NoteStats.tsx
 import { motion } from "framer-motion";
-
 import { Pin, Star, FileText, BookOpen } from "lucide-react";
 import type { NoteStats } from "../../type/NoteType";
 
@@ -14,25 +12,29 @@ export default function NoteStats({ stats }: NoteStatsProps) {
       label: "Total Notes",
       value: stats.totalNotes,
       icon: FileText,
-      color: "primary",
+      iconClass: "text-primary-500",
+      bgClass: "bg-primary-500/10",
     },
     {
       label: "Pinned",
       value: stats.pinnedNotes,
       icon: Pin,
-      color: "accent-blue",
+      iconClass: "text-accent-blue",
+      bgClass: "bg-accent-blue/10",
     },
     {
       label: "Favorites",
       value: stats.favoriteNotes,
       icon: Star,
-      color: "accent-yellow",
+      iconClass: "text-accent-yellow",
+      bgClass: "bg-accent-yellow/10",
     },
     {
       label: "Words Written",
       value: stats.totalWords.toLocaleString(),
       icon: BookOpen,
-      color: "accent-green",
+      iconClass: "text-accent-green",
+      bgClass: "bg-accent-green/10",
     },
   ];
 
@@ -49,14 +51,12 @@ export default function NoteStats({ stats }: NoteStatsProps) {
             className="bg-card border border-default rounded-xl p-4 hover:shadow-medium transition-all"
           >
             <div className="flex items-center gap-3">
-              <div className={`p-2 bg-${stat.color}/10 rounded-lg`}>
-                <Icon size={18} className={`text-${stat.color}`} />
+              <div className={`p-2 rounded-lg flex-shrink-0 ${stat.bgClass}`}>
+                <Icon size={18} className={stat.iconClass} />
               </div>
               <div>
                 <p className="text-xs text-muted">{stat.label}</p>
-                <p className="text-xl font-semibold text-primary">
-                  {stat.value}
-                </p>
+                <p className="text-xl font-semibold text-primary tabular-nums">{stat.value}</p>
               </div>
             </div>
           </motion.div>

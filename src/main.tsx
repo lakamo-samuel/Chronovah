@@ -4,13 +4,16 @@ import './index.css'
 import App from './App.tsx'
 import { DarkModeProvider } from './context/DarkModeContext.tsx'
 import { SidebarProvider } from './context/SidebarToggleContext.tsx'
-
+import { applyTheme, getStoredTheme } from './lib/theme.ts'
 import { registerSW } from "virtual:pwa-register";
 import { DashboardProvider } from './context/DashboardContext.tsx'
 
 import { SearchProvider } from './context/SearchContext.tsx'
 import { AuthProvider } from './context/AuthContext.tsx'
 import { SyncProvider } from './context/SyncContext.tsx'
+
+// Initialize theme as early as possible
+applyTheme(getStoredTheme());
 
 const updateSW = registerSW({
   onNeedRefresh() {
@@ -22,6 +25,16 @@ const updateSW = registerSW({
     console.log("App ready to work offline 🚀");
   },
 });
+
+// Remove the initial HTML loader once React is ready to mount
+function dismissAppLoader() {
+  const loader = document.getElementById('app-loader');
+  if (loader) {
+    loader.classList.add('hidden');
+    setTimeout(() => loader.remove(), 350);
+  }
+}
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <AuthProvider>
@@ -39,3 +52,8 @@ createRoot(document.getElementById("root")!).render(
     </AuthProvider>
   </StrictMode>
 );
+
+// Dismiss loader after React has painted
+requestAnimationFrame(() => {
+  requestAnimationFrame(dismissAppLoader);
+});

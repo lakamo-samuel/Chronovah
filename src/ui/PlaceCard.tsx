@@ -4,7 +4,7 @@ import type { Place } from "../type/PlaceType";
 export function PlacesCard({ item }: { item: Place }) {
   return (
     <div className="space-y-3">
-      <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+      <h2 className="text-lg font-semibold text-primary">
         {item.name}
       </h2>
 
