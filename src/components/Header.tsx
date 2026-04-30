@@ -145,7 +145,7 @@ function Header() {
             <motion.button
               whileTap={{ scale: 0.95 }}
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-card transition-colors md:hidden"
+              className="p-2 rounded-lg hover:bg-default transition-colors md:hidden"
               aria-label="Toggle menu"
             >
               {isMobileMenuOpen ? (
@@ -262,10 +262,11 @@ function Header() {
 
                       {/* Menu items */}
                       <div className="p-1">
+// 1. Header.tsx — replace hardcoded gray-100/gray-800 hover states with design system tokens
                         <NavLink
                           to="/profile"
                           onClick={() => setIsProfileMenuOpen(false)}
-                          className="flex items-center gap-2 px-3 py-2 text-sm text-primary hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                          className="flex items-center gap-2 px-3 py-2 text-sm text-primary hover:bg-default rounded-lg transition-colors"
                         >
                           <User size={16} />
                           <span>Profile</span>
@@ -273,7 +274,7 @@ function Header() {
                         <NavLink
                           to="/settings"
                           onClick={() => setIsProfileMenuOpen(false)}
-                          className="flex items-center gap-2 px-3 py-2 text-sm text-primary hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                          className="flex items-center gap-2 px-3 py-2 text-sm text-primary hover:bg-default rounded-lg transition-colors"
                         >
                           <Settings size={16} />
                           <span>Settings</span>

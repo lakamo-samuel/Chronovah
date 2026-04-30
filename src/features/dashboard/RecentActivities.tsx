@@ -1,53 +1,93 @@
 import { useNavigate } from "react-router-dom";
 import { useDashboard } from "../../hooks/useDashBoard";
 import type { ActivityItem } from "../../type/DashboardType";
+import { NotebookPen, MapPin, Users, BookOpen, ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
+
+const TYPE_CONFIG: Record<
+  ActivityItem["type"],
+  { label: string; icon: React.ElementType; color: string; bg: string; route: string }
+> = {
+  notes:    { label: "Note",    icon: NotebookPen, color: "text-yellow-600 dark:text-yellow-400",  bg: "bg-yellow-500/10",  route: "/notes" },
+  journals: { label: "Journal", icon: BookOpen,    color: "text-purple-600 dark:text-purple-400",  bg: "bg-purple-500/10",  route: "/journal" },
+  places:   { label: "Place",   icon: MapPin,      color: "text-blue-600 dark:text-blue-400",      bg: "bg-blue-500/10",    route: "/places" },
+  people:   { label: "Person",  icon: Users,       color: "text-green-600 dark:text-green-400",    bg: "bg-green-500/10",   route: "/people" },
+};
+
+function timeAgo(dateString: string): string {
+  const diff = Date.now() - new Date(dateString).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return "just now";
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  const days = Math.floor(hrs / 24);
+  if (days < 7) return `${days}d ago`;
+  return new Date(dateString).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
 
 function RecentActivities() {
-  const { activities } = useDashboard()
+  const { activities } = useDashboard();
   const navigate = useNavigate();
-      const typeIcons: Record<ActivityItem["type"], string> = {
-        people: "🧍",
-        places: "📍",
-        notes: "📝",
-        journals: "📖",
-      };
+
   return (
-    <div>
-      <h2 className="text-lg font-semibold text-primary mb-3">
-        Recent Activity
-      </h2>
-      <div className="bg-card border border-default rounded-xl p-4 transition-colors">
-        {activities.length > 0 ? (
-          <ul className="space-y-3 text-gray-700 dark:text-gray-300 text-sm">
-            {activities.map((item) => (
-              <li
-                key={`${item.type}-${item.id ?? crypto.randomUUID()}`}
-                onClick={() => {
-                  navigate(`/item/${item.type}/${item.id}`);
-                }}
-              
-              >
-                {typeIcons[item.type]}{" "}
-                <span className="font-medium capitalize ">
-                  {item.type}
-                </span>{" "}
-                —{" "}
-                <span className="hover:text-blue-600 hover:underline">
-                  {item.title || "Untitled"}
-                </span>{" "}
-                <span className="text-gray-400 text-xs">
-                  ({new Date(item.createdAt).toLocaleDateString()})
-                </span>
-              </li>
-            ))}
-          </ul>
+    <section aria-label="Recent activity">
+      <div className="flex items-center justify-between mb-3">
+        <h2 className="text-base font-semibold text-primary">Recent Activity</h2>
+      </div>
+
+      <div className="bg-card border border-default rounded-xl overflow-hidden">
+        {activities.length === 0 ? (
+          <div className="px-4 py-10 text-center">
+            <p className="text-sm text-muted">No activity yet. Start by creating a note or journal entry.</p>
+          </div>
         ) : (
-          <p className="text-gray-500 dark:text-gray-400 text-sm italic">
-            No recent activity yet.
-          </p>
+          <ul className="divide-y divide-[var(--color-border)]">
+            {activities.map((item, i) => {
+              const cfg = TYPE_CONFIG[item.type];
+              const Icon = cfg.icon;
+              const destination = `${cfg.route}/${item.id}`;
+
+              return (
+                <motion.li
+                  key={`${item.type}-${item.id}`}
+                  initial={{ opacity: 0, x: -8 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.04 }}
+                >
+                  <button
+                    onClick={() => navigate(destination)}
+                    className="w-full flex items-center gap-3 px-4 py-3 hover:bg-default transition-colors text-left group"
+                  >
+                    {/* Icon badge */}
+                    <div className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center ${cfg.bg}`}>
+                      <Icon size={15} className={cfg.color} />
+                    </div>
+
+                    {/* Text */}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-primary truncate leading-snug">
+                        {item.title || "Untitled"}
+                      </p>
+                      <p className="text-xs text-muted mt-0.5">{cfg.label}</p>
+                    </div>
+
+                    {/* Time + arrow */}
+                    <div className="flex-shrink-0 flex items-center gap-2">
+                      <span className="text-xs text-muted tabular-nums">{timeAgo(item.createdAt)}</span>
+                      <ArrowRight
+                        size={14}
+                        className="text-muted opacity-0 group-hover:opacity-100 transition-opacity"
+                      />
+                    </div>
+                  </button>
+                </motion.li>
+              );
+            })}
+          </ul>
         )}
       </div>
-    </div>
+    </section>
   );
 }
 
