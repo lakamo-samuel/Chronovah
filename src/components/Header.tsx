@@ -66,13 +66,6 @@ function Header() {
   const isAuthenticated = !!user;
   const { name = "User", email } = user || {};
 
-  const initials = name
-    .split(" ")
-    .map((n: string) => n[0])
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
-
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;

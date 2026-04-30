@@ -24,6 +24,8 @@ export interface MoodOption extends SelectOption {
 }
 
 export interface JournalStats extends BaseStats {
+  totalEntries: number;
+  favoriteEntries: number;
   currentStreak: number;
   longestStreak: number;
   moodCounts: Record<MoodType, number>;

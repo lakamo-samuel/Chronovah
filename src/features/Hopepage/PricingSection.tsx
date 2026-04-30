@@ -30,7 +30,6 @@ const PricingSection: React.FC = () => {
 
   const monthlyAmount = 2500;
   const yearlyAmount = 25000;
-  const amount = billingPeriod === 'yearly' ? yearlyAmount : monthlyAmount;
 
   const monthlyFormatted = new Intl.NumberFormat('en-NG', {
     style: 'currency',
