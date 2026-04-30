@@ -17,8 +17,8 @@ function BottomNav() {
           className={({ isActive }) =>
             `group flex flex-col items-center py-2 px-3 rounded-xl transition-all duration-200 relative ${
               isActive
-                ? "text-primary-500 bg-primary-50 dark:bg-primary-950/30"
-                : "text-muted hover:text-primary-500 hover:bg-gray-100 dark:hover:bg-card/80"
+                ? "text-primary-500 bg-primary-500/10"
+                : "text-muted hover:text-primary-500 hover:bg-default"
             }`
           }
         >
@@ -55,12 +55,12 @@ function BottomNav() {
               {/* Desktop tooltip */}
               <span
                 className="
-                absolute -top-8 left-1/2 -translate-x-1/2 
-                bg-gray-900 dark:bg-gray-800 text-white text-[10px] font-medium 
-                rounded-md px-2 py-1 
+                absolute -top-8 left-1/2 -translate-x-1/2
+                bg-card border border-default text-primary text-[10px] font-medium
+                rounded-md px-2 py-1
                 opacity-0 group-hover:opacity-100 group-hover:-translate-y-1
                 transition-all duration-200 pointer-events-none
-                whitespace-nowrap shadow-md
+                whitespace-nowrap shadow-soft
                 hidden md:block
               "
               >

@@ -42,14 +42,14 @@ export function ProfileEditor({ profileImg,setProfileImg }: setProfileProp) {
         <img
           src={imgSrc}
           alt="Profile"
-          className="w-full h-full object-cover rounded-full border border-blue-600 ring-blue-600 ring"
+          className="w-full h-full object-cover rounded-full border-2 border-primary-500 ring-2 ring-primary-500/30"
         />
         <button
           onClick={() => fileInputRef.current?.click()}
-          className="absolute bottom-0 right-0 p-2 bg-white rounded-full shadow hover:bg-gray-50"
+          className="absolute bottom-0 right-0 p-2 bg-card border border-default rounded-full shadow-soft hover:bg-default transition-colors"
           aria-label="Change profile picture"
         >
-          <Camera size={18} className="text-amber-600"/>
+          <Camera size={18} className="text-primary-500" />
         </button>
         <input
           ref={fileInputRef}
@@ -61,8 +61,8 @@ export function ProfileEditor({ profileImg,setProfileImg }: setProfileProp) {
       </div>
 
       <div>
-        <p className="font-medium text-lg text-gray-800 dark:text-gray-100"> "Your Name"</p>
-        <p className="text-gray-500 text-sm dark"> "your@email.com"</p>
+        <p className="font-medium text-lg text-primary">"Your Name"</p>
+        <p className="text-sm text-muted">"your@email.com"</p>
       </div>
     </section>
   );

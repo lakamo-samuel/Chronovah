@@ -87,12 +87,8 @@ function Sidebar() {
                 {isLocked && (
                   <Lock
                     size={12}
-                    style={{
-                      position: "absolute",
-                      bottom: -2,
-                      right: -2,
-                      color: "#ef4444",
-                    }}
+                    className="absolute text-accent-red"
+                    style={{ bottom: -2, right: -2 }}
                   />
                 )}
               </div>
@@ -101,45 +97,33 @@ function Sidebar() {
                   <span className="text-sm font-medium">{item.name}</span>
                   {item.name === "Journal" && journalCount > 0 && (
                     <span
-                      className="text-xs px-2 py-0.5 rounded font-medium"
-                      style={{
-                        backgroundColor:
-                          journalCount > 20 ? "#fee2e2" : "var(--color-bg)",
-                        color:
-                          journalCount > 20
-                            ? "#dc2626"
-                            : "var(--color-text-muted)",
-                      }}
+                      className={`text-xs px-2 py-0.5 rounded font-medium ${
+                        journalCount > 20
+                          ? "bg-red-500/10 text-accent-red"
+                          : "bg-default text-muted"
+                      }`}
                     >
                       {journalCount > 20 ? `${journalCount}/20` : journalCount}
                     </span>
                   )}
                   {item.name === "People" && peopleCount > 0 && (
                     <span
-                      className="text-xs px-2 py-0.5 rounded font-medium"
-                      style={{
-                        backgroundColor:
-                          peopleCount > 12 ? "#fee2e2" : "var(--color-bg)",
-                        color:
-                          peopleCount > 12
-                            ? "#dc2626"
-                            : "var(--color-text-muted)",
-                      }}
+                      className={`text-xs px-2 py-0.5 rounded font-medium ${
+                        peopleCount > 12
+                          ? "bg-red-500/10 text-accent-red"
+                          : "bg-default text-muted"
+                      }`}
                     >
                       {peopleCount > 12 ? `${peopleCount}/12` : peopleCount}
                     </span>
                   )}
                   {item.name === "Places" && placesCount > 0 && (
                     <span
-                      className="text-xs px-2 py-0.5 rounded font-medium"
-                      style={{
-                        backgroundColor:
-                          placesCount > 15 ? "#fee2e2" : "var(--color-bg)",
-                        color:
-                          placesCount > 15
-                            ? "#dc2626"
-                            : "var(--color-text-muted)",
-                      }}
+                      className={`text-xs px-2 py-0.5 rounded font-medium ${
+                        placesCount > 15
+                          ? "bg-red-500/10 text-accent-red"
+                          : "bg-default text-muted"
+                      }`}
                     >
                       {placesCount > 15 ? `${placesCount}/15` : placesCount}
                     </span>

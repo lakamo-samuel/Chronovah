@@ -178,10 +178,8 @@ const PricingSection: React.FC = () => {
             }}
           >
             {isProActive && (
-              <div
-                className="absolute -top-4 right-8 px-4 py-1 rounded-full text-white text-sm font-bold bg-primary-600"
-              >
-                ✓ You have access
+              <div className="absolute -top-4 right-8 px-4 py-1 rounded-full text-white text-sm font-bold bg-primary-500">
+                Active plan
               </div>
             )}
 
@@ -214,8 +212,8 @@ const PricingSection: React.FC = () => {
             {/* Pro Features */}
             <div className="space-y-4">
               <div className="flex items-start gap-3">
-                <div className="flex items-center justify-center w-5 h-5 rounded-full flex-shrink-0 mt-0.5" style={{ backgroundColor: 'var(--color-journal-100)' }}>
-                  <BookOpen className="w-3 h-3" style={{ color: 'var(--color-journal-600)' }} />
+                <div className="flex items-center justify-center w-8 h-8 rounded-lg flex-shrink-0 mt-0.5 bg-journal-soft">
+                  <BookOpen className="w-4 h-4 text-[var(--color-journal-light)]" />
                 </div>
                 <div>
                   <p className="font-semibold" style={{ color: 'var(--color-text)' }}>
@@ -230,8 +228,8 @@ const PricingSection: React.FC = () => {
               </div>
 
               <div className="flex items-start gap-3">
-                <div className="flex items-center justify-center w-5 h-5 rounded-full flex-shrink-0 mt-0.5" style={{ backgroundColor: 'var(--color-people-100)' }}>
-                  <Users className="w-3 h-3" style={{ color: 'var(--color-people-600)' }} />
+                <div className="flex items-center justify-center w-8 h-8 rounded-lg flex-shrink-0 mt-0.5 bg-people-soft">
+                  <Users className="w-4 h-4 text-[var(--color-people-light)]" />
                 </div>
                 <div>
                   <p className="font-semibold" style={{ color: 'var(--color-text)' }}>
@@ -246,8 +244,8 @@ const PricingSection: React.FC = () => {
               </div>
 
               <div className="flex items-start gap-3">
-                <div className="flex items-center justify-center w-5 h-5 rounded-full flex-shrink-0 mt-0.5" style={{ backgroundColor: 'var(--color-places-100)' }}>
-                  <MapPin className="w-3 h-3" style={{ color: 'var(--color-places-600)' }} />
+                <div className="flex items-center justify-center w-8 h-8 rounded-lg flex-shrink-0 mt-0.5 bg-places-soft">
+                  <MapPin className="w-4 h-4 text-[var(--color-places-light)]" />
                 </div>
                 <div>
                   <p className="font-semibold" style={{ color: 'var(--color-text)' }}>
@@ -266,11 +264,18 @@ const PricingSection: React.FC = () => {
                   Also included:
                 </p>
                 <ul className="space-y-2 text-sm" style={{ color: 'var(--color-text-muted)' }}>
-                  <li>✓ Unlimited journal entries</li>
-                  <li>✓ Unlimited people profiles</li>
-                  <li>✓ Unlimited place memories</li>
-                  <li>✓ Cross-device sync</li>
-                  <li>✓ Priority support</li>
+                  {[
+                    "Unlimited journal entries",
+                    "Unlimited people profiles",
+                    "Unlimited place memories",
+                    "Cross-device sync",
+                    "Priority support",
+                  ].map((item) => (
+                    <li key={item} className="flex items-center gap-2">
+                      <Check className="w-4 h-4 flex-shrink-0" style={{ color: 'var(--color-primary)' }} />
+                      {item}
+                    </li>
+                  ))}
                 </ul>
               </div>
             </div>

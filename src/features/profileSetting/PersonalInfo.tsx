@@ -328,8 +328,8 @@ function PersonalInfo() {
 
         {/* Success Message */}
         {successMessage && (
-          <div className="p-3 bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-lg text-green-800 dark:text-green-200 text-sm">
-            ✓ {successMessage}
+          <div className="p-3 bg-green-500/10 border border-green-500/30 rounded-xl text-green-700 dark:text-green-400 text-sm">
+            {successMessage}
           </div>
         )}
 

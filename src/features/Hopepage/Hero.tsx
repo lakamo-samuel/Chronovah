@@ -180,14 +180,14 @@ export default function Hero() {
                     </span>
                   </div>
                   <div className="text-2xl font-bold tabular-nums text-primary sm:text-3xl md:text-4xl">
-                    <span className="text-emerald-600 dark:text-emerald-400">
+                    <span className="text-accent-green">
                       {formatNumber(METRICS.activeUsers)}+
                     </span>
                   </div>
                 </div>
               </div>
               <p className="mt-3 flex items-center justify-center gap-2 text-xs text-muted md:justify-start">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400" />
+                <span className="h-1.5 w-1.5 rounded-full bg-accent-green" />
                 Community activity · illustrative figures
               </p>
             </motion.div>
@@ -260,29 +260,12 @@ export default function Hero() {
         className="relative z-10 flex justify-center pb-8 lg:hidden"
       >
         <div className="flex flex-col items-center gap-2 text-muted">
-          <span className="text-xs font-medium uppercase tracking-wider">
-            Scroll
-          </span>
+          <span className="text-xs font-medium uppercase tracking-wider">Scroll</span>
           <div className="flex h-10 w-6 justify-center rounded-full border-2 border-default p-1">
             <div className="h-2 w-1.5 rounded-full bg-primary-500/70 dark:bg-primary-400/80 animate-bounce-slow" />
           </div>
         </div>
       </motion.div>
-
-      <style>{`
-        @keyframes float-slow {
-          0%, 100% { transform: translate(0, 0); }
-          25% { transform: translate(8px, -8px); }
-          50% { transform: translate(-6px, 12px); }
-          75% { transform: translate(-12px, -4px); }
-        }
-        @keyframes bounce-slow {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(6px); }
-        }
-        .animate-float-slow { animation: float-slow infinite ease-in-out; }
-        .animate-bounce-slow { animation: bounce-slow 2s infinite ease-in-out; }
-      `}</style>
     </section>
   );
 }

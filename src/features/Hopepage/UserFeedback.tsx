@@ -181,17 +181,17 @@ export default function UserFeedback() {
             {/* Mobile controls */}
             <button
               onClick={prevSlide}
-              className="absolute left-0 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white dark:bg-gray-800 shadow-lg flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              className="absolute left-0 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-card border border-default shadow-soft flex items-center justify-center hover:bg-default transition-colors"
               aria-label="Previous testimonial"
             >
-              <ChevronLeft size={20} className="text-gray-400" />
+              <ChevronLeft size={20} className="text-muted" />
             </button>
             <button
               onClick={nextSlide}
-              className="absolute right-0 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white dark:bg-gray-800 shadow-lg flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              className="absolute right-0 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-card border border-default shadow-soft flex items-center justify-center hover:bg-default transition-colors"
               aria-label="Next testimonial"
             >
-              <ChevronRight size={20} className="text-gray-400" />
+              <ChevronRight size={20} className="text-muted" />
             </button>
 
             {/* Dots indicator */}
@@ -200,10 +200,10 @@ export default function UserFeedback() {
                 <button
                   key={i}
                   onClick={() => setCurrentIndex(i)}
-                  className={`w-2 h-2 rounded-full transition-all ${
+                  className={`h-2 rounded-full transition-all ${
                     i === currentIndex
-                      ? "w-6 bg-blue-500"
-                      : "bg-gray-300 dark:bg-gray-700"
+                      ? "w-6 bg-primary-500"
+                      : "w-2 bg-default border border-default"
                   }`}
                   aria-label={`Go to testimonial ${i + 1}`}
                 />
@@ -246,7 +246,7 @@ function FeedbackCard({ feedback }: { feedback: Feedback }) {
           <img
             src={feedback.image}
             alt={feedback.name}
-            className="w-12 h-12 rounded-full object-cover border-2 border-blue-200 dark:border-blue-800"
+            className="w-12 h-12 rounded-full object-cover border-2 border-primary-500/30"
           />
         ) : (
           <div className="w-12 h-12 rounded-full bg-primary-600 flex items-center justify-center text-white font-semibold text-sm">
