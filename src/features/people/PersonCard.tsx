@@ -11,7 +11,9 @@ import {
   Instagram,
   Linkedin,
   MapPin,
+  AlertCircle,
 } from "lucide-react";
+import { useState } from "react";
 import type { Person } from "../../type/PeopleType";
 
 interface PersonCardProps {
@@ -29,6 +31,8 @@ export default function PersonCard({
   onClick,
   onUpdate,
 }: PersonCardProps) {
+  const [imgError, setImgError] = useState(false);
+
   const toggleFavorite = async (e: React.MouseEvent) => {
     e.stopPropagation();
     await onUpdate(person.id!, { isFavorite: !person.isFavorite });
@@ -51,19 +55,39 @@ export default function PersonCard({
     >
       {/* Image / avatar area — same height as PlaceCard */}
       <div className="relative h-48 bg-primary-500/10">
-        {person.image ? (
-          <img
-            src={person.image}
-            alt={person.name}
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <div className="w-20 h-20 rounded-full bg-primary-500 text-white flex items-center justify-center text-3xl font-bold">
-              {getInitials(person.name)}
+        {(() => {
+          // Prefer images[] array first, fall back to legacy image field
+          const primaryImage = person.images?.[0] ?? person.image;
+          console.log('Person image data:', person.image, person.images);
+          if (primaryImage && !imgError) {
+            return (
+              <img
+                src={primaryImage}
+                alt={person.name}
+                className="w-full h-full object-cover"
+                onError={() => {
+                  setImgError(true);
+                  console.error(`Failed to load image for person: ${person.name}`, primaryImage);
+                }}
+              />
+            );
+          }
+          if (primaryImage && imgError) {
+            return (
+              <div className="image-error-state">
+                <AlertCircle size={18} />
+                <p>Image failed to load</p>
+              </div>
+            );
+          }
+          return (
+            <div className="w-full h-full flex items-center justify-center">
+              <div className="w-20 h-20 rounded-full bg-primary-500 text-white flex items-center justify-center text-3xl font-bold">
+                {getInitials(person.name)}
+              </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
 
         {/* Favorite button — same position as PlaceCard */}
         <button

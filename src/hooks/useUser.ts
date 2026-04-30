@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from "react";
 import { authService } from "../services/auth.service";
 import { protectedAxios } from "../../axios";
 import { syncManager } from "../lib/sync";
+import { db } from "../database/db";
 
 export interface User {
   id: string;
@@ -11,6 +12,7 @@ export interface User {
   avatar?: string;
   username?: string;
   bio?: string;
+  favoriteQuote?: string;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -24,6 +26,35 @@ interface UseUserReturn {
   updateUser: (userData: Partial<User>) => Promise<boolean>;
 }
 
+/** Persist user profile to Dexie so it's available offline */
+async function cacheUserProfile(userData: User) {
+  try {
+    await db.userProfile.put({
+      id: userData.id,
+      name: userData.name,
+      email: userData.email,
+      avatar: userData.avatar,
+      username: userData.username,
+      bio: userData.bio,
+      favoriteQuote: userData.favoriteQuote,
+      updatedAt: userData.updatedAt ?? new Date().toISOString(),
+    });
+  } catch (err) {
+    console.warn("Failed to cache user profile in Dexie:", err);
+  }
+}
+
+/** Load cached profile from Dexie (used as fallback when offline) */
+async function loadCachedProfile(userId: string): Promise<User | null> {
+  try {
+    const cached = await db.userProfile.get(userId);
+    if (!cached) return null;
+    return cached as User;
+  } catch {
+    return null;
+  }
+}
+
 export const useUser = (): UseUserReturn => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -35,10 +66,13 @@ export const useUser = (): UseUserReturn => {
 
     try {
       const response = await protectedAxios.get("/user/me");
-      // Extract user from nested data structure { statusCode, data: {...}, message, success }
-      const userData = response.data.data || response.data.user || response.data;
+      const userData: User =
+        response.data.data || response.data.user || response.data;
       setUser(userData);
-      
+
+      // Cache to Dexie for offline use
+      await cacheUserProfile(userData);
+
       // Pull user data from server
       if (userData?.id) {
         syncManager.pullUserData(userData.id);
@@ -46,14 +80,26 @@ export const useUser = (): UseUserReturn => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.error("Failed to fetch user:", err);
-      setUser(null);
 
       if (err.response?.status === 401) {
-        // Unauthorized - user is not logged in
-        setError(null); // This is expected, don't show error
+        setUser(null);
+        setError(null);
       } else if (!err.response) {
+        // Offline — try to load from Dexie cache
+        // We don't know the userId yet, so try to find any cached profile
+        try {
+          const allProfiles = await db.userProfile.toArray();
+          if (allProfiles.length > 0) {
+            setUser(allProfiles[0] as User);
+          } else {
+            setUser(null);
+          }
+        } catch {
+          setUser(null);
+        }
         setError("Network error. Please check your connection.");
       } else {
+        setUser(null);
         setError(err.response?.data?.error || "Failed to fetch user data");
       }
     } finally {
@@ -69,14 +115,14 @@ export const useUser = (): UseUserReturn => {
     setLoading(true);
 
     try {
-      // Clear local data before logging out
       if (user?.id) {
         await syncManager.clearUserData(user.id);
+        // Clear cached profile too
+        await db.userProfile.delete(user.id);
       }
-      
+
       await authService.signOut();
       setUser(null);
-      // Optionally redirect to login page
       window.location.href = "/signin";
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
@@ -93,19 +139,30 @@ export const useUser = (): UseUserReturn => {
 
     try {
       const response = await protectedAxios.patch("/user/update", userData);
-      // Extract user from nested data structure
-      const updatedUser = response.data.data || response.data.user || response.data;
+      const updatedUser: User =
+        response.data.data || response.data.user || response.data;
       setUser(updatedUser);
+
+      // Keep Dexie cache in sync
+      await cacheUserProfile(updatedUser);
+
       return true;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
+      // Optimistic update — apply locally even if server is unreachable
+      if (!err.response && user) {
+        const optimistic = { ...user, ...userData };
+        setUser(optimistic);
+        await cacheUserProfile(optimistic);
+        return true;
+      }
       console.error("Failed to update user:", err);
       setError(err.response?.data?.error || "Failed to update user");
       return false;
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [user]);
 
   return {
     user,

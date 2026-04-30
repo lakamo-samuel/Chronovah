@@ -23,6 +23,7 @@ import {
   X,
   Tag,
   Navigation,
+  AlertCircle,
 } from "lucide-react";
 import { useLiveQuery } from "dexie-react-hooks";
 import { db } from "../../database/db";
@@ -30,6 +31,31 @@ import PlaceEditor from "./PlaceEditor";
 import ConfirmationModal from "../../components/ConfirmationModal";
 import { useToast } from "../../hooks/useToast";
 import type { Place } from "../../type/PlaceType";
+
+// Small helper so each gallery thumbnail has its own error state
+function GalleryImage({ src, alt, className, onClick }: { src: string; alt: string; className?: string; onClick?: () => void }) {
+  const [err, setErr] = useState(false);
+  if (err) {
+    return (
+      <div className={`image-error-state ${className ?? ""}`} onClick={onClick}>
+        <AlertCircle size={14} />
+        <p>Failed</p>
+      </div>
+    );
+  }
+  return (
+    <img
+      src={src}
+      alt={alt}
+      className={className}
+      onClick={onClick}
+      onError={() => {
+        setErr(true);
+        console.error(`Failed to load gallery image`, src);
+      }}
+    />
+  );
+}
 
 export default function PlaceDetail() {
   const { id } = useParams();
@@ -44,6 +70,7 @@ export default function PlaceDetail() {
   );
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [heroImgError, setHeroImgError] = useState(false);
 
   const place = useLiveQuery(() => {
     if (!placeId) return undefined;
@@ -117,12 +144,16 @@ export default function PlaceDetail() {
     <div className="min-h-screen bg-default pt-20 pb-24">
       {/* Hero Section with Image Gallery */}
       <div className="relative h-[50vh] md:h-[60vh] bg-primary-900">
-        {place.images && place.images.length > 0 ? (
+        {place.images && place.images.length > 0 && !heroImgError ? (
           <>
             <img
               src={place.images[selectedImageIndex ?? 0]}
               alt={place.name}
               className="w-full h-full object-cover"
+              onError={() => {
+                setHeroImgError(true);
+                console.error(`Failed to load image for place: ${place.name}`, place.images[selectedImageIndex ?? 0]);
+              }}
             />
             {/* Image Gallery Overlay */}
             <div className="absolute inset-0 bg-black/40" />
@@ -171,6 +202,11 @@ export default function PlaceDetail() {
               </>
             )}
           </>
+        ) : place.images && place.images.length > 0 && heroImgError ? (
+          <div className="image-error-state" style={{ borderRadius: 0 }}>
+            <AlertCircle size={32} />
+            <p>Image failed to load</p>
+          </div>
         ) : (
           <div className="w-full h-full flex items-center justify-center">
             <MapPin size={64} className="text-white/30" />
@@ -347,10 +383,11 @@ export default function PlaceDetail() {
                       onClick={() => setSelectedImageIndex(index + 1)}
                       className="aspect-square rounded-lg overflow-hidden hover:opacity-80 transition-opacity"
                     >
-                      <img
+                      <GalleryImage
                         src={img}
                         alt={`${place.name} ${index + 2}`}
                         className="w-full h-full object-cover"
+                        onClick={() => setSelectedImageIndex(index + 1)}
                       />
                     </button>
                   ))}

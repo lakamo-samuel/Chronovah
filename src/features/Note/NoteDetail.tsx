@@ -11,14 +11,7 @@ import {
   Clock,
   Image,
   Link2,
-  Bold,
-  Italic,
-  List,
-  ListOrdered,
-  Heading1,
-  Heading2,
   MoreVertical,
-  Eye,
   Edit2,
   Copy,
   Share2,
@@ -32,6 +25,7 @@ import {
 } from "lucide-react";
 import type { Note, NoteColor } from "../../type/NoteType";
 import MarkdownContent from "../../components/MarkdownContent";
+import AdvancedMarkdownEditor from "../../components/AdvancedMarkdownEditor";
 import Spinner from "../../ui/Spinner";
 import ConfirmationModal from "../../components/ConfirmationModal";
 import { useToast } from "../../hooks/useToast";
@@ -53,81 +47,71 @@ export default function NoteDetail() {
   const [isSaving, setIsSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [tagInput, setTagInput] = useState("");
-  const [isPreview, setIsPreview] = useState(false);
 
-  const editorRef = useRef<HTMLTextAreaElement>(null);
   const titleRef = useRef<HTMLInputElement>(null);
 
-  // Load note
+  // Load note and seed draft so edit mode always has content
   useEffect(() => {
     const loadNote = async () => {
       if (!id) return;
       try {
-        const fetchedNote = await getNote(id);
-        setNote(fetchedNote || null);
-      } catch (error) {
-        console.error('Failed to load note:', error);
+        const fetched = await getNote(id);
+        if (fetched) {
+          setNote(fetched);
+          setDraft(fetched);
+        } else {
+          setNote(null);
+        }
+      } catch (err) {
+        console.error("Failed to load note:", err);
       }
     };
     loadNote();
   }, [id, getNote]);
 
-  // Auto-save functionality
+  // Auto-save while editing
   useEffect(() => {
     if (!isEditing || !note?.id) return;
-
-    const saveTimer = setTimeout(async () => {
+    const timer = setTimeout(async () => {
       if (JSON.stringify(draft) !== JSON.stringify(note)) {
         setIsSaving(true);
         try {
           await updateNote(note.id, {
             ...draft,
             wordCount: draft.content?.split(/\s+/).filter(Boolean).length || 0,
-            readTime: Math.max(
-              1,
-              Math.ceil(
-                (draft.content?.split(/\s+/).filter(Boolean).length || 0) / 200,
-              ),
-            ),
+            readTime: Math.max(1, Math.ceil((draft.content?.split(/\s+/).filter(Boolean).length || 0) / 200)),
           });
           setLastSaved(new Date());
-        } catch (error) {
-          console.error("Failed to save note:", error);
+        } catch (err) {
+          console.error("Auto-save failed:", err);
         } finally {
           setIsSaving(false);
         }
       }
     }, 2000);
-
-    return () => clearTimeout(saveTimer);
+    return () => clearTimeout(timer);
   }, [draft, note, isEditing, updateNote]);
 
-  const handleContentChange = (
-    field: keyof Note,
-    value: string | string[] | NoteColor | undefined,
-  ) => {
+  const handleContentChange = (field: keyof Note, value: string | string[] | NoteColor | undefined) => {
     setDraft((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleSave = async () => {
     if (!note?.id) return;
-
     setIsSaving(true);
     try {
       await updateNote(note.id, {
         ...draft,
         wordCount: draft.content?.split(/\s+/).filter(Boolean).length || 0,
-        readTime: Math.max(
-          1,
-          Math.ceil(
-            (draft.content?.split(/\s+/).filter(Boolean).length || 0) / 200,
-          ),
-        ),
+        readTime: Math.max(1, Math.ceil((draft.content?.split(/\s+/).filter(Boolean).length || 0) / 200)),
       });
       setLastSaved(new Date());
+      // Refresh local note state so view mode shows updated content
+      const refreshed = await getNote(note.id);
+      if (refreshed) setNote(refreshed);
       setIsEditing(false);
-    } catch (error) {
-      console.error("Failed to save note:", error);
+    } catch (err) {
+      console.error("Save failed:", err);
     } finally {
       setIsSaving(false);
     }
@@ -140,8 +124,8 @@ export default function NoteDetail() {
       await deleteNote(note.id);
       success("Note deleted successfully");
       navigate("/notes");
-    } catch (error) {
-      console.error("Failed to delete note:", error);
+    } catch (err) {
+      console.error("Delete failed:", err);
     } finally {
       setIsDeleting(false);
       setShowDeleteConfirm(false);
@@ -149,93 +133,33 @@ export default function NoteDetail() {
   };
 
   const togglePinned = async () => {
-    if (note?.id) {
-      await updateNote(note.id, {
-        isPinned: !note.isPinned,
-      });
-    }
+    if (note?.id) await updateNote(note.id, { isPinned: !note.isPinned });
   };
 
   const toggleFavorite = async () => {
-    if (note?.id) {
-      await updateNote(note.id, {
-        isFavorite: !note.isFavorite,
-      });
-    }
+    if (note?.id) await updateNote(note.id, { isFavorite: !note.isFavorite });
   };
 
   const addTag = () => {
     if (tagInput.trim() && !draft.tags?.includes(tagInput.trim())) {
-      setDraft((prev) => ({
-        ...prev,
-        tags: [...(prev.tags || []), tagInput.trim()],
-      }));
+      setDraft((prev) => ({ ...prev, tags: [...(prev.tags || []), tagInput.trim()] }));
       setTagInput("");
     }
   };
 
-  const removeTag = (tagToRemove: string) => {
-    setDraft((prev) => ({
-      ...prev,
-      tags: (prev.tags || []).filter((tag) => tag !== tagToRemove),
-    }));
-  };
-
-  const insertFormatting = (format: string) => {
-    if (!editorRef.current) return;
-
-    const start = editorRef.current.selectionStart;
-    const end = editorRef.current.selectionEnd;
-    const selectedText = draft.content?.substring(start, end) || "";
-
-    let formattedText = "";
-    switch (format) {
-      case "bold":
-        formattedText = `**${selectedText}**`;
-        break;
-      case "italic":
-        formattedText = `*${selectedText}*`;
-        break;
-      case "h1":
-        formattedText = `# ${selectedText}`;
-        break;
-      case "h2":
-        formattedText = `## ${selectedText}`;
-        break;
-      case "ul":
-        formattedText = `- ${selectedText}`;
-        break;
-      case "ol":
-        formattedText = `1. ${selectedText}`;
-        break;
-      default:
-        return;
-    }
-
-    const newContent =
-      (draft.content || "").substring(0, start) +
-      formattedText +
-      (draft.content || "").substring(end);
-    handleContentChange("content", newContent);
-
-    // Reset cursor position
-    setTimeout(() => {
-      editorRef.current?.setSelectionRange(
-        start + formattedText.length,
-        start + formattedText.length,
-      );
-    }, 0);
+  const removeTag = (tag: string) => {
+    setDraft((prev) => ({ ...prev, tags: (prev.tags || []).filter((t) => t !== tag) }));
   };
 
   const colors: Array<{ name: NoteColor; class: string }> = [
     { name: "default", class: "bg-primary-500" },
-    { name: "red", class: "bg-red-500" },
-    { name: "orange", class: "bg-orange-500" },
-    { name: "yellow", class: "bg-yellow-500" },
-    { name: "green", class: "bg-green-500" },
-    { name: "blue", class: "bg-blue-500" },
-    { name: "purple", class: "bg-purple-500" },
-    { name: "pink", class: "bg-pink-500" },
+    { name: "red",     class: "bg-red-500" },
+    { name: "orange",  class: "bg-orange-500" },
+    { name: "yellow",  class: "bg-yellow-500" },
+    { name: "green",   class: "bg-green-500" },
+    { name: "blue",    class: "bg-blue-500" },
+    { name: "purple",  class: "bg-purple-500" },
+    { name: "pink",    class: "bg-pink-500" },
   ];
 
   if (!note) {
@@ -243,13 +167,8 @@ export default function NoteDetail() {
       <div className="min-h-screen bg-default pt-20 px-4">
         <div className="max-w-4xl mx-auto text-center py-20">
           <FileText size={48} className="mx-auto text-muted mb-4" />
-          <h2 className="text-xl font-semibold text-primary mb-2">
-            Note not found
-          </h2>
-          <button
-            onClick={() => navigate("/notes")}
-            className="text-primary-500 hover:text-primary-600"
-          >
+          <h2 className="text-xl font-semibold text-primary mb-2">Note not found</h2>
+          <button onClick={() => navigate("/notes")} className="text-primary-500 hover:text-primary-600">
             Back to notes
           </button>
         </div>
@@ -260,25 +179,20 @@ export default function NoteDetail() {
   return (
     <div className="min-h-screen bg-default pt-20 pb-24 px-4 sm:px-6">
       <div className="max-w-4xl mx-auto">
-        {/* Header */}
+
+        {/* ── Header bar ── */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2">
-            <button
-              onClick={() => navigate("/notes")}
-              className="p-2 hover:bg-card rounded-lg transition-colors"
-            >
+            <button onClick={() => navigate("/notes")} className="p-2 hover:bg-card rounded-lg transition-colors">
               <ArrowLeft size={20} className="text-muted" />
             </button>
 
+            {/* Pin / Favorite / Color */}
             <div className="flex items-center gap-1">
               <motion.button
                 whileTap={{ scale: 0.95 }}
                 onClick={togglePinned}
-                className={`p-2 rounded-lg transition-colors ${
-                  note.isPinned
-                    ? "text-primary-500 bg-primary-500/10"
-                    : "text-muted hover:text-primary-500"
-                }`}
+                className={`p-2 rounded-lg transition-colors ${note.isPinned ? "text-primary-500 bg-primary-500/10" : "text-muted hover:text-primary-500"}`}
               >
                 <Pin size={18} className={note.isPinned ? "rotate-45" : ""} />
               </motion.button>
@@ -286,16 +200,9 @@ export default function NoteDetail() {
               <motion.button
                 whileTap={{ scale: 0.95 }}
                 onClick={toggleFavorite}
-                className={`p-2 rounded-lg transition-colors ${
-                  note.isFavorite
-                    ? "text-accent-yellow bg-accent-yellow/10"
-                    : "text-muted hover:text-accent-yellow"
-                }`}
+                className={`p-2 rounded-lg transition-colors ${note.isFavorite ? "text-accent-yellow bg-accent-yellow/10" : "text-muted hover:text-accent-yellow"}`}
               >
-                <Star
-                  size={18}
-                  fill={note.isFavorite ? "currentColor" : "none"}
-                />
+                <Star size={18} fill={note.isFavorite ? "currentColor" : "none"} />
               </motion.button>
 
               <div className="relative">
@@ -305,8 +212,6 @@ export default function NoteDetail() {
                 >
                   <Palette size={18} />
                 </button>
-
-                {/* Color picker dropdown */}
                 <AnimatePresence>
                   {showColorPicker && (
                     <motion.div
@@ -316,18 +221,11 @@ export default function NoteDetail() {
                       className="absolute top-full left-0 mt-1 bg-card border border-default rounded-xl shadow-hard p-2 z-50"
                     >
                       <div className="flex gap-1">
-                        {colors.map((color) => (
+                        {colors.map((c) => (
                           <button
-                            key={color.name}
-                            onClick={() => {
-                              handleContentChange("color", color.name);
-                              setShowColorPicker(false);
-                            }}
-                            className={`w-6 h-6 rounded-full ${color.class} transition-transform hover:scale-110 ${
-                              draft.color === color.name
-                                ? "ring-2 ring-primary-500 ring-offset-2"
-                                : ""
-                            }`}
+                            key={c.name}
+                            onClick={() => { handleContentChange("color", c.name); setShowColorPicker(false); }}
+                            className={`w-6 h-6 rounded-full ${c.class} transition-transform hover:scale-110 ${draft.color === c.name ? "ring-2 ring-primary-500 ring-offset-2" : ""}`}
                           />
                         ))}
                       </div>
@@ -341,26 +239,14 @@ export default function NoteDetail() {
             <div className="hidden sm:flex items-center gap-3 ml-2 text-xs text-muted border-l border-default pl-3">
               <div className="flex items-center gap-1">
                 <Clock size={12} />
-                <span>
-                  Updated{" "}
-                  {new Date(note.updatedAt || note.createdAt).toLocaleString()}
-                </span>
+                <span>Updated {new Date(note.updatedAt || note.createdAt).toLocaleString()}</span>
               </div>
-              {note.wordCount && (
-                <>
-                  <span>•</span>
-                  <span>{note.wordCount} words</span>
-                </>
-              )}
-              {note.readTime && (
-                <>
-                  <span>•</span>
-                  <span>{note.readTime} min read</span>
-                </>
-              )}
+              {note.wordCount ? <><span>•</span><span>{note.wordCount} words</span></> : null}
+              {note.readTime  ? <><span>•</span><span>{note.readTime} min read</span></> : null}
             </div>
           </div>
 
+          {/* Save / Edit / Menu */}
           <div className="flex items-center gap-2">
             {isSaving && (
               <div className="flex items-center gap-2 text-xs text-muted">
@@ -368,11 +254,8 @@ export default function NoteDetail() {
                 <span>Saving…</span>
               </div>
             )}
-
             {lastSaved && !isSaving && (
-              <div className="text-xs text-muted">
-                Saved {new Date(lastSaved).toLocaleTimeString()}
-              </div>
+              <div className="text-xs text-muted">Saved {new Date(lastSaved).toLocaleTimeString()}</div>
             )}
 
             {isEditing ? (
@@ -385,10 +268,7 @@ export default function NoteDetail() {
                   <span>Save</span>
                 </button>
                 <button
-                  onClick={() => {
-                    setDraft(note);
-                    setIsEditing(false);
-                  }}
+                  onClick={() => { setDraft(note); setIsEditing(false); }}
                   className="px-4 py-2 text-muted hover:text-primary transition-colors"
                 >
                   Cancel
@@ -397,7 +277,7 @@ export default function NoteDetail() {
             ) : (
               <>
                 <button
-                  onClick={() => setIsEditing(true)}
+                  onClick={() => { setDraft({ ...note }); setIsEditing(true); }}
                   className="flex items-center gap-2 px-4 py-2 bg-card hover:bg-default text-primary rounded-lg transition-colors border border-default"
                 >
                   <Edit2 size={16} />
@@ -411,7 +291,6 @@ export default function NoteDetail() {
                   >
                     <MoreVertical size={18} />
                   </button>
-
                   <AnimatePresence>
                     {showShareMenu && (
                       <motion.div
@@ -421,43 +300,29 @@ export default function NoteDetail() {
                         className="absolute right-0 mt-2 w-48 bg-card border border-default rounded-xl shadow-hard overflow-hidden z-50"
                       >
                         <button
-                          onClick={() => {
-                            navigator.clipboard.writeText(window.location.href);
-                            setShowShareMenu(false);
-                          }}
+                          onClick={() => { navigator.clipboard.writeText(window.location.href); setShowShareMenu(false); }}
                           className="w-full flex items-center gap-2 px-4 py-2 text-sm text-primary hover:bg-default transition-colors"
                         >
-                          <Copy size={14} />
-                          <span>Copy link</span>
+                          <Copy size={14} /><span>Copy link</span>
                         </button>
                         <button
-                          onClick={() => {
-                            setShowShareMenu(false);
-                          }}
+                          onClick={() => setShowShareMenu(false)}
                           className="w-full flex items-center gap-2 px-4 py-2 text-sm text-primary hover:bg-default transition-colors"
                         >
-                          <Share2 size={14} />
-                          <span>Share</span>
+                          <Share2 size={14} /><span>Share</span>
                         </button>
                         <button
-                          onClick={() => {
-                            setShowShareMenu(false);
-                          }}
+                          onClick={() => setShowShareMenu(false)}
                           className="w-full flex items-center gap-2 px-4 py-2 text-sm text-primary hover:bg-default transition-colors"
                         >
-                          <Download size={14} />
-                          <span>Export</span>
+                          <Download size={14} /><span>Export</span>
                         </button>
                         <div className="border-t border-default my-1" />
                         <button
-                          onClick={() => {
-                            setShowDeleteConfirm(true);
-                            setShowShareMenu(false);
-                          }}
-                          className="w-full flex items-center gap-2 px-4 py-2 text-sm text-accent-red hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
+                          onClick={() => { setShowDeleteConfirm(true); setShowShareMenu(false); }}
+                          className="w-full flex items-center gap-2 px-4 py-2 text-sm text-accent-red hover:bg-default transition-colors"
                         >
-                          <Trash2 size={14} />
-                          <span>Delete</span>
+                          <Trash2 size={14} /><span>Delete</span>
                         </button>
                       </motion.div>
                     )}
@@ -468,20 +333,14 @@ export default function NoteDetail() {
           </div>
         </div>
 
-        {/* Tags */}
+        {/* ── Tags ── */}
         <div className="mb-4 flex flex-wrap items-center gap-2">
           <Hash size={14} className="text-muted" />
           {(draft.tags || []).map((tag) => (
-            <span
-              key={tag}
-              className="flex items-center gap-1 px-2 py-1 bg-card border border-default rounded-lg text-xs text-primary"
-            >
+            <span key={tag} className="flex items-center gap-1 px-2 py-1 bg-card border border-default rounded-lg text-xs text-primary">
               <span>{tag}</span>
               {isEditing && (
-                <button
-                  onClick={() => removeTag(tag)}
-                  className="hover:text-accent-red"
-                >
+                <button onClick={() => removeTag(tag)} className="hover:text-accent-red">
                   <X size={12} />
                 </button>
               )}
@@ -497,99 +356,24 @@ export default function NoteDetail() {
                 placeholder="Add tag..."
                 className="w-24 px-2 py-1 bg-transparent border border-default rounded-lg text-xs text-primary focus:outline-none focus:border-primary-500"
               />
-              <button
-                onClick={addTag}
-                className="p-1 text-muted hover:text-primary-500"
-              >
+              <button onClick={addTag} className="p-1 text-muted hover:text-primary-500">
                 <Check size={14} />
               </button>
             </div>
           )}
         </div>
 
-        {/* Note content */}
+        {/* ── Note body ── */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="bg-card rounded-xl border border-default overflow-hidden"
           style={{
-            borderColor:
-              draft.color && draft.color !== "default"
-                ? `var(--color-${draft.color}-500)`
-                : undefined,
+            borderColor: draft.color && draft.color !== "default"
+              ? `var(--color-${draft.color}-500)`
+              : undefined,
           }}
         >
-          {/* Formatting toolbar (only in edit mode) */}
-          {isEditing && (
-            <div className="px-4 md:px-8 pt-4">
-              <div className="flex items-center gap-1 p-2 border border-default rounded-lg bg-default/50 overflow-x-auto">
-                <button
-                  type="button"
-                  onClick={() => insertFormatting("bold")}
-                  className="p-1.5 rounded hover:bg-card text-muted hover:text-primary transition-colors flex-shrink-0"
-                  title="Bold"
-                >
-                  <Bold size={16} />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => insertFormatting("italic")}
-                  className="p-1.5 rounded hover:bg-card text-muted hover:text-primary transition-colors flex-shrink-0"
-                  title="Italic"
-                >
-                  <Italic size={16} />
-                </button>
-                <div className="w-px h-4 bg-default mx-1 flex-shrink-0" />
-                <button
-                  type="button"
-                  onClick={() => insertFormatting("h1")}
-                  className="p-1.5 rounded hover:bg-card text-muted hover:text-primary transition-colors flex-shrink-0"
-                  title="Heading 1"
-                >
-                  <Heading1 size={16} />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => insertFormatting("h2")}
-                  className="p-1.5 rounded hover:bg-card text-muted hover:text-primary transition-colors flex-shrink-0"
-                  title="Heading 2"
-                >
-                  <Heading2 size={16} />
-                </button>
-                <div className="w-px h-4 bg-default mx-1 flex-shrink-0" />
-                <button
-                  type="button"
-                  onClick={() => insertFormatting("ul")}
-                  className="p-1.5 rounded hover:bg-card text-muted hover:text-primary transition-colors flex-shrink-0"
-                  title="Bullet list"
-                >
-                  <List size={16} />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => insertFormatting("ol")}
-                  className="p-1.5 rounded hover:bg-card text-muted hover:text-primary transition-colors flex-shrink-0"
-                  title="Numbered list"
-                >
-                  <ListOrdered size={16} />
-                </button>
-                <div className="flex-1 min-w-2" />
-                <button
-                  type="button"
-                  onClick={() => setIsPreview(!isPreview)}
-                  className={`p-1.5 rounded transition-colors flex-shrink-0 ${
-                    isPreview
-                      ? "bg-primary-500 text-white"
-                      : "text-muted hover:text-primary"
-                  }`}
-                  title="Toggle preview"
-                >
-                  <Eye size={16} />
-                </button>
-              </div>
-            </div>
-          )}
-
           <div className="p-6 md:p-8">
             {/* Title */}
             {isEditing ? (
@@ -599,39 +383,32 @@ export default function NoteDetail() {
                 value={draft.title || ""}
                 onChange={(e) => handleContentChange("title", e.target.value)}
                 placeholder="Note title..."
-                className="w-full text-2xl md:text-3xl font-bold bg-transparent border-b border-default pb-2 mb-4 focus:outline-none focus:border-primary-500 text-primary"
+                className="w-full text-2xl md:text-3xl font-bold bg-transparent border-b border-default pb-2 mb-6 focus:outline-none focus:border-primary-500 text-primary"
                 autoFocus
               />
             ) : (
-              <h1 className="text-2xl md:text-3xl font-bold text-primary mb-4">
+              <h1 className="text-2xl md:text-3xl font-bold text-primary mb-6">
                 {note.title || "Untitled"}
               </h1>
             )}
 
-            {/* Content */}
-            {isEditing && !isPreview ? (
-              <textarea
-                ref={editorRef}
+            {/* Content — AdvancedMarkdownEditor in edit, MarkdownContent in view */}
+            {isEditing ? (
+              <AdvancedMarkdownEditor
                 value={draft.content || ""}
-                onChange={(e) => handleContentChange("content", e.target.value)}
+                onChange={(val) => handleContentChange("content", val)}
                 placeholder="Write your note here… (Markdown supported)"
                 rows={20}
-                className="w-full px-3 py-2 bg-default border border-default rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/50 text-primary resize-none leading-relaxed text-sm sm:text-base min-h-[280px]"
               />
             ) : (
-              <MarkdownContent
-                emptyFallback="*No content yet.*"
-                className="text-primary"
-              >
-                {isEditing && isPreview
-                  ? draft.content || ""
-                  : note.content || ""}
+              <MarkdownContent emptyFallback="*No content yet.*">
+                {note.content || ""}
               </MarkdownContent>
             )}
           </div>
         </motion.div>
 
-        {/* Attachments section */}
+        {/* ── Attachments ── */}
         {note.attachments && note.attachments.length > 0 && (
           <div className="mt-6">
             <h3 className="text-sm font-medium text-muted mb-3 flex items-center gap-2">
@@ -640,10 +417,7 @@ export default function NoteDetail() {
             </h3>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {note.attachments.map((attachment) => (
-                <div
-                  key={attachment.id}
-                  className="bg-card border border-default rounded-lg p-3 flex items-center gap-2"
-                >
+                <div key={attachment.id} className="bg-card border border-default rounded-lg p-3 flex items-center gap-2">
                   {attachment.type === "image" ? (
                     <Image size={16} className="text-primary-500" />
                   ) : attachment.type === "link" ? (
@@ -651,9 +425,7 @@ export default function NoteDetail() {
                   ) : (
                     <FileText size={16} className="text-primary-500" />
                   )}
-                  <span className="text-xs text-primary truncate">
-                    {attachment.name}
-                  </span>
+                  <span className="text-xs text-primary truncate">{attachment.name}</span>
                 </div>
               ))}
             </div>
@@ -661,7 +433,6 @@ export default function NoteDetail() {
         )}
       </div>
 
-      {/* Delete confirmation modal */}
       <ConfirmationModal
         isOpen={showDeleteConfirm}
         title="Delete Note"

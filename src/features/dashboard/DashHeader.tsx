@@ -1,18 +1,12 @@
 import { motion } from "framer-motion";
-import { Settings2 } from "lucide-react";
+import { Settings2, Quote } from "lucide-react";
 import SettingLinkBtn from "../../ui/SettingLinkBtn";
 import { useAuth } from "../../hooks/useAuth";
+import UserAvatar from "../../components/UserAvatar";
 
 function DashHeader() {
   const { user } = useAuth();
-  const { email, name } = user || {};
-
-  const initials = (name || "User")
-    .split(" ")
-    .map((n: string) => n[0])
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
+  const { email, name, avatar, favoriteQuote } = user || {};
 
   const greeting = () => {
     const hour = new Date().getHours();
@@ -31,16 +25,27 @@ function DashHeader() {
     >
       <div className="flex items-center gap-4">
         {/* Avatar */}
-        <div className="w-12 h-12 rounded-full bg-primary-500 text-white flex items-center justify-center text-base font-bold flex-shrink-0 shadow-sm">
-          {initials}
-        </div>
+        <UserAvatar
+          name={name}
+          avatar={avatar}
+          size="w-12 h-12"
+          textSize="text-base"
+        />
 
         {/* Text */}
         <div>
           <h2 className="text-lg font-semibold text-primary leading-snug">
-            {greeting()}, {name || "there"}
+            {greeting()}, {name || "there"} 👋
           </h2>
           <p className="text-sm text-muted mt-0.5">{email}</p>
+
+          {/* Favorite quote */}
+          {favoriteQuote && (
+            <p className="text-xs text-muted mt-1.5 flex items-start gap-1.5 max-w-xs italic">
+              <Quote size={11} className="flex-shrink-0 mt-0.5 text-primary-500" />
+              <span className="line-clamp-2">{favoriteQuote}</span>
+            </p>
+          )}
         </div>
       </div>
 

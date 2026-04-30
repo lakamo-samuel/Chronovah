@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Moon,
@@ -31,6 +31,7 @@ import { useAuth } from "../hooks/useAuth";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useSubscriptionStore } from "../store/subscriptionStore";
 import SyncIndicator from "./SyncIndicator";
+import UserAvatar from "./UserAvatar";
 
 function Header() {
   const { openSearch, setOpenSearch } = useSearch();
@@ -46,6 +47,21 @@ function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const { isOpen } = useSidebar();
   const { isProActive } = useSubscriptionStore();
+
+  // Ref for the profile dropdown container — used to detect outside clicks
+  const profileMenuRef = useRef<HTMLDivElement>(null);
+
+  // Close profile dropdown when clicking outside of it
+  useEffect(() => {
+    if (!isProfileMenuOpen) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(e.target as Node)) {
+        setIsProfileMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isProfileMenuOpen]);
 
   const isAuthenticated = !!user;
   const { name = "User", email } = user || {};
@@ -200,16 +216,19 @@ function Header() {
               </motion.button>
 
               {/* Profile dropdown */}
-              <div className="relative">
+              <div className="relative" ref={profileMenuRef}>
                 <motion.button
                   whileTap={{ scale: 0.95 }}
                   onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
                   className="flex items-center gap-2 p-1 rounded-full hover:bg-default transition-colors"
                   aria-label="Profile menu"
                 >
-                  <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-primary-500 text-white flex items-center justify-center font-semibold text-sm shadow-soft">
-                    {initials || "U"}
-                  </div>
+                  <UserAvatar
+                    name={name}
+                    avatar={user?.avatar}
+                    size="w-8 h-8 sm:w-9 sm:h-9"
+                    textSize="text-sm"
+                  />
                   <ChevronDown
                     size={16}
                     className={`text-muted transition-transform duration-200 hidden sm:block ${
@@ -380,9 +399,12 @@ function Header() {
 
                 <div className="p-4 border-t border-default">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-primary-500 text-white flex items-center justify-center font-semibold flex-shrink-0">
-                      {initials || "U"}
-                    </div>
+                    <UserAvatar
+                      name={name}
+                      avatar={user?.avatar}
+                      size="w-10 h-10"
+                      textSize="text-sm"
+                    />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-primary truncate">{name}</p>
                       <p className="text-xs text-muted truncate">{email}</p>

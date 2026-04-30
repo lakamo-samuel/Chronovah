@@ -10,9 +10,11 @@ import db from '../database/db';
 const BillingPage: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { plan, isProActive, nextBillingDate, planExpiresAt } = useSubscriptionStore();
+  const { plan, isProActive, nextBillingDate, planExpiresAt, fetchStatus } = useSubscriptionStore();
   const [isCancelling, setIsCancelling] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
+  const [cancelError, setCancelError] = useState<string | null>(null);
+  const [cancelSuccess, setCancelSuccess] = useState<string | null>(null);
 
   const journalCount = useLiveQuery(
     async () => user ? (await db.journal.where('userId').equals(user.id).count()) : 0,
@@ -29,13 +31,21 @@ const BillingPage: React.FC = () => {
 
   const handleCancel = async () => {
     setIsCancelling(true);
+    setCancelError(null);
     try {
-      await protectedAxios.post('/subscription/cancel');
+      const response = await protectedAxios.post('/subscription/cancel');
       setShowCancelModal(false);
-      // Refresh subscription store
-      useSubscriptionStore.getState().fetchStatus();
-    } catch (error) {
+      setCancelSuccess(
+        response.data?.message ||
+          'Subscription cancelled. You retain Pro access until the end of your billing period.'
+      );
+      // Refresh subscription store so UI reflects the change
+      await fetchStatus();
+    } catch (error: any) {
       console.error('Failed to cancel subscription:', error);
+      setCancelError(
+        error?.message || error?.response?.data?.error || 'Failed to cancel subscription. Please try again.'
+      );
     } finally {
       setIsCancelling(false);
     }
@@ -53,6 +63,14 @@ const BillingPage: React.FC = () => {
             Manage your plan and billing.
           </p>
         </div>
+
+        {/* Cancel success / error banners */}
+        {cancelSuccess && (
+          <div className="flex items-start gap-3 p-4 rounded-xl bg-green-500/10 border border-green-500/30 text-green-700 dark:text-green-400 text-sm">
+            <CheckCircle2 className="w-5 h-5 flex-shrink-0 mt-0.5" />
+            <span>{cancelSuccess}</span>
+          </div>
+        )}
 
         {isProActive ? (
           // Pro User View
@@ -217,6 +235,13 @@ const BillingPage: React.FC = () => {
                   </p>
                 </div>
               </div>
+
+              {cancelError && (
+                <div className="flex items-start gap-2 p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-600 dark:text-red-400 text-sm mb-2">
+                  <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                  <span>{cancelError}</span>
+                </div>
+              )}
 
               <div className="flex gap-3 mt-6">
                 <button
