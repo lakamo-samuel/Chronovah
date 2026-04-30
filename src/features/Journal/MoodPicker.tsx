@@ -76,7 +76,7 @@ export default function MoodPicker({
           {selectedMood === mood.label && (
             <motion.div
               layoutId="activeMood"
-              className={`absolute -bottom-2 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full ${mood.color.replace("text", "bg")}`}
+              className={`absolute -bottom-2 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full ${(mood.color ?? '').replace("text", "bg")}`}
               transition={{ type: "spring", stiffness: 500, damping: 30 }}
             />
           )}

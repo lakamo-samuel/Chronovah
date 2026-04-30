@@ -1,5 +1,5 @@
 // types/NoteType.ts
-import type { BaseRecord, BaseStats } from "./BaseType";
+import type { BaseRecord } from "./BaseType";
 
 export interface Note extends BaseRecord {
   title: string;
@@ -29,7 +29,9 @@ export interface Attachment {
   size?: number;
 }
 
-export interface NoteStats extends BaseStats {
+export interface NoteStats {
+  totalNotes: number;
+  favoriteNotes: number;
   pinnedNotes: number;
   totalWords: number;
 }

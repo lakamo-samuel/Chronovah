@@ -1,4 +1,4 @@
-import type { BaseRecord, BaseStats } from "./BaseType";
+import type { BaseRecord } from "./BaseType";
 
 export interface Place extends BaseRecord {
   name: string;
@@ -34,7 +34,9 @@ export type PlaceType =
   | "Hotel"
   | "Other";
 
-export interface PlaceStats extends BaseStats {
+export interface PlaceStats {
+  totalPlaces: number;
+  favoritePlaces: number;
   visitedCountries: number;
   typesCount: Record<string, number>;
 }

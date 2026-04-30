@@ -13,7 +13,7 @@ interface SubscriptionState {
 }
 
 const initialState = {
-  plan: 'free',
+  plan: 'free' as const,
   isProActive: false,
   billingPeriod: null,
   nextBillingDate: null,
@@ -34,7 +34,7 @@ export const useSubscriptionStore = create<SubscriptionState>((set) => ({
       const planData = data.data || data;
 
       set({
-        plan: planData.plan || 'free',
+        plan: (planData.plan || 'free') as 'free' | 'pro',
         isProActive: planData.isProActive || false,
         billingPeriod: planData.billingPeriod || null,
         nextBillingDate: planData.nextBillingDate || null,
@@ -61,7 +61,10 @@ export const useSubscriptionStore = create<SubscriptionState>((set) => ({
       const cached = localStorage.getItem('subscription_cache');
       if (cached) {
         const cachedData = JSON.parse(cached);
-        set(cachedData);
+        set({
+          ...cachedData,
+          plan: (cachedData.plan || 'free') as 'free' | 'pro',
+        });
       }
     }
   },

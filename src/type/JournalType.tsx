@@ -1,5 +1,5 @@
 // types/JournalType.ts
-import type { BaseRecord, BaseStats, SelectOption } from "./BaseType";
+import type { BaseRecord, SelectOption } from "./BaseType";
 
 export interface JournalEntry extends BaseRecord {
   mood: MoodType;
@@ -23,7 +23,9 @@ export interface MoodOption extends SelectOption {
   label: MoodType;
 }
 
-export interface JournalStats extends BaseStats {
+export interface JournalStats {
+  totalEntries: number;
+  favoriteEntries: number;
   currentStreak: number;
   longestStreak: number;
   moodCounts: Record<MoodType, number>;
