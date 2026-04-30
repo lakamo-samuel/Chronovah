@@ -1,4 +1,4 @@
-import type { BaseRecord, BaseStats } from "./BaseType";
+import type { BaseRecord } from "./BaseType";
 
 export interface Person extends BaseRecord {
   name: string;
@@ -24,7 +24,7 @@ export interface Person extends BaseRecord {
   };
 }
 
-export interface PeopleStats extends BaseStats {
+export interface PeopleStats {
   totalPeople: number;
   favoritePeople: number;
   uniqueRelations: number;
