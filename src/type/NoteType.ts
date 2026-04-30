@@ -30,6 +30,8 @@ export interface Attachment {
 }
 
 export interface NoteStats extends BaseStats {
+  totalNotes: number;
+  favoriteNotes: number;
   pinnedNotes: number;
   totalWords: number;
 }

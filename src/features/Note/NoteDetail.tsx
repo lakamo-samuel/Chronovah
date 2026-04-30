@@ -50,7 +50,11 @@ export default function NoteDetail() {
 
   const titleRef = useRef<HTMLInputElement>(null);
 
-  // Load note and seed draft so edit mode always has content
+  // Load note once on mount (or when id changes).
+  // We intentionally exclude `getNote` from deps — it changes reference on
+  // every render because it lives inside a hook that calls useAuth(), and
+  // including it would re-run this effect after every Dexie write, resetting
+  // the draft while the user is typing.
   useEffect(() => {
     const loadNote = async () => {
       if (!id) return;
@@ -67,7 +71,8 @@ export default function NoteDetail() {
       }
     };
     loadNote();
-  }, [id, getNote]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]); // ← only re-run when the note id changes, not on every getNote re-creation
 
   // Auto-save while editing
   useEffect(() => {
@@ -106,9 +111,9 @@ export default function NoteDetail() {
         readTime: Math.max(1, Math.ceil((draft.content?.split(/\s+/).filter(Boolean).length || 0) / 200)),
       });
       setLastSaved(new Date());
-      // Refresh local note state so view mode shows updated content
-      const refreshed = await getNote(note.id);
-      if (refreshed) setNote(refreshed);
+      // Update the note state so view mode shows updated content,
+      // but do NOT reset draft — user may still be editing
+      setNote((prev) => prev ? { ...prev, ...draft, updatedAt: new Date().toISOString() } : prev);
       setIsEditing(false);
     } catch (err) {
       console.error("Save failed:", err);

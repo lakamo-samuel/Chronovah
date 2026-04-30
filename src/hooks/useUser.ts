@@ -45,7 +45,7 @@ async function cacheUserProfile(userData: User) {
 }
 
 /** Load cached profile from Dexie (used as fallback when offline) */
-async function loadCachedProfile(userId: string): Promise<User | null> {
+async function _loadCachedProfile(userId: string): Promise<User | null> {
   try {
     const cached = await db.userProfile.get(userId);
     if (!cached) return null;

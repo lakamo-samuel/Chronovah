@@ -25,6 +25,8 @@ export interface Person extends BaseRecord {
 }
 
 export interface PeopleStats extends BaseStats {
+  totalPeople: number;
+  favoritePeople: number;
   uniqueRelations: number;
   recentAdded: number;
   contactMethods: {

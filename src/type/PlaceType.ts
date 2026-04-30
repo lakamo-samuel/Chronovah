@@ -35,6 +35,8 @@ export type PlaceType =
   | "Other";
 
 export interface PlaceStats extends BaseStats {
+  totalPlaces: number;
+  favoritePlaces: number;
   visitedCountries: number;
   typesCount: Record<string, number>;
 }
