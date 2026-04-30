@@ -3,7 +3,6 @@ import { Suspense, lazy } from "react";
 import "./index.css";
 import AppLayout from "./ui/AppLayout";
 import ProtectedRoute from "./pages/ProtectedRoute";
-import Spinner from "./ui/Spinner";
 import PlaceDetail from "./features/Places/PlaceDetail";
 import JournalDetail from "./features/Journal/JournalDetail";
 import PersonDetail from "./features/people/PersonDetail";
@@ -33,9 +32,7 @@ function App() {
 
   return (
     <BrowserRouter>
-      <Suspense
-        fallback={<Spinner size="lg" overlay />}
-      >
+      <Suspense fallback={null}>
         <Routes>
           <Route index path="/" element={<Homepage />} />
           <Route path="pricing" element={<PricingPage />} />

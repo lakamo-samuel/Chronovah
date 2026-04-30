@@ -17,11 +17,11 @@ import PlaceEditor from "./PlaceEditor";
 import PlaceStats from "./PlaceStats";
 import PlaceCard from "./PlaceCard";
 import type { Place, PlaceType } from "../../type/PlaceType";
-import Spinner from "../../ui/Spinner";
 import { useToast } from "../../hooks/useToast";
 import { ToastContainer } from "../../components/Toast";
 import ConfirmationModal from "../../components/ConfirmationModal";
 import { usePlaces } from "../../hooks/usePlaces";
+import PlacesSkeleton from "../../components/skeletons/PlacesSkeleton";
 
 type SortOption = "name" | "country" | "visitedDate" | "createdAt";
 
@@ -424,10 +424,8 @@ export default function Places() {
         </div>
 
         {/* Places grid/list */}
-        {!places ? (
-          <div className="flex justify-center items-center h-64">
-            <Spinner overlay={false} size="lg" />
-          </div>
+        {places === undefined ? (
+          <PlacesSkeleton viewMode={viewMode} />
         ) : filteredPlaces.length === 0 ? (
           <motion.div
             initial={{ opacity: 0, y: 20 }}

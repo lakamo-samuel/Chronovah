@@ -29,6 +29,8 @@ export function createDataHook<T extends BaseRecord>(
     const { user } = useAuth();
 
     // Get all records for user (live query updates on changes)
+    // Returns undefined until the first query resolves — consumers use this
+    // to distinguish "not yet loaded" (show skeleton) from "empty" (show empty state)
     const items = useLiveQuery(
       () => {
         if (!user?.id) return [];
@@ -93,7 +95,8 @@ export function createDataHook<T extends BaseRecord>(
     };
 
     return {
-      items: items || [],
+      // Preserve undefined so consumers can distinguish "not yet loaded" from "empty"
+      items,
       create,
       update,
       remove,

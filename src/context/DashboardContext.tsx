@@ -46,6 +46,8 @@ export function DashboardProvider({ children }: DarkModeProviderProps) {
   });
 
   const [activities, setActivities] = useState<ActivityItem[]>([]);
+  // True once the first liveQuery result has arrived
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
     // Define the observable using Dexie liveQuery
@@ -194,6 +196,7 @@ export function DashboardProvider({ children }: DarkModeProviderProps) {
             createdAt: p.createdAt,
           }))
         );
+        setIsReady(true);
       },
       error: (err) => {
         console.error("Live query error:", err);
@@ -237,7 +240,7 @@ export function DashboardProvider({ children }: DarkModeProviderProps) {
   ];
 
   return (
-    <DashboardContext.Provider value={{ stats, activities, recentNotes, recentPeople, recentPlaces, recentJournals }}>
+    <DashboardContext.Provider value={{ stats, activities, recentNotes, recentPeople, recentPlaces, recentJournals, isReady }}>
       {children}
     </DashboardContext.Provider>
   );

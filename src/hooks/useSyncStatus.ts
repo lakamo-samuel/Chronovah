@@ -1,7 +1,9 @@
 import { createContext, useContext } from "react";
 import type { SyncStatus } from "../lib/sync";
+
 interface SyncContextType {
   status: SyncStatus;
+  lastSyncedAt: Date | null;
 }
 
 export const SyncContext = createContext<SyncContextType | undefined>(undefined);

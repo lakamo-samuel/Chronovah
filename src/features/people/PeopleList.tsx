@@ -8,10 +8,10 @@ import type { Person } from "../../type/PeopleType";
 import PersonEditor from "./PersonEditor";
 import PersonCard from "./PersonCard";
 import PeopleStats from "./PeopleStats";
-import Spinner from "../../ui/Spinner";
 import { useToast } from "../../hooks/useToast";
 import { ToastContainer } from "../../components/Toast";
 import { usePeople } from "../../hooks/usePeople";
+import PeopleSkeleton from "../../components/skeletons/PeopleSkeleton";
 
 export default function PeopleList() {
   const navigate = useNavigate();
@@ -394,10 +394,8 @@ export default function PeopleList() {
         </div>
 
         {/* People grid/list */}
-        {!people ? (
-          <div className="flex justify-center items-center h-32">
-            <Spinner overlay={false} size="sm" className="h-5 w-5" />
-          </div>
+        {people === undefined ? (
+          <PeopleSkeleton viewMode={viewMode} />
         ) : filteredPeople.length === 0 ? (
           <motion.div
             initial={{ opacity: 0, y: 20 }}

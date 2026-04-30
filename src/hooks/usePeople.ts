@@ -3,17 +3,11 @@ import { createDataHook } from './createDataHook';
 import { db } from '../database/db';
 import type { Person } from '../type/PeopleType';
 
-const dataHook = createDataHook<Person>('people', db.people, [
-  'description',
-  'notes',
-  'email',
-  'phone',
-  'address',
-]);
+const dataHook = createDataHook<Person>('people', db.people);
 
 /**
- * Hook to manage people with CRUD operations
- * Maintains backward compatibility with old API while using the generic factory
+ * Hook to manage people with CRUD operations.
+ * `people` is undefined until IndexedDB resolves (use for skeleton detection).
  */
 export const usePeople = () => {
   const { items, create, update, remove, getById } = dataHook();

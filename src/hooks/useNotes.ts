@@ -6,8 +6,8 @@ import type { Note } from '../type/NoteType';
 const dataHook = createDataHook<Note>('notes', db.notes);
 
 /**
- * Hook to manage notes with CRUD operations
- * Maintains backward compatibility with old API while using the generic factory
+ * Hook to manage notes with CRUD operations.
+ * `notes` is undefined until IndexedDB resolves (use for skeleton detection).
  */
 export const useNotes = () => {
   const { items, create, update, remove, getById } = dataHook();

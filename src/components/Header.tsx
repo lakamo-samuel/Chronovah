@@ -30,6 +30,7 @@ import DesktopSearchInput from "../ui/DesktopSearchInput";
 import { useAuth } from "../hooks/useAuth";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useSubscriptionStore } from "../store/subscriptionStore";
+import SyncIndicator from "./SyncIndicator";
 
 function Header() {
   const { openSearch, setOpenSearch } = useSearch();
@@ -190,6 +191,9 @@ function Header() {
 
         {/* Right section - Actions */}
         <div className="flex items-center gap-1 sm:gap-2">
+          {/* Sync status indicator - only for authenticated users */}
+          {isAuthenticated && <SyncIndicator />}
+
           {/* Dark mode toggle - Always visible */}
           <motion.button
             whileTap={{ scale: 0.95 }}

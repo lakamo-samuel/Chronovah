@@ -663,3 +663,27 @@
 
 /* ===== CUSTOM SCREENS ===== */
 @custom-variant xs (@media (min-width: 475px));
+
+/* ===== SKELETON SHIMMER ===== */
+@keyframes skeleton-shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-border) 25%,
+    color-mix(in srgb, var(--color-border) 60%, var(--color-card)) 50%,
+    var(--color-border) 75%
+  );
+  background-size: 800px 100%;
+  animation: skeleton-shimmer 1.6s ease-in-out infinite;
+  border-radius: 0.375rem;
+}
+
+/* Sync indicator dot pulse */
+@keyframes sync-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}

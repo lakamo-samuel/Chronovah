@@ -25,6 +25,16 @@ const updateSW = registerSW({
     console.log("App ready to work offline 🚀");
   },
 });
+
+// Remove the initial HTML loader once React is ready to mount
+function dismissAppLoader() {
+  const loader = document.getElementById('app-loader');
+  if (loader) {
+    loader.classList.add('hidden');
+    setTimeout(() => loader.remove(), 350);
+  }
+}
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <AuthProvider>
@@ -42,3 +52,8 @@ createRoot(document.getElementById("root")!).render(
     </AuthProvider>
   </StrictMode>
 );
+
+// Dismiss loader after React has painted
+requestAnimationFrame(() => {
+  requestAnimationFrame(dismissAppLoader);
+});

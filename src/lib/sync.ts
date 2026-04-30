@@ -7,11 +7,13 @@ import type { Person } from '../type/PeopleType';
 import type { Place } from '../type/PlaceType';
 import { newId } from './helpers';
 
-export type SyncStatus = 'syncing' | 'synced' | 'offline';
+export type SyncStatus = 'syncing' | 'synced' | 'offline' | 'error';
 
 class SyncManager {
   private isOnline = navigator.onLine;
   private syncInProgress = false;
+  private lastError = false;
+  private lastSyncedAt: Date | null = null;
 
   constructor() {
     // Listen for online/offline events
@@ -65,8 +67,10 @@ class SyncManager {
         try {
           await this.syncOperation(op);
           await db.syncQueue.delete(op.id!);
+          this.lastError = false;
         } catch (error) {
           console.warn('Sync operation failed, will retry:', op, error);
+          this.lastError = true;
           // Increment retry count
           await db.syncQueue.update(op.id!, { retryCount: op.retryCount + 1 });
           // If too many retries, remove it
@@ -74,6 +78,10 @@ class SyncManager {
             await db.syncQueue.delete(op.id!);
           }
         }
+      }
+
+      if (!this.lastError) {
+        this.lastSyncedAt = new Date();
       }
     } catch (error) {
       console.error('Sync queue processing failed:', error);
@@ -189,7 +197,12 @@ class SyncManager {
   getStatus(): SyncStatus {
     if (!this.isOnline) return 'offline';
     if (this.syncInProgress) return 'syncing';
+    if (this.lastError) return 'error';
     return 'synced';
+  }
+
+  getLastSyncedAt(): Date | null {
+    return this.lastSyncedAt;
   }
 }
 
