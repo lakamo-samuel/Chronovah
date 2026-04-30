@@ -6,9 +6,8 @@ import {
   User,
   Eye,
   EyeOff,
-  Sparkles,
+  
   ArrowRight,
-  Shield,
 } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import {
@@ -169,7 +168,8 @@ export default function SignUp() {
           <div className="space-y-3">
             <GoogleAuthButton
               onClick={() => {
-                /* Implement Google Sign-Up */
+                const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000/api/v1";
+                window.location.href = `${apiUrl}/oauth/google`;
               }}
               label="Continue with Google"
               loading={loading}
@@ -201,7 +201,13 @@ export default function SignUp() {
                 <input
                   type="text"
                   value={name}
-                  onBlur={() => setTouched((t) => ({ ...t, name: true }))}
+                  onBlur={(e) => { 
+                     e.currentTarget.style.borderColor =
+                       nameError && touched.name
+                         ? "#ef4444"
+                         : "var(--color-border)";
+                    setTouched((t) => ({ ...t, name: true }))
+                  }}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="John Doe"
                   className="w-full pl-10 pr-4 py-3 rounded-lg focus:outline-none focus:ring-2 transition-all"
@@ -209,17 +215,14 @@ export default function SignUp() {
                     backgroundColor: 'var(--color-default)',
                     borderColor: nameError && touched.name ? '#ef4444' : 'var(--color-border)',
                     borderWidth: '1px',
-                    color: 'var(--color-text)',
-                    focus: 'ring-primary-500/20',
+                    color: 'var(--color-text)'
                   }}
                   onFocus={(e) => {
                     if (!(nameError && touched.name)) {
                       e.currentTarget.style.borderColor = 'var(--color-primary)';
                     }
                   }}
-                  onBlur={(e) => {
-                    e.currentTarget.style.borderColor = nameError && touched.name ? '#ef4444' : 'var(--color-border)';
-                  }}
+                  
                   aria-invalid={!!nameError}
                   aria-describedby="name-error"
                   disabled={loading}
@@ -468,8 +471,8 @@ export default function SignUp() {
               disabled={loading || !isFormValid}
               className="w-full py-3 rounded-lg font-semibold transition-all flex items-center justify-center gap-2 text-white shadow-medium hover:shadow-hard"
               style={{
-                backgroundColor: loading || !isFormValid ? 'var(--color-primary-muted)' : 'var(--color-primary)',
-                opacity: loading || !isFormValid ? 0.6 : 1,
+                backgroundColor: loading || !isFormValid ? 'var(--color-primary)' : 'var(--color-primary)',
+                opacity: loading || !isFormValid ? 0.8 : 1,
                 cursor: loading || !isFormValid ? 'not-allowed' : 'pointer',
               }}
             >

@@ -89,8 +89,7 @@ const UpgradeNudge: React.FC = () => {
         <div className="flex items-center gap-2 flex-shrink-0">
           <button
             onClick={() => navigate('/upgrade')}
-            className="px-4 py-2 text-white font-bold rounded-lg hover:shadow-lg transition-all whitespace-nowrap text-sm"
-            style={{ background: 'var(--gradient-primary)' }}
+            className="px-4 py-2 bg-primary-600 text-white font-bold rounded-lg hover:shadow-lg transition-all whitespace-nowrap text-sm"
           >
             Upgrade Now
           </button>

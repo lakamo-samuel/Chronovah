@@ -65,7 +65,7 @@ const LockedSection: React.FC<LockedSectionProps> = ({ section }) => {
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-card dark:bg-default relative">
       {/* Blurred background preview effect */}
-      <div className="absolute inset-0 blur-2xl opacity-5 bg-gradient-primary"></div>
+      <div className="absolute inset-0 blur-2xl opacity-5 bg-primary-500"></div>
 
       {/* Main content */}
       <div className="relative z-10 w-full max-w-md">
@@ -83,7 +83,7 @@ const LockedSection: React.FC<LockedSectionProps> = ({ section }) => {
 
           {/* Pro Badge */}
           <div className="flex justify-center">
-            <div className="bg-gradient-primary text-white px-4 py-1 rounded-full text-sm font-semibold">
+            <div className="bg-primary-500 text-white px-4 py-1 rounded-full text-sm font-semibold">
               Pro
             </div>
           </div>
@@ -102,7 +102,7 @@ const LockedSection: React.FC<LockedSectionProps> = ({ section }) => {
           <div className="space-y-2">
             {config.features.map((feature, index) => (
               <div key={index} className="flex items-center gap-3">
-                <div className="w-5 h-5 rounded-full bg-gradient-primary flex items-center justify-center flex-shrink-0">
+                <div className="w-5 h-5 rounded-full bg-primary-500 flex items-center justify-center flex-shrink-0">
                   <svg
                     className="w-3 h-3 text-white"
                     fill="none"
@@ -125,11 +125,11 @@ const LockedSection: React.FC<LockedSectionProps> = ({ section }) => {
           </div>
 
           {/* Price Callout */}
-          <div className="bg-gradient-primary/5 dark:bg-gradient-primary/10 rounded-xl p-4 border border-primary-200 dark:border-primary-800">
+          <div className="bg-primary-500/5 dark:bg-primary-500/10 rounded-xl p-4 border border-primary-200 dark:border-primary-800">
             <p className="font-semibold text-primary dark:text-primary-200 mb-1">
               Chronovah Pro
             </p>
-            <p className="text-lg font-bold bg-gradient-primary bg-clip-text text-transparent mb-2">
+            <p className="text-lg font-bold text-primary-600 dark:text-primary-400 mb-2">
               ₦2,500/month or ₦25,000/year
             </p>
             <p className="text-xs text-muted dark:text-muted">
@@ -141,8 +141,7 @@ const LockedSection: React.FC<LockedSectionProps> = ({ section }) => {
           <div className="space-y-3 pt-4">
             <button
               onClick={() => navigate('/upgrade')}
-              className="w-full py-3 px-4 text-white font-semibold rounded-lg hover:shadow-lg transition-shadow"
-              style={{ background: 'var(--gradient-primary)' }}
+              className="w-full py-3 px-4 bg-primary-600 text-white font-semibold rounded-lg hover:shadow-lg transition-shadow"
             >
               Unlock {section.charAt(0).toUpperCase() + section.slice(1)} with Pro →
             </button>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Lock, AlertCircle, Loader, BookOpen, Users, MapPin, Check } from 'lucide-react';
+import { Lock, AlertCircle, Loader, BookOpen, Users, MapPin, Check, ArrowLeft } from 'lucide-react';
 import { protectedAxios } from '../../axios';
 import { useAuth } from '../hooks/useAuth';
 
@@ -55,6 +55,7 @@ const UpgradePage: React.FC = () => {
       } else {
         setError('Failed to initialize payment. Please try again.');
       }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.error('Upgrade error:', err);
       setError(
@@ -76,7 +77,7 @@ const UpgradePage: React.FC = () => {
             className="font-semibold mb-6 flex items-center gap-2 hover:opacity-80 transition-opacity"
             style={{ color: 'var(--color-primary)' }}
           >
-            ← Back to pricing
+            <ArrowLeft size={12}/> Back to pricing
           </button>
 
           <h1 className="text-4xl font-bold" style={{ color: 'var(--color-text)' }}>
@@ -273,7 +274,7 @@ const UpgradePage: React.FC = () => {
               onClick={handleUpgrade}
               disabled={isLoading}
               className="w-full py-3 px-4 text-white font-semibold rounded-lg hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed mb-4"
-              style={{ background: isLoading ? 'var(--color-text-muted)' : 'var(--gradient-primary)' }}
+              style={{ background: isLoading ? 'var(--color-text-muted)' : 'var(--color-primary)' }}
             >
               {isLoading ? (
                 <div className="flex items-center justify-center gap-2">

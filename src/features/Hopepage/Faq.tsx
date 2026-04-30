@@ -268,7 +268,7 @@ export default function Faq() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.4 }}
-          className="mt-12 text-center p-8 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/30 dark:to-purple-950/30 rounded-2xl border border-gray-200 dark:border-gray-800"
+          className="mt-12 text-center p-8 rounded-2xl border border-gray-200 dark:border-gray-800"
         >
           <h3 className="font-serif text-xl font-bold mb-2 text-gray-900 dark:text-white">
             Still have questions?

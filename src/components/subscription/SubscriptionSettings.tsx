@@ -138,7 +138,7 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = () => {
 
               <button
                 onClick={handleReactivate}
-                className="w-full py-2 px-4 bg-gradient-primary text-white font-semibold rounded-lg hover:shadow-lg transition-shadow"
+                className="w-full py-2 px-4 bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 transition-colors"
               >
                 Reactivate Subscription
               </button>
@@ -161,7 +161,7 @@ const SubscriptionSettings: React.FC<SubscriptionSettingsProps> = () => {
 
               <button
                 onClick={() => navigate('/pricing')}
-                className="w-full py-2 px-4 bg-gradient-primary text-white font-semibold rounded-lg hover:shadow-lg transition-shadow"
+                className="w-full py-2 px-4 bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 transition-colors"
               >
                 Upgrade to Pro →
               </button>

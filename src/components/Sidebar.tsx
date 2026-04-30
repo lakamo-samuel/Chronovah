@@ -16,7 +16,7 @@ function Sidebar() {
   const { isOpen } = useSidebar();
   const { logout, user } = useAuth();
   const navigate = useNavigate();
-  const { isProActive, plan } = useSubscriptionStore();
+  const { isProActive } = useSubscriptionStore();
 
   // Get real counts from Dexie
   const journalCount = useLiveQuery(
@@ -39,17 +39,20 @@ function Sidebar() {
       className={`${
         isOpen ? "w-[260px]" : "w-20"
       } border-r top-15 border-t-0 fixed left-0 bottom-0 min-h-screen flex flex-col transition-all duration-300`}
-      style={{ backgroundColor: 'var(--color-bg)', borderColor: 'var(--color-border)' }}
+      style={{
+        backgroundColor: "var(--color-bg)",
+        borderColor: "var(--color-border)",
+      }}
     >
       {/* Navigation */}
       <nav className="flex-1 flex flex-col mt-6">
         {navItems.map((item) => {
           // Lock if free user AND over limit for that section
-          const isLocked = 
-            (item.name === 'Journal' && !isProActive && journalCount > 20) ||
-            (item.name === 'People' && !isProActive && peopleCount > 12) ||
-            (item.name === 'Places' && !isProActive && placesCount > 15);
-          
+          const isLocked =
+            (item.name === "Journal" && !isProActive && journalCount > 20) ||
+            (item.name === "People" && !isProActive && peopleCount > 12) ||
+            (item.name === "Places" && !isProActive && placesCount > 15);
+
           return (
             <NavLink
               key={item.name}
@@ -57,60 +60,85 @@ function Sidebar() {
               className={({ isActive }) =>
                 `flex items-center gap-4 px-5 py-3 rounded-lg mx-3 my-1 transition-all ${
                   isLocked
-                    ? 'opacity-50 cursor-not-allowed'
+                    ? "opacity-50 cursor-not-allowed"
                     : isActive
-                      ? 'text-white'
-                      : ''
+                      ? "text-white"
+                      : ""
                 }`
               }
               style={({ isActive }) => ({
-                backgroundColor: isActive && !isLocked ? 'var(--color-primary)' : isActive ? 'var(--color-primary)' : 'transparent',
-                color: isActive && !isLocked ? 'white' : 'var(--color-text)',
+                backgroundColor:
+                  isActive && !isLocked
+                    ? "var(--color-primary)"
+                    : isActive
+                      ? "var(--color-primary)"
+                      : "transparent",
+                color: isActive && !isLocked ? "white" : "var(--color-text)",
               })}
               onClick={(e) => {
                 if (isLocked) {
                   e.preventDefault();
-                  navigate('/upgrade');
+                  navigate("/upgrade");
                 }
               }}
             >
-              <div style={{ position: 'relative' }}>
+              <div style={{ position: "relative" }}>
                 <item.icon size={20} />
                 {isLocked && (
-                  <Lock size={12} style={{ position: 'absolute', bottom: -2, right: -2, color: '#ef4444' }} />
+                  <Lock
+                    size={12}
+                    style={{
+                      position: "absolute",
+                      bottom: -2,
+                      right: -2,
+                      color: "#ef4444",
+                    }}
+                  />
                 )}
               </div>
               {isOpen && (
                 <div className="flex-1 flex items-center justify-between">
                   <span className="text-sm font-medium">{item.name}</span>
-                  {item.name === 'Journal' && journalCount > 0 && (
-                    <span 
+                  {item.name === "Journal" && journalCount > 0 && (
+                    <span
                       className="text-xs px-2 py-0.5 rounded font-medium"
-                      style={{ 
-                        backgroundColor: journalCount > 20 ? '#fee2e2' : 'var(--color-bg)',
-                        color: journalCount > 20 ? '#dc2626' : 'var(--color-text-muted)'
+                      style={{
+                        backgroundColor:
+                          journalCount > 20 ? "#fee2e2" : "var(--color-bg)",
+                        color:
+                          journalCount > 20
+                            ? "#dc2626"
+                            : "var(--color-text-muted)",
                       }}
                     >
                       {journalCount > 20 ? `${journalCount}/20` : journalCount}
                     </span>
                   )}
-                  {item.name === 'People' && peopleCount > 0 && (
-                    <span 
+                  {item.name === "People" && peopleCount > 0 && (
+                    <span
                       className="text-xs px-2 py-0.5 rounded font-medium"
-                      style={{ 
-                        backgroundColor: peopleCount > 12 ? '#fee2e2' : 'var(--color-bg)',
-                        color: peopleCount > 12 ? '#dc2626' : 'var(--color-text-muted)'
+                      style={{
+                        backgroundColor:
+                          peopleCount > 12 ? "#fee2e2" : "var(--color-bg)",
+                        color:
+                          peopleCount > 12
+                            ? "#dc2626"
+                            : "var(--color-text-muted)",
                       }}
                     >
                       {peopleCount > 12 ? `${peopleCount}/12` : peopleCount}
                     </span>
                   )}
-                  {item.name === 'Places' && placesCount > 0 && (
-                    <span 
+                  {item.name === "Places" && placesCount > 0 && (
+                    <span
                       className="text-xs px-2 py-0.5 rounded font-medium"
-                      style={{ 
-                        backgroundColor: placesCount > 15 ? '#fee2e2' : 'var(--color-bg)',
-                        color: placesCount > 15 ? '#dc2626' : 'var(--color-text-muted)'
+                      style={{
+                        backgroundColor:
+                          placesCount > 15 ? "#fee2e2" : "var(--color-bg)",
+                        color:
+                          placesCount > 15
+                            ? "#dc2626"
+                            : "var(--color-text-muted)",
                       }}
                     >
                       {placesCount > 15 ? `${placesCount}/15` : placesCount}
@@ -128,22 +156,30 @@ function Sidebar() {
         <div
           className="mx-3 mb-4 p-4 rounded-lg border-2"
           style={{
-            backgroundColor: 'var(--color-card)',
-            borderColor: isProActive ? 'var(--color-primary)' : 'var(--color-border)',
+            backgroundColor: "var(--color-card)",
+           borderColor: isProActive
+              ? "var(--color-primary)"
+              : "var(--color-border)",
           }}
         >
           <div className="flex items-center gap-2 mb-3">
             {isProActive ? (
               <>
-                <Crown size={16} style={{ color: 'var(--color-primary)' }} />
-                <span className="text-xs font-bold" style={{ color: 'var(--color-text)' }}>
+                <Crown size={16} style={{ color: "var(--color-primary)" }} />
+                <span
+                  className="text-xs font-bold"
+                  style={{ color: "var(--color-text)" }}
+                >
                   Pro Active
                 </span>
               </>
             ) : (
               <>
-                <Zap size={16} style={{ color: 'var(--color-text-muted)' }} />
-                <span className="text-xs font-bold" style={{ color: 'var(--color-text)' }}>
+                <Zap size={16} style={{ color: "var(--color-text-muted)" }} />
+                <span
+                  className="text-xs font-bold"
+                  style={{ color: "var(--color-text)" }}
+                >
                   Free Plan
                 </span>
               </>
@@ -151,21 +187,21 @@ function Sidebar() {
           </div>
           {!isProActive && (
             <button
-              onClick={() => navigate('/upgrade')}
+              onClick={() => navigate("/upgrade")}
               className="w-full py-2 px-3 text-white text-xs font-bold rounded-lg transition-all hover:shadow-md"
-              style={{ background: 'var(--gradient-primary)' }}
+              style={{ background: "var(--color-primary-500)" }}
             >
               Upgrade Now
             </button>
           )}
           {isProActive && (
             <button
-              onClick={() => navigate('/billing')}
+              onClick={() => navigate("/billing")}
               className="w-full py-2 px-3 text-xs font-bold rounded-lg transition-all"
               style={{
-                backgroundColor: 'var(--color-bg)',
-                color: 'var(--color-text)',
-                border: '1px solid var(--color-border)',
+                backgroundColor: "var(--color-bg)",
+                color: "var(--color-text)",
+                border: "1px solid var(--color-border)",
               }}
             >
               Manage Plan
@@ -177,14 +213,14 @@ function Sidebar() {
       {/* Logout */}
       <div
         onClick={logout}
-        className="p-4 flex border-t items-center gap-2 cursor-pointer transition-colors hover:opacity-70"
+        className="p-4 mb-15 flex border-t items-center gap-2 cursor-pointer transition-colors hover:opacity-70"
         style={{
-          borderColor: 'var(--color-border)',
-          color: 'var(--color-text-muted)',
+          borderColor: "var(--color-border)",
+          color: "var(--color-text-muted)",
         }}
       >
         <LogOut size={16} className="ml-2" />
-       {isOpen && <span className="text-xs">Logout</span>}
+        {isOpen && <span className="text-xs">Logout</span>}
       </div>
     </aside>
   );

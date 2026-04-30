@@ -51,8 +51,7 @@ const PricingPage: React.FC = () => {
             </p>
             <button
               onClick={() => navigate('/dashboard')}
-              className="px-8 py-4 font-bold rounded-lg shadow-lg hover:shadow-xl transition-shadow text-white"
-              style={{ background: 'var(--gradient-primary)' }}
+              className="px-8 py-4 font-bold rounded-lg shadow-lg hover:shadow-xl transition-shadow text-white bg-primary-600"
             >
               Go to Dashboard
             </button>
@@ -163,7 +162,7 @@ const PricingPage: React.FC = () => {
 
             {/* Pro */}
             <div className="rounded-xl p-8 flex flex-col border-2 relative md:-translate-y-4" style={{ backgroundColor: 'var(--color-card)', borderColor: 'var(--color-primary)' }}>
-              <div className="absolute top-0 left-0 right-0 h-1 rounded-t-xl" style={{ background: 'var(--gradient-primary)' }} />
+              <div className="absolute top-0 left-0 right-0 h-1 rounded-t-xl bg-primary-600" />
               <div className="mb-8">
                 <div className="flex justify-between items-start">
                   <h3 className="text-2xl font-bold mb-2">Chronovah Pro</h3>
@@ -195,8 +194,7 @@ const PricingPage: React.FC = () => {
               </div>
               <button
                 onClick={handleUpgrade}
-                className="w-full py-4 px-6 rounded-lg font-bold text-white hover:shadow-lg transition-shadow flex justify-center items-center gap-2"
-                style={{ background: 'var(--gradient-primary)' }}
+                className="w-full py-4 px-6 rounded-lg font-bold text-white bg-primary-600 hover:shadow-lg transition-shadow flex justify-center items-center gap-2"
               >
                 Upgrade to Pro
                 <span>→</span>

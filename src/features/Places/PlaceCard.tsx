@@ -61,7 +61,7 @@ export default function PlaceCard({ place, onEdit, onDelete, onClick, onUpdate }
             className="w-full h-full object-cover"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary-500/10 to-secondary-500/10">
+          <div className="w-full h-full flex items-center justify-center bg-primary-500/10">
             <MapPin size={48} className="text-muted opacity-50" />
           </div>
         )}

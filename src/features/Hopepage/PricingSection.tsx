@@ -179,8 +179,7 @@ const PricingSection: React.FC = () => {
           >
             {isProActive && (
               <div
-                className="absolute -top-4 right-8 px-4 py-1 rounded-full text-white text-sm font-bold"
-                style={{ background: 'var(--gradient-primary)' }}
+                className="absolute -top-4 right-8 px-4 py-1 rounded-full text-white text-sm font-bold bg-primary-600"
               >
                 ✓ You have access
               </div>
@@ -206,8 +205,7 @@ const PricingSection: React.FC = () => {
 
             <button
               onClick={() => navigate(isProActive ? '/billing' : '/upgrade')}
-              className="w-full py-3 px-4 text-white font-bold rounded-lg transition-all mb-8 hover:shadow-lg"
-              style={{ background: 'var(--gradient-primary)' }}
+              className="w-full py-3 px-4 text-white font-bold rounded-lg transition-all mb-8 hover:shadow-lg bg-primary-600"
             >
               {isProActive ? 'Manage Plan' : 'Unlock Pro'}
               <ArrowRight className="w-4 h-4 inline ml-2" />

@@ -125,7 +125,7 @@ export default function Hero() {
               className="font-serif text-balance text-3xl font-bold tracking-tight text-primary sm:text-4xl md:text-5xl lg:text-6xl"
             >
               <span className="block">Your life, organized</span>
-              <span className="mt-2 block bg-gradient-to-r from-primary-600 via-primary-500 to-secondary-500 bg-clip-text text-transparent dark:from-primary-400 dark:via-primary-300 dark:to-secondary-400">
+              <span className="mt-2 block text-primary-600 dark:text-primary-400">
                 in one calm workspace
               </span>
             </motion.h1>
@@ -165,7 +165,7 @@ export default function Hero() {
                 </div>
 
                 <div
-                  className="w-px self-stretch bg-gradient-to-b from-transparent via-default to-transparent"
+                  className="w-px self-stretch bg-default"
                   aria-hidden
                 />
 

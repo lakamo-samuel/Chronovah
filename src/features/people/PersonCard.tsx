@@ -68,7 +68,7 @@ export default function PersonCard({
       className="bg-card rounded-xl border border-default overflow-hidden hover:shadow-hard transition-all cursor-pointer group flex flex-col h-full"
     >
       {/* Image/Initials Section */}
-      <div className="relative h-32 bg-gradient-to-br from-primary-500/20 to-secondary-500/20">
+      <div className="relative h-32 bg-primary-500/10 dark:bg-primary-500/5">
         {person.image ? (
           <img
             src={person.image}
@@ -86,19 +86,15 @@ export default function PersonCard({
         {/* Favorite button */}
         <button
           onClick={toggleFavorite}
-          className={`absolute top-2 right-2 p-1.5 rounded-full transition-all ${
+          className={`absolute top-2 right-2 p-1.5 rounded-full transition-all z-10 ${
             person.isFavorite
               ? "text-red-500 bg-red-500/20"
-              : "text-muted bg-black/40 opacity-0 group-hover:opacity-100"
+              : "text-white bg-black/40 opacity-0 group-hover:opacity-100"
           }`}
         >
           <Heart size={14} fill={person.isFavorite ? "currentColor" : "none"} />
         </button>
 
-        {/* Relation badge */}
-        <div className="absolute bottom-2 left-2 bg-black/60 backdrop-blur-sm text-white text-xs px-2 py-0.5 rounded-full">
-          {person.relation}
-        </div>
       </div>
 
       {/* Content */}
@@ -111,26 +107,42 @@ export default function PersonCard({
           <p className="text-xs text-muted mb-2">"{person.nickname}"</p>
         )}
 
-        {/* Contact icons */}
-        <div className="flex items-center gap-2 mb-2">
-          {person.email && <Mail size={12} className="text-muted" />}
-          {person.phone && <Phone size={12} className="text-muted" />}
-          {person.birthday && <Calendar size={12} className="text-muted" />}
-          {person.company && <Briefcase size={12} className="text-muted" />}
-          {hasSocialMedia && (
-            <div className="flex items-center gap-1">
-              {person.socialMedia?.twitter && (
-                <Twitter size={10} className="text-muted" />
-              )}
-              {person.socialMedia?.instagram && (
-                <Instagram size={10} className="text-muted" />
-              )}
-              {person.socialMedia?.linkedin && (
-                <Linkedin size={10} className="text-muted" />
-              )}
-            </div>
-          )}
-        </div>
+      {/* Contact icons & Socials */}
+      <div className="flex flex-wrap items-center gap-2 mb-2 min-h-[20px]">
+        {person.email && (
+          <div title={person.email}>
+            <Mail size={12} className="text-muted" />
+          </div>
+        )}
+        {person.phone && (
+          <div title={person.phone}>
+            <Phone size={12} className="text-muted" />
+          </div>
+        )}
+        {person.birthday && (
+          <div title={person.birthday}>
+            <Calendar size={12} className="text-muted" />
+          </div>
+        )}
+        {person.company && (
+          <div title={person.company}>
+            <Briefcase size={12} className="text-muted" />
+          </div>
+        )}
+        {hasSocialMedia && (
+          <div className="flex items-center gap-1.5 border-l border-default pl-2 ml-1">
+            {person.socialMedia?.twitter && (
+              <Twitter size={10} className="text-muted hover:text-primary-500 transition-colors" />
+            )}
+            {person.socialMedia?.instagram && (
+              <Instagram size={10} className="text-muted hover:text-primary-500 transition-colors" />
+            )}
+            {person.socialMedia?.linkedin && (
+              <Linkedin size={10} className="text-muted hover:text-primary-500 transition-colors" />
+            )}
+          </div>
+        )}
+      </div>
 
         {/* Description preview */}
         {person.description && (
@@ -155,27 +167,34 @@ export default function PersonCard({
       </div>
 
       {/* Action Buttons */}
-      <div className="flex items-center justify-end gap-1 p-2 border-t border-default bg-default/50">
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onEdit();
-          }}
-          className="p-1.5 hover:bg-card rounded-lg transition-colors flex items-center gap-1 text-xs text-muted hover:text-primary-500"
-        >
-          <Edit2 size={12} />
-          <span>Edit</span>
-        </button>
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onDelete();
-          }}
-          className="p-1.5 hover:bg-card rounded-lg transition-colors flex items-center gap-1 text-xs text-muted hover:text-red-500"
-        >
-          <Trash2 size={12} />
-          <span>Delete</span>
-        </button>
+      <div className="flex items-center justify-between p-2 border-t border-default bg-default/50">
+        <div className="flex items-center gap-1">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onEdit();
+            }}
+            className="p-1.5 hover:bg-card rounded-lg transition-colors flex items-center gap-1 text-xs text-muted hover:text-primary-500"
+          >
+            <Edit2 size={12} />
+            <span className="hidden xs:inline">Edit</span>
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete();
+            }}
+            className="p-1.5 hover:bg-card rounded-lg transition-colors flex items-center gap-1 text-xs text-muted hover:text-red-500"
+          >
+            <Trash2 size={12} />
+            <span className="hidden xs:inline">Delete</span>
+          </button>
+        </div>
+        
+        {/* Relation badge moved here to avoid overlap if it's too long */}
+        <div className="bg-primary-500/10 text-primary-600 dark:text-primary-400 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
+          {person.relation}
+        </div>
       </div>
     </motion.div>
   );

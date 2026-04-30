@@ -145,7 +145,7 @@ export default function Features() {
             className="font-serif text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-primary mb-5 md:max-w-4xl"
           >
             One workspace for{" "}
-            <span className="bg-gradient-to-r from-primary-600 to-secondary-500 bg-clip-text text-transparent dark:from-primary-400 dark:to-secondary-400">
+            <span className="text-primary-600 dark:text-primary-400">
               places, notes, people, and journal
             </span>
           </h2>

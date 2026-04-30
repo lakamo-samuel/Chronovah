@@ -152,8 +152,7 @@ const PaymentSuccessPage: React.FC = () => {
             <div className="space-y-3">
               <button
                 onClick={() => navigate('/journal')}
-                className="w-full py-3 px-4 text-white font-semibold rounded-lg hover:shadow-lg transition-shadow"
-                style={{ background: 'var(--gradient-primary)' }}
+                className="w-full py-3 px-4 bg-primary-600 text-white font-semibold rounded-lg hover:shadow-lg transition-shadow"
               >
                 Explore Journal →
               </button>
@@ -219,8 +218,7 @@ const PaymentSuccessPage: React.FC = () => {
                 setError(null);
                 window.location.reload();
               }}
-              className="w-full py-3 px-4 text-white font-semibold rounded-lg hover:shadow-lg transition-shadow"
-              style={{ background: 'var(--gradient-primary)' }}
+              className="w-full py-3 px-4 bg-primary-600 text-white font-semibold rounded-lg hover:shadow-lg transition-shadow"
             >
               Try Again
             </button>

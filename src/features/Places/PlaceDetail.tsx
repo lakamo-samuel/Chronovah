@@ -116,7 +116,7 @@ export default function PlaceDetail() {
   return (
     <div className="min-h-screen bg-default pt-20 pb-24">
       {/* Hero Section with Image Gallery */}
-      <div className="relative h-[50vh] md:h-[60vh] bg-gradient-to-br from-primary-900 to-secondary-900">
+      <div className="relative h-[50vh] md:h-[60vh] bg-primary-900">
         {place.images && place.images.length > 0 ? (
           <>
             <img
@@ -125,7 +125,7 @@ export default function PlaceDetail() {
               className="w-full h-full object-cover"
             />
             {/* Image Gallery Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+            <div className="absolute inset-0 bg-black/40" />
 
             {/* Image Navigation */}
             {place.images.length > 1 && (

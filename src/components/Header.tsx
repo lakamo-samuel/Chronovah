@@ -18,6 +18,9 @@ import {
   ChevronDown,
   LogIn,
   UserPlus,
+  Sidebar,
+  Zap,
+  Crown,
 } from "lucide-react";
 import { useDarkMode } from "../hooks/useDarkMode";
 import { useSidebar } from "../hooks/useSidebar";
@@ -26,6 +29,7 @@ import { useSearch } from "../hooks/useSearch";
 import DesktopSearchInput from "../ui/DesktopSearchInput";
 import { useAuth } from "../hooks/useAuth";
 import { NavLink, useNavigate } from "react-router-dom";
+import { useSubscriptionStore } from "../store/subscriptionStore";
 
 function Header() {
   const { openSearch, setOpenSearch } = useSearch();
@@ -39,7 +43,10 @@ function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const { isOpen } = useSidebar();
+    const { isProActive } = useSubscriptionStore();
 
+  
   const isAuthenticated = !!user;
   const { name = "User", email } = user || {};
 
@@ -106,10 +113,10 @@ function Header() {
   const navItems = isAuthenticated
     ? [
         { path: "/dashboard", label: "Dashboard", icon: Home },
-        { path: "/places", label: "Places", icon: MapPin },
-        { path: "/people", label: "People", icon: Users },
         { path: "/notes", label: "Notes", icon: BookOpen },
         { path: "/journeys", label: "Journeys", icon: Compass },
+        { path: "/places", label: "Places", icon: MapPin },
+        { path: "/people", label: "People", icon: Users },
       ]
     : [];
 
@@ -149,15 +156,6 @@ function Header() {
           )}
 
           {/* Desktop sidebar toggle - Only for authenticated */}
-          {isAuthenticated && (
-            <button
-              onClick={toggleSidebar}
-              className="hidden md:block p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-card transition-colors"
-              aria-label="Toggle sidebar"
-            >
-              <Menu size={20} className="text-muted" />
-            </button>
-          )}
 
           {/* Logo - Always visible */}
           <NavLink
@@ -172,6 +170,15 @@ function Header() {
               Chronovah
             </span>
           </NavLink>
+          {isAuthenticated && (
+            <button
+              onClick={toggleSidebar}
+              className="hidden md:block p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-card transition-colors"
+              aria-label="Toggle sidebar"
+            >
+              <Sidebar size={20} className="text-muted" />
+            </button>
+          )}
         </div>
 
         {/* Center - Desktop Search (only for authenticated) */}
@@ -371,7 +378,69 @@ function Header() {
                     );
                   })}
                 </nav>
-
+                {isOpen && (
+                  <div
+                    className="mx-3 mb-4 p-4 rounded-lg border-2"
+                    style={{
+                      backgroundColor: "var(--color-card)",
+                      borderColor: isProActive
+                        ? "var(--color-primary)"
+                        : "var(--color-border)",
+                    }}
+                  >
+                    <div className="flex items-center gap-2 mb-3">
+                      {isProActive ? (
+                        <>
+                          <Crown
+                            size={16}
+                            style={{ color: "var(--color-primary)" }}
+                          />
+                          <span
+                            className="text-xs font-bold"
+                            style={{ color: "var(--color-text)" }}
+                          >
+                            Pro Active
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <Zap
+                            size={16}
+                            style={{ color: "var(--color-text-muted)" }}
+                          />
+                          <span
+                            className="text-xs font-bold"
+                            style={{ color: "var(--color-text)" }}
+                          >
+                            Free Plan
+                          </span>
+                        </>
+                      )}
+                    </div>
+                    {!isProActive && (
+                      <button
+                        onClick={() => navigate("/upgrade")}
+                        className="w-full py-2 px-3 text-white text-xs font-bold rounded-lg transition-all hover:shadow-md"
+                        style={{ background: "var(--color-primary-500)" }}
+                      >
+                        Upgrade Now
+                      </button>
+                    )}
+                    {isProActive && (
+                      <button
+                        onClick={() => navigate("/billing")}
+                        className="w-full py-2 px-3 text-xs font-bold rounded-lg transition-all"
+                        style={{
+                          backgroundColor: "var(--color-bg)",
+                          color: "var(--color-text)",
+                          border: "1px solid var(--color-border)",
+                        }}
+                      >
+                        Manage Plan
+                      </button>
+                    )}
+                  </div>
+                )}
                 {/* Mobile user info */}
                 <div className="p-4 border-t border-default">
                   <div className="flex items-center gap-3">

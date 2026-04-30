@@ -5,9 +5,9 @@ import {
   Lock,
   Eye,
   EyeOff,
-  Sparkles,
+
   ArrowRight,
-  Shield,
+
 } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import { validateEmail, validatePassword } from "../hooks/useValidation";
@@ -124,7 +124,7 @@ export default function SignIn() {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="mb-6 p-4 bg-gradient-to-r from-primary-500/10 to-secondary-500/10 rounded-xl border border-primary-500/20"
+            className="mb-6 p-4 bg-primary-500/5 rounded-xl border border-primary-500/10"
           >
             <div className="flex items-start gap-3">
               <div className="p-2 bg-primary-500/20 rounded-lg">
@@ -150,7 +150,8 @@ export default function SignIn() {
           <div className="space-y-3">
             <GoogleAuthButton
               onClick={() => {
-                /* Implement Google Sign-In */
+                const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000/api/v1";
+                window.location.href = `${apiUrl}/oauth/google`;
               }}
               label="Continue with Google"
               loading={isLoading}
@@ -317,7 +318,7 @@ export default function SignIn() {
               disabled={isLoading || !isFormValid}
               className="w-full py-3 rounded-lg font-semibold transition-all flex items-center justify-center gap-2 text-white shadow-medium hover:shadow-hard"
               style={{
-                backgroundColor: isLoading || !isFormValid ? 'var(--color-primary-muted)' : 'var(--color-primary)',
+                backgroundColor: isLoading || !isFormValid ? 'var(--color-primary)' : 'var(--color-primary)',
                 opacity: isLoading || !isFormValid ? 0.6 : 1,
                 cursor: isLoading || !isFormValid ? 'not-allowed' : 'pointer',
               }}

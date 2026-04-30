@@ -46,11 +46,17 @@ export default function CTAComponent() {
   return (
     <section
       ref={sectionRef}
-      className="relative py-12 sm:py-16 md:py-24 px-4 sm:px-6 lg:px-8 overflow-hidden"
-      style={{ backgroundColor: 'var(--color-bg)' }}
+      className="relative py-12 sm:py-16 md:py-24 px-4 sm:px-6 lg:px-8 overflow-hidden bg-gray-50 dark:bg-gray-900"
       aria-label="Call to action"
     >
+      {/* Simplified background for mobile */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-400/20 dark:bg-blue-500/10 rounded-full blur-3xl" />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-400/20 dark:bg-purple-500/10 rounded-full blur-3xl" />
 
+        {/* Lighter grid pattern for mobile */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:20px_20px] sm:bg-[size:24px_24px]" />
+      </div>
 
       <div className="relative max-w-6xl mx-auto">
         {/* Main CTA Card */}
@@ -58,11 +64,7 @@ export default function CTAComponent() {
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.5 }}
-          className="rounded-2xl sm:rounded-3xl shadow-medium border overflow-hidden"
-          style={{
-            backgroundColor: 'var(--color-card)',
-            borderColor: 'var(--color-border)',
-          }}
+          className="bg-white dark:bg-gray-900/90 backdrop-blur-xl rounded-2xl sm:rounded-3xl shadow-xl border border-gray-200 dark:border-gray-800 overflow-hidden"
         >
           {/* Stack on mobile, grid on desktop */}
           <div className="flex flex-col md:grid md:grid-cols-2">
@@ -73,14 +75,9 @@ export default function CTAComponent() {
                 initial={{ opacity: 0, x: -20 }}
                 animate={isInView ? { opacity: 1, x: 0 } : {}}
                 transition={{ delay: 0.2 }}
-                className="hidden xs:inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium mb-4 sm:mb-6 border"
-                style={{
-                  backgroundColor: 'var(--color-primary-light)',
-                  borderColor: 'var(--color-border)',
-                  color: 'var(--color-text)',
-                }}
+                className="hidden xs:inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs sm:text-sm font-medium mb-4 sm:mb-6 border border-blue-200 dark:border-blue-800"
               >
-                <Sparkles size={14} style={{ color: 'var(--color-primary)' }} />
+                <Sparkles size={14} className="text-blue-500" />
                 <span>Ready to get organized?</span>
               </motion.div>
 
@@ -90,12 +87,12 @@ export default function CTAComponent() {
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ delay: 0.3 }}
                 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6"
-                style={{ color: 'var(--color-text)' }}
               >
-                <span>
+                <span className="text-gray-900 dark:text-gray-100">
                   Start your organized life
                 </span>
                 <br className="hidden xs:block" />
+                <span className="bg-blue-600 dark:bg-blue-400  bg-clip-text text-transparent"></span>
               </motion.h2>
 
               {/* Shorter description for mobile */}
@@ -215,7 +212,8 @@ export default function CTAComponent() {
               initial={{ opacity: 0, x: 20 }}
               animate={isInView ? { opacity: 1, x: 0 } : {}}
               transition={{ delay: 0.4 }}
-              className="relative bg-gradient-to-br from-blue-50 to-blue-50 dark:from-blue-950/30 dark:to-purple-950/30 p-6 sm:p-8 lg:p-12 order-1 md:order-2"
+              style={{ backgroundColor: "var(--color-bg)" }}
+              className="relative sm:p-8 lg:p-12 order-1 md:order-2"
             >
               <div className="space-y-4 sm:space-y-6">
                 <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6">
@@ -264,7 +262,7 @@ export default function CTAComponent() {
                       {[1, 2, 3].map((i) => (
                         <div
                           key={i}
-                          className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-gradient-to-r from-blue-500 to-blue-500 border-2 border-white dark:border-gray-900"
+                          className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-blue-500 border-2 border-white dark:border-gray-900"
                         />
                       ))}
                     </div>
