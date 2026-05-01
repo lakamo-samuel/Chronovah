@@ -40,6 +40,8 @@ export default defineConfig({
     }),
   ],
   server: {
+     host: true,
+    allowedHosts: ['chronovah.outray.app'],
     proxy: {
       "/api": {
         target: "https://x52bljmr-3000.uks1.devtunnels.ms/",

@@ -9,6 +9,7 @@ import type { Note } from "../type/NoteType";
 import type { JournalEntry } from "../type/JournalType";
 import type { Place } from "../type/PlaceType";
 import type { Person } from "../type/PeopleType";
+import { useAuth } from "../hooks/useAuth";
 
 interface ActivityCardItem {
   id: number | string;
@@ -32,7 +33,8 @@ type DashboardSnapshot = {
 };
 
 export function DashboardProvider({ children }: DarkModeProviderProps) {
-  
+  const { user } = useAuth();
+
   const [recentNotes, setRecentNotes] = useState<ActivityCardItem[]>([]);
   const [recentPeople, setRecentPeople] = useState<ActivityCardItem[]>([]);
   const [recentPlaces, setRecentPlaces] = useState<ActivityCardItem[]>([]);
@@ -50,41 +52,56 @@ export function DashboardProvider({ children }: DarkModeProviderProps) {
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    // Define the observable using Dexie liveQuery
+    // Reset to loading state when user changes so stale data is never shown
+    setIsReady(false);
+    setActivities([]);
+    setRecentNotes([]);
+    setRecentPeople([]);
+    setRecentPlaces([]);
+    setRecentJournals([]);
+    setCounts({ people: 0, places: 0, notes: 0, journals: 0 });
+
+    // No user logged in — nothing to query
+    if (!user?.id) {
+      setIsReady(true);
+      return;
+    }
+
+    const userId = user.id;
+
+    // Define the observable using Dexie liveQuery — all queries filtered by userId
     const observable = liveQuery<DashboardSnapshot>(() => {
-      // Counts
-      const peopleCount = db.people.count();
-      const placesCount = db.places.count();
-      const notesCount = db.notes.count();
-      const journalsCount = db.journal.count();
+      // Counts — only this user's records
+      const peopleCount   = db.people.where("userId").equals(userId).count();
+      const placesCount   = db.places.where("userId").equals(userId).count();
+      const notesCount    = db.notes.where("userId").equals(userId).count();
+      const journalsCount = db.journal.where("userId").equals(userId).count();
 
-      // Recent items
+      // Recent items — filter by userId then sort by createdAt descending
       const recentPeopleP = db.people
-
-        .orderBy("createdAt")
+        .where("userId").equals(userId)
         .reverse()
-        .limit(3)
-        .toArray();
+        .sortBy("createdAt")
+        .then((arr) => arr.slice(0, 3));
 
       const recentPlacesP = db.places
-        .orderBy("createdAt")
+        .where("userId").equals(userId)
         .reverse()
-        .limit(3)
-        .toArray();
+        .sortBy("createdAt")
+        .then((arr) => arr.slice(0, 3));
 
       const recentNotesP = db.notes
-        .orderBy("createdAt")
+        .where("userId").equals(userId)
         .reverse()
-        .limit(3)
-        .toArray();
+        .sortBy("createdAt")
+        .then((arr) => arr.slice(0, 3));
 
       const recentJournalsP = db.journal
-        .orderBy("createdAt")
+        .where("userId").equals(userId)
         .reverse()
-        .limit(3)
-        .toArray();
+        .sortBy("createdAt")
+        .then((arr) => arr.slice(0, 3));
 
-      // Aggregate in a single Promise.all to align with TS types
       return Promise.all([
         peopleCount,
         placesCount,
@@ -181,12 +198,12 @@ export function DashboardProvider({ children }: DarkModeProviderProps) {
           }))
         );
         setRecentPeople(
-       snapshot.recentPeople.map((p) => ({
-         id: String(p.id),
-         item: "people",
+          snapshot.recentPeople.map((p) => ({
+            id: String(p.id),
+            item: "people",
             title: p.name ?? "Unknown",
             createdAt: p.createdAt,
-          })  )
+          }))
         );
         setRecentPlaces(
           snapshot.recentPlaces.map((p) => ({
@@ -200,14 +217,14 @@ export function DashboardProvider({ children }: DarkModeProviderProps) {
       },
       error: (err) => {
         console.error("Live query error:", err);
+        setIsReady(true);
       },
     });
 
-    // Cleanup
     return () => {
       subscription.unsubscribe();
     };
-  }, []);
+  }, [user?.id]); // re-run whenever the logged-in user changes
 
   const stats = [
     {
