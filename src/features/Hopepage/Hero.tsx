@@ -36,7 +36,7 @@ const TRUST = [
 const fadeUp = (delay = 0) => ({
   initial: { opacity: 0, y: 20 },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1], delay },
+  transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] as const, delay },
 });
 
 export default function Hero() {
@@ -189,14 +189,14 @@ export default function Hero() {
           <motion.div
             initial={{ opacity: 0, x: reduced ? 0 : 32 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: 0.18 }}
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] as const, delay: 0.18 }}
             className="relative hidden lg:block"
           >
             {/* ── Shadow card (back) — tilted right ── */}
             <motion.div
               initial={{ opacity: 0, rotate: 0 }}
               animate={{ opacity: 1, rotate: 3.5 }}
-              transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1], delay: 0.28 }}
+              transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] as const, delay: 0.28 }}
               className="absolute inset-0 rounded-2xl border border-primary-500/20 bg-card shadow-hard"
               aria-hidden
             />
@@ -205,7 +205,7 @@ export default function Hero() {
             <motion.div
               initial={{ opacity: 0, rotate: 0 }}
               animate={{ opacity: 1, rotate: -1.5 }}
-              transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1], delay: 0.22 }}
+              transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] as const, delay: 0.22 }}
               className="absolute inset-0 rounded-2xl border border-default bg-card/80 shadow-medium backdrop-blur-sm"
               aria-hidden
             />
