@@ -1,269 +1,174 @@
-import { motion, useAnimationControls, useInView } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { motion, useInView } from "framer-motion";
+import { useRef, useState } from "react";
 import { Star, Quote, ChevronLeft, ChevronRight } from "lucide-react";
 
-interface Feedback {
+interface Testimonial {
   id: number;
   name: string;
+  role: string;
   text: string;
-  image?: string;
   rating: number;
-  role?: string;
-  date?: string;
 }
 
-const feedbacks: Feedback[] = [
+const TESTIMONIALS: Testimonial[] = [
   {
     id: 1,
     name: "Blessing A.",
-    text: "Chronovah helped me organize everything. Notes, places, memories — all in one secure place. The offline support is a game-changer for someone like me who travels often.",
-    rating: 5,
     role: "Digital Nomad",
-    date: "March 2024",
+    text: "Chronovah helped me organize everything. Notes, places, memories — all in one secure place. The offline support is a game-changer for someone who travels often.",
+    rating: 5,
   },
   {
     id: 2,
     name: "Daniel T.",
-    text: "The offline support is crazy good. My data is always with me, even without internet. I've tried many productivity apps, but Chronovah's offline-first approach is unmatched.",
-    rating: 5,
     role: "Software Engineer",
-    date: "February 2024",
+    text: "The offline-first architecture is genuinely impressive. My data is always with me. I have tried many productivity apps but nothing matches this approach.",
+    rating: 5,
   },
   {
     id: 3,
     name: "Mary J.",
-    text: "The UI is clean and fast. I love how simple it is to save and search everything. No clutter, no confusion — just pure productivity. The dark mode is gorgeous too!",
-    rating: 5,
     role: "Content Creator",
-    date: "March 2024",
+    text: "Clean, fast, and distraction-free. I love how simple it is to save and search everything. The dark mode is gorgeous too.",
+    rating: 5,
   },
   {
     id: 4,
     name: "John K.",
-    text: "Best productivity tool I've used this year. Sync + privacy is top notch. Finally, an app that respects my data while giving me all the features I need.",
-    rating: 5,
     role: "Freelancer",
-    date: "January 2024",
+    text: "Best productivity tool I have used this year. Sync and privacy are top notch. Finally an app that respects my data while giving me all the features I need.",
+    rating: 5,
   },
   {
     id: 5,
     name: "Sarah M.",
-    text: "The journaling feature alone is worth it. Being able to track my mood and thoughts alongside my notes and places gives me a complete picture of my life.",
-    rating: 5,
     role: "Therapist",
-    date: "March 2024",
+    text: "The journaling feature alone is worth it. Tracking mood and thoughts alongside notes and places gives me a complete picture of my life.",
+    rating: 5,
   },
   {
     id: 6,
     name: "Michael R.",
-    text: "I've been using Chronovah for 6 months now. It's become my digital brain. Everything from client meetings to travel memories is perfectly organized.",
-    rating: 5,
     role: "Consultant",
-    date: "February 2024",
+    text: "Six months in and it has become my digital brain. Everything from client meetings to travel memories is perfectly organized.",
+    rating: 5,
   },
 ];
 
-export default function UserFeedback() {
-  const controls = useAnimationControls();
-  const [isPaused, setPaused] = useState(false);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isMobile, setIsMobile] = useState(false);
-  const sectionRef = useRef<HTMLElement>(null);
-  const isInView = useInView(sectionRef, { once: true, amount: 0.2 });
-  const carouselRef = useRef<HTMLDivElement>(null);
-
-  // Check for mobile
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
-
-  // Auto-scroll carousel
-  useEffect(() => {
-    if (!isMobile && !isPaused && isInView) {
-      controls.start({
-        x: ["0%", "-50%"],
-        transition: {
-          repeat: Infinity,
-          repeatType: "loop",
-          duration: 30,
-          ease: "linear",
-        },
-      });
-    } else {
-      controls.stop();
-    }
-  }, [isPaused, isMobile, isInView, controls]);
-
-  // Manual navigation for mobile
-  const nextSlide = () => {
-    setCurrentIndex((prev) => (prev + 1) % feedbacks.length);
-  };
-
-  const prevSlide = () => {
-    setCurrentIndex((prev) => (prev - 1 + feedbacks.length) % feedbacks.length);
-  };
-
+function Card({ t }: { t: Testimonial }) {
   return (
-    <section
-      ref={sectionRef}
-      className="relative py-20 px-4 sm:px-6 lg:px-8 bg-default overflow-hidden border-b border-default"
-      aria-labelledby="feedback-title"
-    >
-
-      <div className="relative max-w-7xl mx-auto">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-12"
-        >
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-card border border-default text-muted text-xs font-medium mb-5">
-            <span className="text-primary-600">Feedback</span>
-          </div>
-
-          <h2
-            id="feedback-title"
-            className="font-serif text-3xl md:text-4xl font-semibold tracking-tight text-primary mb-3"
-          >
-            What people{" "}
-            <span className="text-primary-600 dark:text-primary-400">
-              say about using it
-            </span>
-          </h2>
-
-          <p className="text-sm text-muted max-w-lg mx-auto">
-            Early users and testers—quoted as they wrote them, not marketing
-            scores.
-          </p>
-        </motion.div>
-
-        {/* Desktop carousel */}
-        {!isMobile ? (
-          <div
-            className="relative w-full overflow-hidden"
-            onMouseEnter={() => setPaused(true)}
-            onMouseLeave={() => setPaused(false)}
-          >
-            <motion.div
-              ref={carouselRef}
-              className="flex gap-6"
-              animate={controls}
-              style={{ width: "fit-content" }}
-            >
-              {[...feedbacks, ...feedbacks].map((item, index) => (
-                <FeedbackCard key={`${item.id}-${index}`} feedback={item} />
-              ))}
-            </motion.div>
-          </div>
-        ) : (
-          /* Mobile carousel with manual controls */
-          <div className="relative">
-            <div className="overflow-hidden">
-              <motion.div
-                className="flex"
-                animate={{ x: `-${currentIndex * 100}%` }}
-                transition={{ type: "spring", damping: 20 }}
-              >
-                {feedbacks.map((item) => (
-                  <div key={item.id} className="min-w-full px-4">
-                    <FeedbackCard feedback={item} />
-                  </div>
-                ))}
-              </motion.div>
-            </div>
-
-            {/* Mobile controls */}
-            <button
-              onClick={prevSlide}
-              className="absolute left-0 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-card border border-default shadow-soft flex items-center justify-center hover:bg-default transition-colors"
-              aria-label="Previous testimonial"
-            >
-              <ChevronLeft size={20} className="text-muted" />
-            </button>
-            <button
-              onClick={nextSlide}
-              className="absolute right-0 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-card border border-default shadow-soft flex items-center justify-center hover:bg-default transition-colors"
-              aria-label="Next testimonial"
-            >
-              <ChevronRight size={20} className="text-muted" />
-            </button>
-
-            {/* Dots indicator */}
-            <div className="flex justify-center gap-2 mt-6">
-              {feedbacks.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setCurrentIndex(i)}
-                  className={`h-2 rounded-full transition-all ${
-                    i === currentIndex
-                      ? "w-6 bg-primary-500"
-                      : "w-2 bg-default border border-default"
-                  }`}
-                  aria-label={`Go to testimonial ${i + 1}`}
-                />
-              ))}
-            </div>
-          </div>
-        )}
+    <div className="flex h-full flex-col rounded-2xl border border-default bg-card p-7">
+      <Quote size={18} className="mb-4 shrink-0 text-primary-500/40" strokeWidth={1.5} />
+      <div className="mb-4 flex gap-0.5" aria-hidden>
+        {Array.from({ length: t.rating }).map((_, i) => (
+          <Star key={i} size={13} className="fill-amber-500 text-amber-500" />
+        ))}
       </div>
-    </section>
+      <p className="mb-6 flex-1 text-[0.9375rem] leading-relaxed text-primary/90">
+        {t.text}
+      </p>
+      <div className="flex items-center gap-3">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-600 text-xs font-semibold text-white">
+          {t.name[0]}
+        </div>
+        <div>
+          <p className="text-sm font-semibold text-primary">{t.name}</p>
+          <p className="text-sm text-muted">{t.role}</p>
+        </div>
+      </div>
+    </div>
   );
 }
 
-// Feedback Card Component
-function FeedbackCard({ feedback }: { feedback: Feedback }) {
+export default function UserFeedback() {
+  const ref = useRef<HTMLElement>(null);
+  const inView = useInView(ref, { once: true, amount: 0.15 });
+  const [page, setPage] = useState(0);
+
+  const perPage = 3;
+  const totalPages = Math.ceil(TESTIMONIALS.length / perPage);
+  const visible = TESTIMONIALS.slice(page * perPage, page * perPage + perPage);
+
   return (
-    <motion.div
-      whileHover={{ y: -5, scale: 1.02 }}
-      transition={{ type: "spring", damping: 20 }}
-      className="min-w-[320px] max-w-[320px] bg-card rounded-xl p-6 border border-default shadow-soft hover:shadow-medium transition-shadow duration-300"
+    <section
+      ref={ref}
+      className="relative border-b border-default bg-default py-24 md:py-32"
+      aria-labelledby="testimonials-heading"
     >
-      <Quote size={20} className="text-primary-600/40 mb-4" strokeWidth={1.5} />
-
-      <div className="flex gap-0.5 mb-4" aria-hidden>
-        {[...Array(feedback.rating)].map((_, i) => (
-          <Star
-            key={i}
-            size={14}
-            className="fill-amber-500/90 text-amber-600"
-          />
-        ))}
-      </div>
-
-      <p className="text-primary/90 mb-6 text-sm leading-relaxed">
-        &ldquo;{feedback.text}&rdquo;
-      </p>
-
-      {/* User info */}
-      <div className="flex items-center gap-3">
-        {feedback.image ? (
-          <img
-            src={feedback.image}
-            alt={feedback.name}
-            className="w-12 h-12 rounded-full object-cover border-2 border-primary-500/30"
-          />
-        ) : (
-          <div className="w-12 h-12 rounded-full bg-primary-600 flex items-center justify-center text-white font-semibold text-sm">
-            {feedback.name[0]}
+      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.5 }}
+          className="mb-14 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"
+        >
+          <div>
+            <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-primary-600 dark:text-primary-400">
+              Testimonials
+            </p>
+            <h2
+              id="testimonials-heading"
+              className="font-display text-4xl font-normal tracking-tight text-primary sm:text-5xl"
+            >
+              What people say
+            </h2>
+            <p className="mt-3 max-w-md text-muted">
+              Early users and testers — quoted as they wrote them.
+            </p>
           </div>
-        )}
-        <div>
-          <p className="font-medium text-primary">{feedback.name}</p>
-          {feedback.role && (
-            <p className="text-xs text-muted">{feedback.role}</p>
-          )}
+
+          {/* Pagination controls */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setPage((p) => Math.max(0, p - 1))}
+              disabled={page === 0}
+              className="flex h-9 w-9 items-center justify-center rounded-lg border border-default bg-card text-muted transition-colors hover:bg-default disabled:opacity-30"
+              aria-label="Previous"
+            >
+              <ChevronLeft size={16} />
+            </button>
+            <span className="text-xs text-muted tabular-nums">
+              {page + 1} / {totalPages}
+            </span>
+            <button
+              onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+              disabled={page === totalPages - 1}
+              className="flex h-9 w-9 items-center justify-center rounded-lg border border-default bg-card text-muted transition-colors hover:bg-default disabled:opacity-30"
+              aria-label="Next"
+            >
+              <ChevronRight size={16} />
+            </button>
+          </div>
+        </motion.div>
+
+        {/* Cards */}
+        <motion.div
+          key={page}
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35 }}
+          className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3"
+        >
+          {visible.map((t) => (
+            <Card key={t.id} t={t} />
+          ))}
+        </motion.div>
+
+        {/* Dot indicators */}
+        <div className="mt-8 flex justify-center gap-2">
+          {Array.from({ length: totalPages }).map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setPage(i)}
+              className={`h-1.5 rounded-full transition-all ${
+                i === page ? "w-6 bg-primary-500" : "w-1.5 bg-default border border-default"
+              }`}
+              aria-label={`Page ${i + 1}`}
+            />
+          ))}
         </div>
       </div>
-
-      {feedback.date && (
-        <p className="mt-4 text-xs text-muted">{feedback.date}</p>
-      )}
-    </motion.div>
+    </section>
   );
 }

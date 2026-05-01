@@ -1,329 +1,193 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Check, BookOpen, Users, MapPin, ArrowRight } from 'lucide-react';
-import { useAuth } from '../../hooks/useAuth';
-import { useSubscriptionStore } from '../../store/subscriptionStore';
-import { db } from '../../database/db';
-import { useLiveQuery } from 'dexie-react-hooks';
+import { useState, useRef } from "react";
+import { motion, useInView } from "framer-motion";
+import { Check, ArrowRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useSubscriptionStore } from "../../store/subscriptionStore";
 
-const PricingSection: React.FC = () => {
+const FREE_FEATURES = [
+  "Unlimited notes",
+  "Up to 20 journal entries",
+  "Up to 12 people",
+  "Up to 15 places",
+  "Offline access",
+  "End-to-end encryption",
+];
+
+const PRO_FEATURES = [
+  "Everything in Free",
+  "Unlimited journal entries",
+  "Unlimited people profiles",
+  "Unlimited place memories",
+  "Cross-device sync",
+  "Priority support",
+];
+
+export default function PricingSection() {
+  const ref = useRef<HTMLElement>(null);
+  const inView = useInView(ref, { once: true, amount: 0.15 });
   const navigate = useNavigate();
-  const { user } = useAuth();
   const { isProActive } = useSubscriptionStore();
-  const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
+  const [yearly, setYearly] = useState(false);
 
-  // Get real counts from Dexie
-  const journalCount = useLiveQuery(
-    async () => (user ? (await db.journal.where('userId').equals(user.id).count()) : 0),
-    [user?.id]
-  ) ?? 0;
+  const fmt = (n: number) =>
+    new Intl.NumberFormat("en-NG", { style: "currency", currency: "NGN", maximumFractionDigits: 0 }).format(n);
 
-  const peopleCount = useLiveQuery(
-    async () => (user ? (await db.people.where('userId').equals(user.id).count()) : 0),
-    [user?.id]
-  ) ?? 0;
-
-  const placesCount = useLiveQuery(
-    async () => (user ? (await db.places.where('userId').equals(user.id).count()) : 0),
-    [user?.id]
-  ) ?? 0;
-
-  const monthlyAmount = 2500;
-  const yearlyAmount = 25000;
-
-  const monthlyFormatted = new Intl.NumberFormat('en-NG', {
-    style: 'currency',
-    currency: 'NGN',
-  }).format(monthlyAmount);
-
-  const yearlyFormatted = new Intl.NumberFormat('en-NG', {
-    style: 'currency',
-    currency: 'NGN',
-  }).format(yearlyAmount);
+  const price = yearly ? fmt(25000) : fmt(2500);
+  const period = yearly ? "/ year" : "/ month";
+  const saving = yearly ? "Save 17%" : null;
 
   return (
-    <section className="py-20 px-4" style={{ backgroundColor: 'var(--color-bg)' }}>
-      <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-16">
+    <section
+      id="pricing"
+      ref={ref}
+      className="relative border-b border-default bg-card py-24 md:py-32"
+      aria-labelledby="pricing-heading"
+    >
+      <div className="mx-auto max-w-5xl px-6 lg:px-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.5 }}
+          className="mb-14 text-center"
+        >
+          <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-primary-600 dark:text-primary-400">
+            Pricing
+          </p>
           <h2
-            className="text-4xl md:text-5xl font-bold mb-4"
-            style={{ color: 'var(--color-text)' }}
+            id="pricing-heading"
+            className="font-display text-4xl font-normal tracking-tight text-primary sm:text-5xl"
           >
-            Choose Your Plan
+            Simple, honest pricing
           </h2>
-          <p
-            className="text-lg mb-8"
-            style={{ color: 'var(--color-text-muted)' }}
-          >
-            Notes are free forever. Unlock the full vault with Pro.
+          <p className="mx-auto mt-4 max-w-md text-muted">
+            Notes are free forever. Upgrade when you need the full vault.
           </p>
 
-          {/* Billing Toggle */}
-          <div className="flex items-center justify-center gap-4">
+          {/* Toggle */}
+          <div className="mt-8 inline-flex items-center gap-1 rounded-xl border border-default bg-default p-1">
             <button
-              onClick={() => setBillingPeriod('monthly')}
-              className="px-6 py-3 rounded-lg font-semibold transition-all"
-              style={{
-                backgroundColor: billingPeriod === 'monthly' ? 'var(--color-primary)' : 'var(--color-card)',
-                color: billingPeriod === 'monthly' ? 'white' : 'var(--color-text)',
-                border: `2px solid ${billingPeriod === 'monthly' ? 'var(--color-primary)' : 'var(--color-border)'}`,
-              }}
+              onClick={() => setYearly(false)}
+              className={`rounded-lg px-5 py-2 text-sm font-medium transition-colors ${
+                !yearly ? "bg-card text-primary shadow-soft" : "text-muted hover:text-primary"
+              }`}
             >
               Monthly
             </button>
             <button
-              onClick={() => setBillingPeriod('yearly')}
-              className="px-6 py-3 rounded-lg font-semibold transition-all relative"
-              style={{
-                backgroundColor: billingPeriod === 'yearly' ? 'var(--color-primary)' : 'var(--color-card)',
-                color: billingPeriod === 'yearly' ? 'white' : 'var(--color-text)',
-                border: `2px solid ${billingPeriod === 'yearly' ? 'var(--color-primary)' : 'var(--color-border)'}`,
-              }}
+              onClick={() => setYearly(true)}
+              className={`relative rounded-lg px-5 py-2 text-sm font-medium transition-colors ${
+                yearly ? "bg-card text-primary shadow-soft" : "text-muted hover:text-primary"
+              }`}
             >
               Yearly
-              {billingPeriod === 'yearly' && (
-                <span className="absolute -top-3 -right-2 text-white text-xs font-bold px-2 py-0.5 rounded-full" style={{ background: 'var(--color-primary)' }}>
-                  Save 17%
+              {saving && (
+                <span className="absolute -top-2.5 -right-2 rounded-full bg-primary-600 px-1.5 py-0.5 text-[10px] font-bold text-white">
+                  {saving}
                 </span>
               )}
             </button>
           </div>
-        </div>
+        </motion.div>
 
-        {/* Pricing Cards */}
-        <div className="grid md:grid-cols-2 gap-8">
-          {/* Free Plan */}
-          <div
-            className="rounded-2xl p-8 border-2"
-            style={{
-              backgroundColor: 'var(--color-card)',
-              borderColor: 'var(--color-border)',
-            }}
+        <div className="grid gap-6 md:grid-cols-2">
+          {/* Free */}
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.45, delay: 0.1 }}
+            className="flex flex-col rounded-2xl border border-default bg-default p-8"
           >
             <div className="mb-6">
-              <h3 className="text-2xl font-bold mb-2" style={{ color: 'var(--color-text)' }}>
-                Free Forever
-              </h3>
-              <p style={{ color: 'var(--color-text-muted)' }}>
-                Start capturing your thoughts - with limits
-              </p>
+              <p className="text-xs font-semibold uppercase tracking-widest text-muted">Starter</p>
+              <div className="mt-3 flex items-baseline gap-1">
+                <span className="text-4xl font-bold text-primary">Free</span>
+              </div>
+              <p className="mt-2 text-sm text-muted">Forever. No time limit.</p>
             </div>
 
-            <div className="mb-8">
-              <p className="text-sm mb-2" style={{ color: 'var(--color-text-muted)' }}>
-                Price
-              </p>
-              <p className="text-4xl font-bold" style={{ color: 'var(--color-text)' }}>
-                ₦0
-              </p>
-            </div>
+            <ul className="mb-8 flex-1 space-y-3">
+              {FREE_FEATURES.map((f) => (
+                <li key={f} className="flex items-center gap-3 text-[0.9375rem] text-muted">
+                  <Check size={15} className="shrink-0 text-primary-500" />
+                  {f}
+                </li>
+              ))}
+            </ul>
 
             <button
-              onClick={() => navigate('/notes')}
-              className="w-full py-3 px-4 rounded-lg font-bold transition-all mb-8"
-              style={{
-                backgroundColor: 'var(--color-bg)',
-                color: 'var(--color-text)',
-                border: '2px solid var(--color-border)',
-              }}
+              onClick={() => navigate("/signup")}
+              className="w-full rounded-xl border border-default bg-card py-3.5 text-sm font-semibold text-primary transition-colors hover:bg-default"
             >
-              Get Started
+              Get started free
             </button>
+          </motion.div>
 
-            <div className="space-y-4">
-              <div className="flex items-start gap-3">
-                <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: 'var(--color-primary)' }} />
-                <div>
-                  <p className="font-semibold" style={{ color: 'var(--color-text)' }}>
-                    Unlimited Notes
-                  </p>
-                  <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
-                    Write as much as you want
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: 'var(--color-primary)' }} />
-                <div>
-                  <p className="font-semibold" style={{ color: 'var(--color-text)' }}>
-                    Limited Vault Access
-                  </p>
-                  <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
-                    20 journal, 12 people, 15 places
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: 'var(--color-primary)' }} />
-                <div>
-                  <p className="font-semibold" style={{ color: 'var(--color-text)' }}>
-                    End-to-End Encrypted
-                  </p>
-                  <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
-                    Your privacy, always protected
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Pro Plan */}
-          <div
-            className="rounded-2xl p-8 border-2 relative"
-            style={{
-              backgroundColor: 'var(--color-card)',
-              borderColor: isProActive ? 'var(--color-primary)' : 'var(--color-border)',
-            }}
+          {/* Pro */}
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.45, delay: 0.2 }}
+            className="relative flex flex-col rounded-2xl border-2 border-primary-500/60 bg-default p-8 shadow-medium"
           >
+            {/* Popular badge */}
+            <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 rounded-full bg-primary-600 px-4 py-1 text-xs font-bold text-white">
+              Most popular
+            </div>
+
             {isProActive && (
-              <div className="absolute -top-4 right-8 px-4 py-1 rounded-full text-white text-sm font-bold bg-primary-500">
-                Active plan
+              <div className="absolute -top-3.5 right-6 rounded-full bg-accent-green px-3 py-1 text-xs font-bold text-white">
+                Active
               </div>
             )}
 
             <div className="mb-6">
-              <h3 className="text-2xl font-bold mb-2" style={{ color: 'var(--color-text)' }}>
-                Chronovah Pro
-              </h3>
-              <p style={{ color: 'var(--color-text-muted)' }}>
-                Unlock the full vault
+              <p className="text-xs font-semibold uppercase tracking-widest text-primary-600 dark:text-primary-400">
+                Pro
               </p>
+              <div className="mt-3 flex items-baseline gap-1">
+                <span className="text-4xl font-bold text-primary">{price}</span>
+                <span className="text-sm text-muted">{period}</span>
+              </div>
+              <p className="mt-2 text-sm text-muted">Full vault, no limits.</p>
             </div>
 
-            <div className="mb-8">
-              <p className="text-sm mb-2" style={{ color: 'var(--color-text-muted)' }}>
-                {billingPeriod === 'yearly' ? 'Per year' : 'Per month'}
-              </p>
-              <p className="text-4xl font-bold" style={{ color: 'var(--color-text)' }}>
-                {billingPeriod === 'yearly' ? yearlyFormatted : monthlyFormatted}
-              </p>
-            </div>
+            <ul className="mb-8 flex-1 space-y-3">
+              {PRO_FEATURES.map((f) => (
+                <li key={f} className="flex items-center gap-3 text-[0.9375rem] text-muted">
+                  <Check size={15} className="shrink-0 text-primary-500" />
+                  {f}
+                </li>
+              ))}
+            </ul>
 
             <button
-              onClick={() => navigate(isProActive ? '/billing' : '/upgrade')}
-              className="w-full py-3 px-4 text-white font-bold rounded-lg transition-all mb-8 hover:shadow-lg bg-primary-600"
+              onClick={() => navigate(isProActive ? "/billing" : "/upgrade")}
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary-600 py-3 text-sm font-semibold text-white shadow-soft transition-colors hover:bg-primary-700"
             >
-              {isProActive ? 'Manage Plan' : 'Unlock Pro'}
-              <ArrowRight className="w-4 h-4 inline ml-2" />
+              {isProActive ? "Manage plan" : "Upgrade to Pro"}
+              <ArrowRight size={15} strokeWidth={2.5} />
             </button>
 
-            {/* Pro Features */}
-            <div className="space-y-4">
-              <div className="flex items-start gap-3">
-                <div className="flex items-center justify-center w-8 h-8 rounded-lg flex-shrink-0 mt-0.5 bg-journal-soft">
-                  <BookOpen className="w-4 h-4 text-[var(--color-journal-light)]" />
-                </div>
-                <div>
-                  <p className="font-semibold" style={{ color: 'var(--color-text)' }}>
-                    Journal
-                  </p>
-                  <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
-                    {journalCount > 20
-                      ? `${journalCount}/∞ (${journalCount - 20} over free limit)`
-                      : `${journalCount}/20 entries used`}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3">
-                <div className="flex items-center justify-center w-8 h-8 rounded-lg flex-shrink-0 mt-0.5 bg-people-soft">
-                  <Users className="w-4 h-4 text-[var(--color-people-light)]" />
-                </div>
-                <div>
-                  <p className="font-semibold" style={{ color: 'var(--color-text)' }}>
-                    People
-                  </p>
-                  <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
-                    {peopleCount > 12
-                      ? `${peopleCount}/∞ (${peopleCount - 12} over free limit)`
-                      : `${peopleCount}/12 people used`}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3">
-                <div className="flex items-center justify-center w-8 h-8 rounded-lg flex-shrink-0 mt-0.5 bg-places-soft">
-                  <MapPin className="w-4 h-4 text-[var(--color-places-light)]" />
-                </div>
-                <div>
-                  <p className="font-semibold" style={{ color: 'var(--color-text)' }}>
-                    Places
-                  </p>
-                  <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
-                    {placesCount > 15
-                      ? `${placesCount}/∞ (${placesCount - 15} over free limit)`
-                      : `${placesCount}/15 places used`}
-                  </p>
-                </div>
-              </div>
-
-              <div className="pt-4" style={{ borderTop: '1px solid var(--color-border)' }}>
-                <p className="text-sm font-semibold mb-3" style={{ color: 'var(--color-text)' }}>
-                  Also included:
-                </p>
-                <ul className="space-y-2 text-sm" style={{ color: 'var(--color-text-muted)' }}>
-                  {[
-                    "Unlimited journal entries",
-                    "Unlimited people profiles",
-                    "Unlimited place memories",
-                    "Cross-device sync",
-                    "Priority support",
-                  ].map((item) => (
-                    <li key={item} className="flex items-center gap-2">
-                      <Check className="w-4 h-4 flex-shrink-0" style={{ color: 'var(--color-primary)' }} />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
+            <p className="mt-4 text-center text-xs text-muted">
+              Cancel anytime.{" "}
+              <span className="font-medium text-primary">
+                All payments are final — no refunds.
+              </span>
+            </p>
+          </motion.div>
         </div>
 
-        {/* FAQ Section */}
-        <div className="mt-16 pt-16" style={{ borderTop: '1px solid var(--color-border)' }}>
-          <h3 className="text-2xl font-bold text-center mb-8" style={{ color: 'var(--color-text)' }}>
-            Frequently Asked
-          </h3>
-
-          <div className="grid md:grid-cols-2 gap-8">
-            {[
-              {
-                q: 'Can I cancel anytime?',
-                a: 'Yes, cancel your subscription at any time with no penalties.',
-              },
-              {
-                q: 'What happens to my data after canceling?',
-                a: 'Your notes remain forever. Journal, People, and Places become locked.',
-              },
-              {
-                q: 'Is payment secure?',
-                a: 'Yes, payments are processed securely through Paystack.',
-              },
-              {
-                q: 'Do you offer refunds?',
-                a: 'Yes, within 7 days of your first purchase.',
-              },
-            ].map((faq, idx) => (
-              <div
-                key={idx}
-                className="p-6 rounded-lg"
-                style={{ backgroundColor: 'var(--color-card)', border: '1px solid var(--color-border)' }}
-              >
-                <p className="font-bold mb-2" style={{ color: 'var(--color-text)' }}>
-                  {faq.q}
-                </p>
-                <p style={{ color: 'var(--color-text-muted)' }}>
-                  {faq.a}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
+        {/* Refund policy notice */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={inView ? { opacity: 1 } : {}}
+          transition={{ duration: 0.4, delay: 0.4 }}
+          className="mt-8 text-center text-xs text-muted"
+        >
+          <span className="font-semibold text-primary">No refunds.</span>{" "}
+          All payments are final. You may cancel at any time to stop future charges — access continues until the end of your billing period. Please review the plan before purchasing.
+        </motion.p>
       </div>
     </section>
   );
-};
-
-export default PricingSection;
+}

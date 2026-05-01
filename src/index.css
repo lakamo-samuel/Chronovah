@@ -8,6 +8,8 @@
   --breakpoint-xs: 475px;
   /* UI components - Inter */
   --font-ui: "Inter", ui-sans-serif, system-ui, sans-serif;
+  /* Landing page display headings - Instrument Serif */
+  --font-display: "Instrument Serif", "Georgia", serif;
   /* Content areas - Source Serif 4 */
   --font-content: "Source Serif 4", Georgia, "Times New Roman", serif;
   /* Fallback for legacy UI - Plus Jakarta Sans */
@@ -315,6 +317,11 @@
     font-size: 1.5rem;
     line-height: 2rem;
     font-weight: 700;
+  }
+
+  /* Display font (Instrument Serif) - landing page section headings only */
+  .font-display {
+    font-family: var(--font-display);
   }
   
   /* Content Font (Source Serif 4) - for notes, journal entries, markdown content */
