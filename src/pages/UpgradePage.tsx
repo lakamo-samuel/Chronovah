@@ -80,6 +80,7 @@ export default function UpgradePage() {
       } else {
         setError("Failed to initialize payment. Please try again.");
       }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       setError(err.response?.data?.error || "Failed to initialize payment. Please try again.");
     } finally {

@@ -14,6 +14,7 @@ import {
   validateEmail,
   validatePassword,
   validateName,
+  validateConfirmPassword,
 } from "../hooks/useValidation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
@@ -50,10 +51,9 @@ export default function SignUp() {
   const nameError = touched.name ? validateName(name) : "";
   const emailError = touched.email ? validateEmail(email) : "";
   const passwordError = touched.password ? validatePassword(password) : "";
-  const confirmPasswordError =
-    touched.confirmPassword && password !== confirmPassword
-      ? "Passwords do not match"
-      : "";
+  const confirmPasswordError = touched.confirmPassword
+    ? validateConfirmPassword(password, confirmPassword)
+    : "";
 
   const isFormValid =
     !nameError &&
@@ -63,8 +63,7 @@ export default function SignUp() {
     name &&
     email &&
     password &&
-    confirmPassword &&
-    passwordStrength.score >= 2;
+    confirmPassword;
 
   // Password strength checker
   useEffect(() => {
@@ -124,7 +123,7 @@ export default function SignUp() {
 
       // Small delay for success animation
       setTimeout(() => {
-        navigate("/otpverification");
+        navigate("/otpverification", { state: { email: email.trim() } });
       }, 500);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
@@ -433,19 +432,19 @@ export default function SignUp() {
               />
               <label htmlFor="terms" className="text-xs text-muted">
                 I agree to the{" "}
-                <a
-                  href="/terms"
-                  className="text-primary-500 hover:text-primary-600"
+                <Link
+                  to="/terms"
+                  className="text-primary-600 hover:underline dark:text-primary-400"
                 >
                   Terms of Service
-                </a>{" "}
+                </Link>{" "}
                 and{" "}
-                <a
-                  href="/privacy"
-                  className="text-primary-500 hover:text-primary-600"
+                <Link
+                  to="/privacy"
+                  className="text-primary-600 hover:underline dark:text-primary-400"
                 >
                   Privacy Policy
-                </a>
+                </Link>
               </label>
             </div>
 

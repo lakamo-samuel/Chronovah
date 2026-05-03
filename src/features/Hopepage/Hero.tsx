@@ -1,6 +1,7 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth";
 import {
   ArrowRight,
   MapPin,
@@ -41,6 +42,7 @@ const fadeUp = (delay = 0) => ({
 
 export default function Hero() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const ref = useRef<HTMLElement>(null);
   const reduced = useReducedMotion();
 
@@ -104,10 +106,10 @@ export default function Hero() {
             {/* CTAs */}
             <motion.div {...fadeUp(0.21)} className="mt-10 flex flex-wrap items-center gap-3">
               <button
-                onClick={() => navigate("/signup")}
+                onClick={() => navigate(user ? "/dashboard" : "/signup")}
                 className="group inline-flex items-center gap-2 rounded-xl bg-primary-600 px-7 py-3.5 text-sm font-semibold text-white shadow-medium transition-all hover:bg-primary-700 hover:shadow-glow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 dark:hover:bg-primary-500"
               >
-                Get started free
+                {user ? "Go to Dashboard" : "Get started free"}
                 <ArrowRight size={15} strokeWidth={2.5} className="transition-transform group-hover:translate-x-0.5" />
               </button>
               <button

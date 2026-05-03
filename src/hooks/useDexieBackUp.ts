@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import { db } from "../database/db";
 import { useAuth } from "./useAuth";
+import { useToast } from "./useToast";
 
 type BackupData = {
   _meta: { version: string; exportedAt: string };
@@ -11,81 +12,97 @@ type BackupData = {
 };
 
 export const useDexieBackup = () => {
+  // ✅ Hooks called at the top level — not inside callbacks
+  const { user } = useAuth();
+  const { success, error: showError } = useToast();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [importError, setImportError] = useState<string | null>(null);
 
   const exportBackup = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    const { user } = useAuth();
-    try {
-      if (!user?.id) {
-        setError("User not authenticated");
-        return;
-      }
+    if (!user?.id) {
+      showError("You must be logged in to export data.");
+      return;
+    }
 
+    setLoading(true);
+    try {
       const exportData: BackupData = {
-        _meta: { version: "1.0.0", exportedAt: new Date().toISOString() },
-        people: await db.people.where("userId").equals(user.id).toArray(),
-        places: await db.places.where("userId").equals(user.id).toArray(),
-        notes: await db.notes.where("userId").equals(user.id).toArray(),
+        _meta: {
+          version: "1.0.0",
+          exportedAt: new Date().toISOString(),
+        },
+        people:   await db.people.where("userId").equals(user.id).toArray(),
+        places:   await db.places.where("userId").equals(user.id).toArray(),
+        notes:    await db.notes.where("userId").equals(user.id).toArray(),
         journals: await db.journal.where("userId").equals(user.id).toArray(),
       };
+
       const blob = new Blob([JSON.stringify(exportData, null, 2)], {
         type: "application/json",
       });
+
+      const timestamp = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = "app_backup.json";
+      link.download = `chronovah-backup-${timestamp}.json`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
+
+      success("Backup exported successfully.");
     } catch (err) {
-      console.error(err);
-      setError("Export failed. See console for details.");
+      console.error("Export failed:", err);
+      showError("Export failed. Please try again.");
     } finally {
       setLoading(false);
     }
-  }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
 
   const importBackup = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (!user?.id) {
+        showError("You must be logged in to import data.");
+        return;
+      }
+
+      const file = e.target.files?.[0];
+      if (!file) return;
+
       setLoading(true);
-      setError(null);
-      const { user } = useAuth();
+      setImportError(null);
+
       try {
-        if (!user?.id) {
-          setError("User not authenticated");
-          return;
-        }
-
-        const file = e.target.files?.[0];
-        if (!file) return;
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        let data: any;
+        // Parse JSON
+        let data: BackupData;
         try {
           const text = await file.text();
           data = JSON.parse(text);
         } catch {
-          alert("Invalid JSON file.");
+          showError("Invalid file — could not parse JSON.");
           return;
         }
 
-        if (!confirm("Importing will overwrite your data. Continue?")) return;
-
-        const people = Array.isArray(data?.people) ? data.people : [];
-        const places = Array.isArray(data?.places) ? data.places : [];
-        const notes = Array.isArray(data?.notes) ? data.notes : [];
+        // Validate shape
+        const people   = Array.isArray(data?.people)   ? data.people   : [];
+        const places   = Array.isArray(data?.places)   ? data.places   : [];
+        const notes    = Array.isArray(data?.notes)    ? data.notes    : [];
+        // Support both "journals" (export key) and "journal" (legacy)
         const journals = Array.isArray(data?.journals)
           ? data.journals
-          : Array.isArray(data?.journal)
-          ? data.journal
+          : Array.isArray((data as any)?.journal)
+          ? (data as any).journal
           : [];
 
-        // Clear existing user data for these tables
+        const totalRecords = people.length + places.length + notes.length + journals.length;
+        if (totalRecords === 0) {
+          showError("The backup file contains no data.");
+          return;
+        }
+
+        // Clear existing user data
         await Promise.all([
           db.people.where("userId").equals(user.id).delete(),
           db.places.where("userId").equals(user.id).delete(),
@@ -93,23 +110,29 @@ export const useDexieBackup = () => {
           db.journal.where("userId").equals(user.id).delete(),
         ]);
 
-        // Add userId to imported data and bulk add
-        await db.people.bulkAdd(people.map((p: any) => ({ ...p, userId: user.id })));
-        await db.places.bulkAdd(places.map((p: any) => ({ ...p, userId: user.id })));
-        await db.notes.bulkAdd(notes.map((n: any) => ({ ...n, userId: user.id })));
-        await db.journal.bulkAdd(journals.map((j: any) => ({ ...j, userId: user.id })));
+        // Stamp userId on every record and bulk-put (handles duplicates gracefully)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const stamp = (arr: unknown[]) => arr.map((r: any) => ({ ...r, userId: user.id }));
 
-        alert("Data imported successfully!");
+        await db.people.bulkPut(stamp(people) as any);
+        await db.places.bulkPut(stamp(places) as any);
+        await db.notes.bulkPut(stamp(notes) as any);
+        await db.journal.bulkPut(stamp(journals) as any);
+
+        success(`Imported ${totalRecords} records successfully.`);
       } catch (err) {
         console.error("Import failed:", err);
-        alert("Import failed. See console for details.");
+        showError("Import failed. The file may be corrupted or incompatible.");
+        setImportError("Import failed. See console for details.");
       } finally {
+        // Reset the file input so the same file can be re-selected
         if (e.target) e.target.value = "";
         setLoading(false);
       }
     },
-    []
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [user?.id]
   );
 
-  return { exportBackup, importBackup, loading, error };
+  return { exportBackup, importBackup, loading, importError };
 };

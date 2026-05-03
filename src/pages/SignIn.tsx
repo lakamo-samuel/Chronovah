@@ -10,7 +10,7 @@ import {
 
 } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
-import { validateEmail, validatePassword } from "../hooks/useValidation";
+import { validateEmail, validateSignInPassword } from "../hooks/useValidation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import { GoogleAuthButton } from "../features/Authentication/Oauth";
@@ -27,6 +27,7 @@ export default function SignIn() {
   const [formError, setFormError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [needsVerification, setNeedsVerification] = useState(false);
 
   const { refresh } = useAuth();
 
@@ -37,7 +38,7 @@ export default function SignIn() {
   // };
 
   const emailError = touched.email ? validateEmail(email) : "";
-  const passwordError = touched.password ? validatePassword(password) : "";
+  const passwordError = touched.password ? validateSignInPassword(password) : "";
   const isFormValid = !emailError && !passwordError && email && password;
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -47,6 +48,7 @@ export default function SignIn() {
     if (!isFormValid) return;
 
     setFormError(null);
+    setNeedsVerification(false);
 
     try {
       setIsLoading(true);
@@ -72,7 +74,14 @@ export default function SignIn() {
       }, 500);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
-      setFormError(err.message || "Failed to sign in. Please try again.");
+      const msg: string = err.message || "Failed to sign in. Please try again.";
+      // Backend returns "Please verify your email first" with a 403
+      if (msg.toLowerCase().includes("verify")) {
+        setNeedsVerification(true);
+        setFormError(msg);
+      } else {
+        setFormError(msg);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -305,9 +314,18 @@ export default function SignIn() {
                   exit={{ opacity: 0, y: -10 }}
                   className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg"
                 >
-                  <p className="text-xs text-red-500 text-center">
-                    {formError}
-                  </p>
+                  <p className="text-xs text-red-500 text-center">{formError}</p>
+                  {needsVerification && (
+                    <div className="mt-2 text-center">
+                      <Link
+                        to="/otpverification"
+                        state={{ email: email.trim() }}
+                        className="text-xs font-semibold text-primary-600 underline underline-offset-2 hover:opacity-80 dark:text-primary-400"
+                      >
+                        Go to verification page →
+                      </Link>
+                    </div>
+                  )}
                 </motion.div>
               )}
             </AnimatePresence>
@@ -352,6 +370,19 @@ export default function SignIn() {
               Create one
             </Link>
           </div>
+
+          {/* Legal links */}
+          <p className="mt-5 text-center text-xs text-muted">
+            By signing in you agree to our{" "}
+            <Link to="/terms" className="text-primary-600 hover:underline dark:text-primary-400">
+              Terms of Service
+            </Link>{" "}
+            and{" "}
+            <Link to="/privacy" className="text-primary-600 hover:underline dark:text-primary-400">
+              Privacy Policy
+            </Link>
+            .
+          </p>
         </div>
 
         {/* Success Overlay */}

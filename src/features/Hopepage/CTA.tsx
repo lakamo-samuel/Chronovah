@@ -2,6 +2,7 @@ import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { ArrowRight, ShieldCheck, WifiOff, Zap } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth";
 
 const BULLETS = [
   { icon: Zap,         label: "Fast and lightweight" },
@@ -13,10 +14,12 @@ export default function CTAComponent() {
   const ref = useRef<HTMLElement>(null);
   const inView = useInView(ref, { once: true, amount: 0.2 });
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   return (
     <section
       ref={ref}
+      id="contact"
       className="relative overflow-hidden border-b border-default bg-default py-24 md:py-32"
       aria-label="Call to action"
     >
@@ -62,10 +65,10 @@ export default function CTAComponent() {
           {/* CTAs */}
           <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
             <button
-              onClick={() => navigate("/signup")}
+              onClick={() => navigate(user ? "/dashboard" : "/signup")}
               className="inline-flex items-center gap-2 rounded-xl bg-primary-600 px-8 py-3.5 text-sm font-semibold text-white shadow-medium transition-colors hover:bg-primary-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
             >
-              Start for free
+              {user ? "Go to Dashboard" : "Start for free"}
               <ArrowRight size={16} strokeWidth={2.5} />
             </button>
             <button

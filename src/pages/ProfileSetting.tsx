@@ -30,7 +30,7 @@ function ProfileSetting() {
   };
 
   return (
-    <div className="w-full space-y-8 max-w-3xl mx-auto mt-5 px-4 py-10 mb-10">
+    <div className="w-full space-y-8  mx-auto mt-5 px-4 py-10 mb-10">
       <ToastContainer toasts={toasts} onClose={removeToast} />
       {/* Header */}
       <div className="flex flex-col gap-3 mb-8">
