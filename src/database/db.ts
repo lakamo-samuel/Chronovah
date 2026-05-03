@@ -63,6 +63,19 @@ class ChronovahDB extends Dexie {
       syncQueue: "id, userId, table, operation, recordId, createdAt, retryCount",
       userProfile: "id, email, updatedAt",
     });
+
+    // Version 3 — ensures userId index exists on all stores (fixes SchemaError on old clients)
+    this.version(3).stores({
+      notes:
+        "id, userId, title, isPinned, isFavorite, color, createdAt, updatedAt, *tags",
+      journal: "id, userId, mood, isFavorite, createdAt, updatedAt, *tags",
+      people:
+        "id, userId, name, relation, birthday, email, company, isFavorite, createdAt, updatedAt, *tags",
+      places:
+        "id, userId, name, country, type, visitedDate, isFavorite, createdAt, updatedAt, *tags",
+      syncQueue: "id, userId, table, operation, recordId, createdAt, retryCount",
+      userProfile: "id, email, updatedAt",
+    });
   }
 }
 
