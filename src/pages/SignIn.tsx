@@ -159,7 +159,7 @@ export default function SignIn() {
           <div className="space-y-3">
             <GoogleAuthButton
               onClick={() => {
-                const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000/api/v1";
+                const apiUrl = import.meta.env.VITE_API_URL || "https://api-chronovah-backend.onrender.com/api/v1";
                 window.location.href = `${apiUrl}/oauth/google`;
               }}
               label="Continue with Google"
