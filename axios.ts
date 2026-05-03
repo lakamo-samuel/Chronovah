@@ -3,9 +3,13 @@ import axios, { AxiosError } from "axios";
 
 const isDevelopment = import.meta.env.DEV;
 
+// API URL - uses environment variable or falls back to production URL
 const API_URL =
   import.meta.env.VITE_API_URL ||
-  "https://api-chronovah-backend/api/v1";
+  "https://api-chronovah-backend.onrender.com/api/v1";
+
+// Log the API URL being used (helps with debugging)
+console.log("🌐 API URL:", API_URL);
 
 export const axiosInstance = axios.create({
   baseURL: API_URL,
