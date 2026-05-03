@@ -27,6 +27,11 @@ const PricingPage = lazy(() => import("./pages/PricingPage"));
 const UpgradePage = lazy(() => import("./pages/UpgradePage"));
 const PaymentSuccessPage = lazy(() => import("./pages/PaymentSuccessPage"));
 const BillingPage = lazy(() => import("./pages/BillingPage"));
+const AboutPage = lazy(() => import("./pages/AboutPage"));
+const PrivacyPolicyPage = lazy(() => import("./pages/PrivacyPolicyPage"));
+const TermsOfServicePage = lazy(() => import("./pages/TermsOfServicePage"));
+const RefundPolicyPage = lazy(() => import("./pages/RefundPolicyPage"));
+const ContactPage = lazy(() => import("./pages/ContactPage"));
 
 function App() {
 
@@ -36,6 +41,11 @@ function App() {
         <Routes>
           <Route index path="/" element={<Homepage />} />
           <Route path="pricing" element={<PricingPage />} />
+          <Route path="about" element={<AboutPage />} />
+          <Route path="privacy" element={<PrivacyPolicyPage />} />
+          <Route path="terms" element={<TermsOfServicePage />} />
+          <Route path="refund" element={<RefundPolicyPage />} />
+          <Route path="contact" element={<ContactPage />} />
 
           <Route
             element={

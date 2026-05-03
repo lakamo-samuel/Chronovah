@@ -3,24 +3,43 @@ import { Box } from "lucide-react";
 
 const LINKS = {
   Product: [
-    { label: "Features",  to: "/#features" },
-    { label: "Pricing",   to: "/pricing" },
-    { label: "Changelog", to: "#" },
+    { label: "Features", to: "/#features" },
+    { label: "Pricing",  to: "/pricing" },
   ],
   Company: [
-    { label: "About",   to: "#" },
-    { label: "Blog",    to: "#" },
-    { label: "Contact", to: "mailto:support@chronovah.com" },
+    { label: "About",   to: "/about" },
+    { label: "Contact", to: "/contact" },
   ],
   Legal: [
-    { label: "Privacy Policy",    to: "#" },
-    { label: "Terms of Service",  to: "#" },
-    { label: "Refund Policy",     to: "#" },
+    { label: "Privacy Policy",   to: "/privacy" },
+    { label: "Terms of Service", to: "/terms" },
+    { label: "Refund Policy",    to: "/refund" },
   ],
 };
 
 export default function Footer() {
   const navigate = useNavigate();
+
+  const handleClick = (to: string) => {
+    if (to.startsWith("mailto") || to.startsWith("http")) return; // handled by <a>
+
+    // Hash-only links on the same page — scroll to section
+    if (to.startsWith("/#")) {
+      const id = to.slice(2); // strip "/#"
+      if (window.location.pathname === "/") {
+        document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+      } else {
+        navigate("/");
+        // Give the page time to mount before scrolling
+        setTimeout(() => {
+          document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+        }, 300);
+      }
+      return;
+    }
+
+    navigate(to);
+  };
 
   return (
     <footer className="border-t border-default bg-default">
@@ -65,9 +84,8 @@ export default function Footer() {
                       </a>
                     ) : (
                       <button
-                        onClick={() => to !== "#" && navigate(to)}
-                        className="text-sm text-muted transition-colors hover:text-primary disabled:cursor-default"
-                        disabled={to === "#"}
+                        onClick={() => handleClick(to)}
+                        className="text-sm text-muted transition-colors hover:text-primary"
                       >
                         {label}
                       </button>

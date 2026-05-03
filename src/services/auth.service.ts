@@ -68,7 +68,7 @@ class AuthService {
 
   async signOut(): Promise<void> {
     try {
-      await authAxios.post("/user/signout");
+      await authAxios.post("/user/logout");
     } catch (error) {
       console.error("Sign out error:", error);
     } finally {
