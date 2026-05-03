@@ -61,15 +61,24 @@ export const useUser = (): UseUserReturn => {
         response.data.data || response.data.user || response.data;
       setUser(userData);
 
-      // Cache to Dexie for offline use
-      await cacheUserProfile(userData);
-
-      // Pull user data from server — MUST be awaited so Dexie is populated
-      // before setLoading(false) fires. Without await, pages render with
-      // items === undefined (skeleton) because Dexie is still empty.
-      if (userData?.id) {
-        await syncManager.pullUserData(userData.id);
+      // Cache to Dexie for offline use — non-fatal, don't let it block sync
+      try {
+        await cacheUserProfile(userData);
+      } catch (cacheErr) {
+        console.warn("Profile cache failed (non-fatal):", cacheErr);
       }
+
+      // Pull user data from server — awaited so Dexie is populated before
+      // setLoading(false) fires and pages render.
+      if (userData?.id) {
+        try {
+          await syncManager.pullUserData(userData.id);
+        } catch (syncErr) {
+          console.warn("Initial sync failed (non-fatal):", syncErr);
+        }
+      }
+
+      // Mark sync complete regardless of cache/sync errors so pages render
       setSynced(true);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {

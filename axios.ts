@@ -76,6 +76,12 @@ const responseInterceptor = async (error: AxiosError<any>) => {
         status,
       });
 
+    case 401:
+      return Promise.reject({
+        message: errorData?.error || errorData?.message || "Invalid credentials.",
+        status,
+      });
+
     case 403:
       // Handle PRO_REQUIRED specifically
       if (errorData?.code === 'PRO_REQUIRED') {
@@ -87,46 +93,38 @@ const responseInterceptor = async (error: AxiosError<any>) => {
         });
       }
       return Promise.reject({
-        message: "Permission denied.",
+        message: errorData?.error || errorData?.message || "Permission denied.",
         status,
       });
 
     case 404:
       return Promise.reject({
-        message: "Resource not found.",
+        message: errorData?.error || errorData?.message || "Resource not found.",
         status,
       });
 
     case 422:
       return Promise.reject({
-        message: errorData?.error || "Validation failed.",
+        message: errorData?.error || errorData?.message || "Validation failed.",
         errors: errorData?.errors,
         status,
       });
 
     case 429:
       return Promise.reject({
-        message: "Too many requests.",
+        message: errorData?.error || errorData?.message || "Too many requests. Please slow down.",
         status,
       });
 
     case 500:
       return Promise.reject({
-        message: "Server error.",
+        message: errorData?.error || errorData?.message || "Server error. Please try again later.",
         status,
       });
-    
-    case 401:
-      return Promise.reject({
-        message: "Invalid credential.",
-        status,
-      });
+
     default:
       return Promise.reject({
-        message:
-          errorData?.error ||
-          errorData?.message ||
-          "Unexpected error occurred.",
+        message: errorData?.error || errorData?.message || "Unexpected error occurred.",
         status,
       });
   }
