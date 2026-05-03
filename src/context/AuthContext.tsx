@@ -4,7 +4,7 @@ import { AuthContext } from "../hooks/useAuth";
 import { useSubscriptionStore } from "../store/subscriptionStore";
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const { user, loading, refresh, logout } = useUser();
+  const { user, loading, synced, refresh, logout } = useUser();
   const { fetchStatus } = useSubscriptionStore();
 
   // Fetch subscription status when user logs in
@@ -15,7 +15,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [user?.id, loading, fetchStatus]);
 
   return (
-    <AuthContext.Provider value={{ user, loading, refresh, logout }}>
+    <AuthContext.Provider value={{ user, loading, synced, refresh, logout }}>
       {children}
     </AuthContext.Provider>
   );

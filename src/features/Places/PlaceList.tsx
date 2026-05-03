@@ -28,7 +28,7 @@ type SortOption = "name" | "country" | "visitedDate" | "createdAt";
 export default function Places() {
   const navigate = useNavigate();
   const { toasts, removeToast, success, error } = useToast();
-  const { places, createPlace, updatePlace, deletePlace } = usePlaces();
+  const { places, isLoading, createPlace, updatePlace, deletePlace } = usePlaces();
 
   // State for UI
   const [searchTerm, setSearchTerm] = useState("");
@@ -424,7 +424,7 @@ export default function Places() {
         </div>
 
         {/* Places grid/list */}
-        {places === undefined ? (
+        {places === undefined || isLoading ? (
           <PlacesSkeleton viewMode={viewMode} />
         ) : filteredPlaces.length === 0 ? (
           <motion.div

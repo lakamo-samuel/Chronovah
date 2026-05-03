@@ -17,7 +17,7 @@ import JournalSkeleton from "../../components/skeletons/JournalSkeleton";
 export default function JournalList() {
   const navigate = useNavigate();
   const { toasts, removeToast, success, error } = useToast();
-  const { entries, createEntry, updateEntry, deleteEntry } = useJournal();
+  const { entries, isLoading, createEntry, updateEntry, deleteEntry } = useJournal();
 
   // State for UI
   const [searchTerm, setSearchTerm] = useState("");
@@ -408,7 +408,7 @@ export default function JournalList() {
         </div>
 
         {/* Entries grid/list */}
-        {entries === undefined ? (
+        {entries === undefined || isLoading ? (
           <JournalSkeleton viewMode={viewMode} />
         ) : filteredEntries.length === 0 ? (
           <motion.div

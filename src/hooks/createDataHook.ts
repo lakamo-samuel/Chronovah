@@ -26,11 +26,13 @@ export function createDataHook<T extends BaseRecord>(
   dbTable: Table<T, string>,
 ) {
   return function useDataHook() {
-    const { user } = useAuth();
+    const { user, synced } = useAuth();
 
     // Get all records for user (live query updates on changes)
-    // Returns undefined until the first query resolves — consumers use this
-    // to distinguish "not yet loaded" (show skeleton) from "empty" (show empty state)
+    // Returns undefined until the first query resolves.
+    // We use `synced` (from auth) as the primary loading gate so the skeleton
+    // only shows while the initial API pull is in progress, not while Dexie
+    // is doing its first async read (which causes a false undefined flash).
     const items = useLiveQuery(
       () => {
         if (!user?.id) return [];
@@ -38,6 +40,10 @@ export function createDataHook<T extends BaseRecord>(
       },
       [user?.id]
     );
+
+    // Show skeleton while: auth is loading OR sync hasn't completed yet OR
+    // Dexie hasn't resolved its first query (items still undefined after sync)
+    const isLoading = !synced || items === undefined;
 
     /**
      * Create a new record
@@ -95,8 +101,9 @@ export function createDataHook<T extends BaseRecord>(
     };
 
     return {
-      // Preserve undefined so consumers can distinguish "not yet loaded" from "empty"
+      // undefined = not yet loaded (show skeleton), array = loaded (even if empty)
       items,
+      isLoading,
       create,
       update,
       remove,

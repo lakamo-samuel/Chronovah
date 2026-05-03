@@ -10,10 +10,11 @@ const dataHook = createDataHook<Person>('people', db.people);
  * `people` is undefined until IndexedDB resolves (use for skeleton detection).
  */
 export const usePeople = () => {
-  const { items, create, update, remove, getById } = dataHook();
+  const { items, isLoading, create, update, remove, getById } = dataHook();
 
   return {
     people: items,
+    isLoading,
     createPerson: create,
     updatePerson: update,
     deletePerson: remove,

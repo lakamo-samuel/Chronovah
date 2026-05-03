@@ -20,6 +20,7 @@ export interface User {
 interface UseUserReturn {
   user: User | null;
   loading: boolean;
+  synced: boolean;
   error: string | null;
   refresh: () => Promise<void>;
   logout: () => Promise<void>;
@@ -47,6 +48,7 @@ async function cacheUserProfile(userData: User) {
 export const useUser = (): UseUserReturn => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [synced, setSynced] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const fetchUserFromBackend = useCallback(async () => {
@@ -62,10 +64,13 @@ export const useUser = (): UseUserReturn => {
       // Cache to Dexie for offline use
       await cacheUserProfile(userData);
 
-      // Pull user data from server
+      // Pull user data from server — MUST be awaited so Dexie is populated
+      // before setLoading(false) fires. Without await, pages render with
+      // items === undefined (skeleton) because Dexie is still empty.
       if (userData?.id) {
-        syncManager.pullUserData(userData.id);
+        await syncManager.pullUserData(userData.id);
       }
+      setSynced(true);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.error("Failed to fetch user:", err);
@@ -156,6 +161,7 @@ export const useUser = (): UseUserReturn => {
   return {
     user,
     loading,
+    synced,
     error,
     refresh: fetchUserFromBackend,
     logout,

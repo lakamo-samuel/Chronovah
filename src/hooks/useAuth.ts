@@ -15,6 +15,7 @@ type User = {
 type AuthContextType = {
   user: User;
   loading: boolean;
+  synced: boolean;
   refresh: () => void;
   logout: () => void;
 };

@@ -28,7 +28,7 @@ type FilterOption = "all" | "pinned" | "favorites" | "recent";
 export default function Notes() {
   const navigate = useNavigate();
   const { toasts, removeToast, success, error } = useToast();
-  const { notes, createNote, updateNote } = useNotes();
+  const { notes, isLoading, createNote, updateNote } = useNotes();
 
   // State for UI
   const [searchTerm, setSearchTerm] = useState("");
@@ -249,7 +249,7 @@ export default function Notes() {
         </div>
 
         {/* Show skeleton only when notes haven't loaded from local DB yet */}
-        {notes === undefined ? (
+        {isLoading ? (
           <NotesSkeleton viewMode={viewMode} />
         ) : (
           <>

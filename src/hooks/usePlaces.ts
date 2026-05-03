@@ -10,10 +10,11 @@ const dataHook = createDataHook<Place>('places', db.places);
  * `places` is undefined until IndexedDB resolves (use for skeleton detection).
  */
 export const usePlaces = () => {
-  const { items, create, update, remove, getById } = dataHook();
+  const { items, isLoading, create, update, remove, getById } = dataHook();
 
   return {
     places: items,
+    isLoading,
     createPlace: create,
     updatePlace: update,
     deletePlace: remove,

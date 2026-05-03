@@ -10,10 +10,11 @@ const dataHook = createDataHook<JournalEntry>('journal', db.journal);
  * `entries` is undefined until IndexedDB resolves (use for skeleton detection).
  */
 export const useJournal = () => {
-  const { items, create, update, remove, getById } = dataHook();
+  const { items, isLoading, create, update, remove, getById } = dataHook();
 
   return {
     entries: items,
+    isLoading,
     createEntry: create,
     updateEntry: update,
     deleteEntry: remove,

@@ -17,7 +17,7 @@ import CommonPageHeader from "../../components/CommonPageHeader";
 export default function PeopleList() {
   const navigate = useNavigate();
   const { toasts, removeToast, success, error } = useToast();
-  const { people, createPerson, updatePerson, deletePerson } = usePeople();
+  const { people, isLoading, createPerson, updatePerson, deletePerson } = usePeople();
 
   // State for UI
   const [searchTerm, setSearchTerm] = useState("");
@@ -394,7 +394,7 @@ export default function PeopleList() {
         </div>
 
         {/* People grid/list */}
-        {people === undefined ? (
+        {people === undefined || isLoading ? (
           <PeopleSkeleton viewMode={viewMode} />
         ) : filteredPeople.length === 0 ? (
           <motion.div

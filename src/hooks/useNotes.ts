@@ -10,10 +10,11 @@ const dataHook = createDataHook<Note>('notes', db.notes);
  * `notes` is undefined until IndexedDB resolves (use for skeleton detection).
  */
 export const useNotes = () => {
-  const { items, create, update, remove, getById } = dataHook();
+  const { items, isLoading, create, update, remove, getById } = dataHook();
 
   return {
     notes: items,
+    isLoading,
     createNote: create,
     updateNote: update,
     deleteNote: remove,
